@@ -1,0 +1,10 @@
+<div>
+    <div *ngIf="models; else loading">
+        <ul>
+            <li *ngFor="let item of models">{{item.text}}</li>
+        </ul>
+    </div>
+    <ng-template #loading>
+        <loading></loading>
+    </ng-template>
+</div>

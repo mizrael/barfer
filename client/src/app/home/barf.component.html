@@ -1,0 +1,11 @@
+<div>
+    <div *ngIf="!isSaving; else loading">
+        <form #barfForm="ngForm">
+            <input type="text" placeholder="barf!" name="barfText" required [(ngModel)]="model.text" #text="ngModel">
+            <button type="submit" [disabled]="!this.barfForm.form.valid" (click)="onSave()" class="btn btn-primary">Barf!</button>
+        </form>
+    </div>
+    <ng-template #loading>
+        <loading></loading>
+    </ng-template>
+</div>
