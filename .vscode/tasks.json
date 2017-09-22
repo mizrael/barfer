@@ -1,0 +1,9 @@
+{
+    "tasks": [
+        {
+            "type": "gulp",
+            "task": "build_watch",
+            "problemMatcher": []
+        }
+    ]
+}
