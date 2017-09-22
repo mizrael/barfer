@@ -1,3 +1,5 @@
+import { AuthConfig, AuthHttp } from 'angular2-jwt/angular2-jwt';
+import { RequestOptions, Http } from '@angular/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
@@ -16,6 +18,12 @@ import { AboutModule } from './about/about.module';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../styles/main.css';
 
+export function authHttpServiceFactory(http: Http, options: RequestOptions) {
+    return new AuthHttp(new AuthConfig({
+        tokenGetter: (() => localStorage.getItem('access_token'))
+    }), http, options);
+}
+
 @NgModule({
     imports: [
         BrowserModule,
@@ -30,6 +38,11 @@ import '../styles/main.css';
         BarfService,
         AUTH_PROVIDERS,
         AuthService,
+        {
+            provide: AuthHttp,
+            useFactory: authHttpServiceFactory,
+            deps: [Http, RequestOptions]
+        },
         AuthGuard
     ],
     bootstrap: [AppComponent]

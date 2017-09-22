@@ -17,6 +17,11 @@ export class BarfsListComponent {
     }
 
     private async readItems() {
-        this.models = await this.barfService.read();
+        this.barfService.read()
+            .then(models => {
+                this.models = models;
+            }).catch(() => {
+                this.models = [];
+            });
     }
 }

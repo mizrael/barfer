@@ -17,9 +17,12 @@ export class AuthService {
     // Create Auth0 web auth instance
     // @TODO: Update AUTH_CONFIG and remove .example extension in src/app/auth/auth0-variables.ts.example
     auth0 = new auth0.WebAuth({
-        clientID: AUTH_CONFIG.CLIENT_ID,
-        domain: AUTH_CONFIG.CLIENT_DOMAIN,
-        scope: 'read:barfs create:barfs'
+        clientID: 'wRbiLUrSkXx03vB51d0glux1LyuNIjuv',
+        domain: 'mizrael.auth0.com',
+        responseType: 'token id_token',
+        audience: 'barfer-api-gateway',
+        redirectUri: 'http://localhost:3030/callback',
+        scope: 'openid profile read:barfs'
     });
 
     // Create a stream of logged in status to communicate throughout app
@@ -72,8 +75,7 @@ export class AuthService {
     }
 
     private _setSession(authResult: any, profile: any) {
-        // Save session data and update login status subject
-        localStorage.setItem('token', authResult.accessToken);
+        localStorage.setItem('access_token', authResult.accessToken);
         localStorage.setItem('id_token', authResult.idToken);
         localStorage.setItem('profile', JSON.stringify(profile));
         this.setLoggedIn(true);
@@ -81,7 +83,7 @@ export class AuthService {
 
     logout() {
         // Remove tokens and profile and update login status subject
-        localStorage.removeItem('token');
+        localStorage.removeItem('access_token');
         localStorage.removeItem('id_token');
         localStorage.removeItem('profile');
         this.router.navigate(['/']);
@@ -90,7 +92,7 @@ export class AuthService {
 
     get authenticated() {
         // Check if there's an unexpired access token
-        return tokenNotExpired('token');
+        return tokenNotExpired('access_token');
     }
 
 }

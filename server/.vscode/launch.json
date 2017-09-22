@@ -15,7 +15,8 @@
                 "CORS_ORIGINS": "http://localhost:3030",
                 "JWT_ISSUER": "https://mizrael.auth0.com/",
                 "JWT_AUDIENCE": "barfer-api-gateway",
-                "JWKS_URI": "https://mizrael.auth0.com/.well-known/jwks.json"
+                "JWKS_URI": "https://mizrael.auth0.com/.well-known/jwks.json",
+                "PORT": "3000"
             }
         },
         {
@@ -28,10 +29,20 @@
                 "RABBIT": "amqp://ttbpnbfu:7hfcmVuEDM4d-47mgZntCOceiXkMz9b3@lark.rmq.cloudamqp.com/ttbpnbfu",
                 "MONGO": "mongodb://admin:admin@cluster0-shard-00-00-yuik9.mongodb.net:27017,cluster0-shard-00-01-yuik9.mongodb.net:27017,cluster0-shard-00-02-yuik9.mongodb.net:27017/barfer?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin"
             }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Web Client",
+            "program": "${workspaceRoot}/bin/client/main.js",
+            "cwd": "${workspaceRoot}",
+            "env": {
+                "PORT": "3100"
+            }
         }
     ],
     "compounds": [{
         "name": "All services",
-        "configurations": ["API", "Barfs processor"]
+        "configurations": ["API", "Barfs processor", "Web Client"]
     }]
 }
