@@ -18,8 +18,9 @@ router.get('/', ensureLoggedIn.ensureLoggedIn(), function (req, res, next) {
                     method: 'GET',
                     headers: headers
                 };
-            request(options).then(barfs => {
-                res.json(barfs);
+            request(options).then(json => {
+                let barfs = JSON.parse(json);
+                res.render('partials/_barfs', { barfs: barfs });
             }).catch(err => {
                 res.json(err);
             });

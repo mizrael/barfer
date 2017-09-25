@@ -17,7 +17,8 @@ function startServer() {
             secret: process.env.SESSION_SECRET || 'shhhhhhhhh',
             resave: true,
             saveUninitialized: true
-        }));
+        }))
+        .use('/static', express.static('./bin/web/static'));
 
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'pug');

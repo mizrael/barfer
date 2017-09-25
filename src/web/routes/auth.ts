@@ -50,7 +50,8 @@ function initRouter() {
     );
 
     router.get('/', function (req, res) {
-        res.render('index', { title: 'Hey', message: 'Hello there!' });
+        res.locals.area = 'home';
+        res.render('areas/home', { title: 'Hey', message: 'Hello there!' });
     });
 
     return router;
