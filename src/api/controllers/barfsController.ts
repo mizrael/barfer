@@ -10,7 +10,7 @@ import { ICreateBarf } from '../dto/barf';
 export class BarfsController {
     constructor(private app: express.Application, private barfsRepo: IRepository<Barf>, private publisher: IPublisher) {
         app.route('/barfs')
-            .get(jwtAuthz(['read:barfs']), this.getBarfs.bind(this))
+            .get(this.getBarfs.bind(this))
             .post(jwtAuthz(['create:barfs']), this.postBarf.bind(this));
     }
 
@@ -19,11 +19,9 @@ export class BarfsController {
     }
 
     private postBarf(req: express.Request, res: express.Response) {
-        console.log(req.user);
-
         let me = this,
             command = req.body as ICreateBarf,
-            barf = new Barf("lorem", command.text);
+            barf = new Barf(req.user.sub, command.text);
         this.barfsRepo.insert(barf)
             .then((result) => {
                 let task = new Task("barf_created", barf.id.toHexString());

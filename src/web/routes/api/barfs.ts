@@ -1,11 +1,30 @@
 import * as express from 'express';
 import * as ensureLoggedIn from 'connect-ensure-login';
-import * as authService from '../../services/barfsService';
+import * as authService from '../../services/authService';
 import * as request from 'request-promise';
 
-const router = express.Router();
+const router = express.Router(),
+    serviceUrl = 'http://localhost:3000/barfs';
 
-router.get('/', ensureLoggedIn.ensureLoggedIn(), function (req, res, next) {
+router.get('/', function (req, res, next) {
+    let
+        headers = {
+            'content-type': 'application/json'
+        },
+        options = {
+            url: serviceUrl,
+            method: 'GET',
+            headers: headers
+        };
+    request(options).then(json => {
+        let barfs = JSON.parse(json);
+        res.render('partials/_barfs', { barfs: barfs });
+    }).catch(err => {
+        res.json(err);
+    });
+});
+
+router.post('/', function (req, res, next) {
     authService.requestAccessToken()
         .then(data => {
             let
@@ -13,14 +32,16 @@ router.get('/', ensureLoggedIn.ensureLoggedIn(), function (req, res, next) {
                     'content-type': 'application/json',
                     'Authorization': 'Bearer ' + data['access_token']
                 },
+                body = { text: req.body.text },
                 options = {
-                    url: 'http://localhost:3000/barfs',
-                    method: 'GET',
-                    headers: headers
+                    url: serviceUrl,
+                    method: 'POST',
+                    headers: headers,
+                    body: body,
+                    json: true
                 };
             request(options).then(json => {
-                let barfs = JSON.parse(json);
-                res.render('partials/_barfs', { barfs: barfs });
+                res.json(json);
             }).catch(err => {
                 res.json(err);
             });

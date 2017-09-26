@@ -1,11 +1,18 @@
 barfer.areas.home = function () {
-    var _init = function (index, container) {
-        var $container = $(container),
-            $barfsContainer = $container.find('.jsBarfs');
-        $.get("/api/barfs").then(function (data) {
-            $barfsContainer.html(data);
-        });
+    var _initBarfer = function ($container) {
 
-    };
+        },
+        _init = function (index, container) {
+            var $container = $(container),
+                archive = new barfer.controllers.barfsArchive($container.find('.jsBarfs')),
+                onBarfSaved = function (resp) {
+                    archive.read();
+                },
+                createBarf = new barfer.controllers.createBarf($container.find('.jsBarfer'), {
+                    onSaved: onBarfSaved
+                });
+
+            archive.read();
+        };
     $('.jsHome').each(_init);
 };

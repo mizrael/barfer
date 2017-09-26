@@ -2,6 +2,7 @@ import * as uuid from 'uuid';
 import * as readline from 'readline';
 
 import * as express from 'express';
+import * as unless from 'express-unless';
 import * as cors from 'cors';
 import * as bodyParser from 'body-parser';
 import * as jwt from 'express-jwt';
@@ -33,6 +34,10 @@ function startServer() {
             audience: process.env.JWT_AUDIENCE,
             issuer: process.env.JWT_ISSUER,
             algorithms: ['RS256']
+        }).unless({
+            path: [
+                { url: '/barfs', methods: ['GET'] }
+            ]
         }),
         port = process.env.PORT || 3000;
 

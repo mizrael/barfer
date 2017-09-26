@@ -2,6 +2,6 @@ extends ../layout
 
 block content
   div(class="home jsHome")
-    h1= title
-    p= message
+    if user
+      include ../partials/_createBarf.pug
     div(class="barfs jsBarfs")

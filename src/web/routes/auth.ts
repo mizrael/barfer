@@ -9,7 +9,7 @@ const Auth0Strategy = require('passport-auth0'),
         redirectUri: process.env.AUTH0_CALLBACK_URL,
         audience: 'https://' + process.env.AUTH0_DOMAIN + '/userinfo',
         responseType: 'code',
-        scope: 'openid profile'
+        scope: 'openid profile create:barfs read:barfs'
     },
     strategy = new Auth0Strategy(
         {
@@ -51,7 +51,7 @@ function initRouter() {
 
     router.get('/', function (req, res) {
         res.locals.area = 'home';
-        res.render('areas/home', { title: 'Hey', message: 'Hello there!' });
+        res.render('areas/home');
     });
 
     return router;
