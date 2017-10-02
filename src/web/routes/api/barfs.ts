@@ -32,7 +32,7 @@ router.post('/', function (req, res, next) {
                     'content-type': 'application/json',
                     'Authorization': 'Bearer ' + data['access_token']
                 },
-                body = { text: req.body.text },
+                body = { text: req.body.text, authorId: req.user['_json'].sub },
                 options = {
                     url: serviceUrl,
                     method: 'POST',

@@ -8,14 +8,16 @@ import * as bodyParser from 'body-parser';
 import * as jwt from 'express-jwt';
 import * as jwks from 'jwks-rsa';
 import { IPublisher, Publisher } from '../common/services/publisher';
-import { IRepository } from '../common/infrastructure/baseRepository';
-import { BarfsRepository } from '../common/infrastructure/barfsRepository';
+import { IRepository, RepositoryFactory } from '../common/infrastructure/db';
+import { CommandsDbContext, QueriesDbContext } from '../common/infrastructure/dbContext';
 import { BarfsController } from './controllers/barfsController';
 
 function initRoutes(app: express.Application) {
     let publisher = new Publisher(process.env.RABBIT),
-        barfsRepo = new BarfsRepository(process.env.MONGO),
-        barfsCtrl = new BarfsController(app, barfsRepo, publisher);
+        repoFactory = new RepositoryFactory(),
+        commandsDbContext = new CommandsDbContext(process.env.MONGO, repoFactory),
+        queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),
+        barfsCtrl = new BarfsController(app, commandsDbContext, queriesDbContext, publisher);
 }
 
 function startServer() {

@@ -1,11 +1,19 @@
 import * as amqplib from 'amqplib';
 import { MongoClient, ObjectId } from 'mongodb';
 import { Task } from '../common/services/publisher';
-import { Barf } from '../common/infrastructure/entities/barf';
+import { Commands } from '../common/infrastructure/entities/commands';
+import { Queries } from '../common/infrastructure/entities/queries';
+import { RepositoryFactory } from '../common/infrastructure/db';
+import { CommandsDbContext, QueriesDbContext } from '../common/infrastructure/dbContext';
 import * as request from 'request-promise';
 
 const connStr = process.env.MONGO,
+    repoFactory = new RepositoryFactory(),
+    commandsDbContext = new CommandsDbContext(process.env.MONGO, repoFactory),
+    queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),
     processors = {
+        // all the callbacks should be in the form
+        // callback(data:any):Promise<void>
         'barf_created': onBarfCreated
     };
 
@@ -26,6 +34,13 @@ function requestAccessToken() {
     return request(options);
 };
 
+interface IUser {
+    nickname: string;
+    email: string;
+    user_id: string;
+    name: string;
+};
+
 function fetchUserProfile() {
     return requestAccessToken()
         .then(data => {
@@ -41,7 +56,8 @@ function fetchUserProfile() {
                     headers: headers
                 };
             return request(options).then(json => {
-                return json;
+                let users = JSON.parse(json) as IUser[];
+                return (users.length) ? users[0] : null;
             }).catch(err => {
                 console.log(err);
             });
@@ -54,15 +70,25 @@ function onBarfCreated(data) {
     console.log("onBarfCreated: " + data);
 
     let barfId = new ObjectId(data);
-    return MongoClient.connect(connStr).then(db => {
-        let coll = db.collection('barfs');
-        coll.findOne({ _id: barfId }).then((barf: Barf) => {
+
+    return commandsDbContext.Barfs.then(repo => {
+        repo.findOne({ _id: barfId }).then((barf: Commands.Barf) => {
             console.log("processing barf: " + JSON.stringify(barf));
+
             fetchUserProfile().then(user => {
-                console.log("user: " + JSON.stringify(user));
+                console.log("user: " + user.nickname);
+                let barfDetails = new Queries.Barf(barf.id,
+                    user.user_id,
+                    user.nickname,
+                    barf.text,
+                    barf.creationDate);
+
+                queriesDbContext.Barfs.then(repo => {
+                    repo.insert(barfDetails).then(() => {
+                        console.log("barf details created: " + JSON.stringify(barfDetails));
+                    });
+                });
             });
-        }).then(result => {
-            db.close();
         });
     });
 };
