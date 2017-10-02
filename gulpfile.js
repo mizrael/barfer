@@ -33,7 +33,7 @@ gulp.task('scripts_build', ['scripts_clean'], function () {
         .pipe(tsProject());
 
     return tsResult.js
-        .pipe(sourcemaps.write())
+        .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest(ts_paths.output));
 });
 
