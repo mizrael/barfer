@@ -31,8 +31,8 @@ export class BarfsController {
 
             repo.insert(barf)
                 .then((result) => {
-                    let task = new Task("barf_created", barf.id.toHexString());
-                    me.publisher.publishTask('barfs', task);
+                    let task = new Task("barfs", "create.barf", barf.id.toHexString());
+                    me.publisher.publish(task);
                     res.status(201).json(barf);
                 });
         });

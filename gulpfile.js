@@ -8,10 +8,11 @@ const gulp = require('gulp'),
 
 var base_path = '.',
     ts_paths = {
-        clean: ['!' + base_path + '/bin/web/static/**/*.js', base_path + '/bin/**/*.js'],
+        clean: ['!' + base_path + '/bin/web/static/**/*.js', base_path + '/bin/**/*.js', base_path + '/bin/**/*.js.map'],
         input: [
             base_path + '/src/**/*.ts'
         ],
+        sourcemaps: '.', // this is relative to the /bin/ folder
         output: base_path + '/bin/'
     };
 
@@ -33,7 +34,7 @@ gulp.task('scripts_build', ['scripts_clean'], function () {
         .pipe(tsProject());
 
     return tsResult.js
-        .pipe(sourcemaps.write('.'))
+        .pipe(sourcemaps.write(ts_paths.sourcemaps))
         .pipe(gulp.dest(ts_paths.output));
 });
 

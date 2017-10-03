@@ -39,6 +39,7 @@
             "cwd": "${workspaceRoot}",
             "env": {
                 "PORT": "3100",
+                "RABBIT": "amqp://ttbpnbfu:7hfcmVuEDM4d-47mgZntCOceiXkMz9b3@lark.rmq.cloudamqp.com/ttbpnbfu",
                 "AUTH0_CLIENT_ID": "J0rv26KV7CarQk2lf16UF6PMg8E6UczL",
                 "AUTH0_CLIENT_SECRET": "r7_0r9_Aktp9NWGpBh0LF3lDf8frCKIjeS3582QPZntng5yxxnVKQf3fgk-YjeyJ",
                 "AUTH0_DOMAIN": "mizrael.auth0.com",
