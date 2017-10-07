@@ -2,7 +2,8 @@ import * as express from 'express';
 import * as jwtAuthz from 'express-jwt-authz';
 
 import { MongoClient } from 'mongodb';
-import { IPublisher, Task } from '../../common/services/publisher';
+import { Task } from '../../common/services/task';
+import { IPublisher } from '../../common/services/publisher';
 import { CommandsDbContext, QueriesDbContext } from '../../common/infrastructure/dbContext';
 import { Query } from '../../common/infrastructure/db';
 import { Commands } from '../../common/infrastructure/entities/commands';
