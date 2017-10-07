@@ -7,24 +7,31 @@ export interface IUser {
     nickname: string;
     user_id: string;
     name: string;
+    picture: string;
 };
 
 export interface IUserService {
-    fetchUserProfile(): Bluebird<IUser>;
+    readUser(id: string): Bluebird<IUser>;
 }
 
 export class UserService implements IUserService {
     constructor(private readonly _authService: IAuthService) { }
 
-    public fetchUserProfile() {
+    private parseAuth0UserId(id: string) {
+        let parts = id.split('|');
+        if (!parts || 2 != parts.length) return id;
+        return parts[1];
+    }
+
+    public readUser(id: string) {
         return this._authService.requestAccessToken()
             .then(data => {
-                let
+                let userId = this.parseAuth0UserId(id),
                     headers = {
                         'Authorization': 'Bearer ' + data['access_token']
                     },
                     options = {
-                        url: "https://mizrael.auth0.com/api/v2/users",
+                        url: "https://mizrael.auth0.com/api/v2/users?q=" + userId,
                         method: 'GET',
                         headers: headers
                     };

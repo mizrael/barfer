@@ -27,7 +27,7 @@ export class CreateBarfDetailsHandler implements ICommandHandler<CreateBarfDetai
             repo.findOne({ _id: barfId }).then((barf: Commands.Barf) => {
                 console.log("processing barf: " + JSON.stringify(barf));
 
-                this._userService.fetchUserProfile().then(user => {
+                this._userService.readUser(barf.userId).then(user => {
                     let barfDetails = new Queries.Barf(barf.id,
                         user.user_id,
                         user.nickname,
