@@ -1,16 +1,15 @@
 import { MongoClient, Db, Collection } from 'mongodb';
 
 export class Query {
-    constructor(private readonly _filter: any, private readonly _sortby: any) { }
-
-    public get filter() { return this._filter; }
-    public get sortby() { return this._sortby; }
+    constructor(public readonly filter: any, public readonly sortby: any, public readonly limit: number = 0) { }
 }
 
 export interface IRepository<T> {
-    find(filter: Query): Promise<T[]>;
+    find(query: Query): Promise<T[]>;
     findOne(filter: any): Promise<T>;
     insert(entity: T): Promise<void>;
+    count(filter: any): Promise<number>;
+    upsertOne(filter: any, entity: T): Promise<void>;
 }
 
 export class BaseRepository<T> implements IRepository<T> {
@@ -24,6 +23,9 @@ export class BaseRepository<T> implements IRepository<T> {
         let cursor = this.coll.find<T>(query.filter);
         if (query.sortby)
             cursor = cursor.sort(query.sortby);
+        if (0 != query.limit)
+            cursor = cursor.limit(query.limit);
+
         return cursor.map(item => {
             return this.renameId(item);
         }).toArray();
@@ -33,6 +35,16 @@ export class BaseRepository<T> implements IRepository<T> {
         return this.coll.insertOne(entity).then(result => {
             this.renameId(entity);
         });
+    }
+
+    public upsertOne(filter: any, entity: T): Promise<void> {
+        return this.coll.updateOne(filter, entity, { upsert: true }).then(result => {
+            this.renameId(entity);
+        });
+    }
+
+    public count(filter: any): Promise<number> {
+        return this.coll.count(filter);
     }
 
     private renameId(entity: any) {

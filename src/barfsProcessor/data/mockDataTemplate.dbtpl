@@ -1,0 +1,29 @@
+// generated with https://next.json-generator.com/
+
+[
+  {
+    'repeat(10)': {
+      userId: '{{objectId()}}',
+      firstName: '{{firstName()}}',
+      lastName: '{{surname()}}',
+      name: function(){ return this.firstName + " " + this.lastName; },
+      picture: 'http://placehold.it/32x32',
+      nickname: '{{company()}}',
+      company: '{{company()}}',
+      email: function (tags) {
+        // Email tag is deprecated, because now you can produce an email as simple as this:
+        return (this.firstName + '.' + this.lastName + '@' + this.company + tags.domainZone()).toLowerCase();
+      },
+      
+      barfs: [
+        {
+          'repeat(10, 20)': {
+            id: '{{objectId()}}',
+            text: '{{lorem(1, "paragraphs")}}'
+          }
+        }
+      ]
+      
+    }
+  }
+]

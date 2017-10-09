@@ -73,8 +73,10 @@ export default function route(app: express.Application) {
     app.use(passport.session());
 
     app.use((req, res, next) => {
-        if (req.user)
-            res.locals.user = { name: req.user.nickname, picture: req.user.picture };
+        if (req.user) {
+            res.locals.user = { id: req.user['_json'].sub, name: req.user.nickname, picture: req.user.picture };
+        }
+
         next();
     });
 

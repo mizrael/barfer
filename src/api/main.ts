@@ -11,13 +11,15 @@ import { IPublisher, Publisher } from '../common/services/publisher';
 import { IRepository, RepositoryFactory } from '../common/infrastructure/db';
 import { CommandsDbContext, QueriesDbContext } from '../common/infrastructure/dbContext';
 import { BarfsController } from './controllers/barfsController';
+import { UsersController } from './controllers/usersController';
 
 function initRoutes(app: express.Application) {
     let publisher = new Publisher(process.env.RABBIT),
         repoFactory = new RepositoryFactory(),
         commandsDbContext = new CommandsDbContext(process.env.MONGO, repoFactory),
         queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),
-        barfsCtrl = new BarfsController(app, commandsDbContext, queriesDbContext, publisher);
+        barfsCtrl = new BarfsController(app, commandsDbContext, queriesDbContext, publisher),
+        usersController = new UsersController(app, queriesDbContext);
 }
 
 function startServer() {
@@ -38,7 +40,8 @@ function startServer() {
             algorithms: ['RS256']
         }).unless({
             path: [
-                { url: '/barfs', methods: ['GET'] }
+                { url: '/barfs', methods: ['GET'] },
+                { url: '/users/top', methods: ['GET'] }
             ]
         }),
         port = process.env.PORT || 3000;

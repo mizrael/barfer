@@ -3,24 +3,29 @@ import { Server } from 'http';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as session from 'express-session';
-import auth from './routes/auth';
-import barfsApi from './routes/api/barfs';
 import * as path from 'path';
 import * as amqplib from 'amqplib';
 import * as io from 'socket.io';
-import { Task } from '../common/services/publisher';
+
+import auth from './routes/auth';
+import barfsApi from './routes/api/barfs';
+import { Subscriber, SubscriberOptions } from '../common/services/subscriber';
+import { Task } from '../common/services/task';
+import { Queries } from '../common/infrastructure/entities/queries';
+import { Publisher } from '../common/services/publisher';
 
 function startSocket(server: Server): SocketIO.Server {
-    let socket = io(server);
+    let socketServer = io(server);
 
-    socket.on('connection', (socket) => {
-        // socket.emit('news', { hello: 'world' });
-        // socket.on('my other event', function (data) {
-        //     console.log(data);
-        // });
+    socketServer.on('connection', (socket) => {
+        socket.on('auth', function (data) {
+            let publisher = new Publisher(process.env.RABBIT),
+                task = new Task("users", "user.logged", data.user);
+            publisher.publish(task);
+        });
     });
 
-    return socket;
+    return socketServer;
 };
 
 function initViewEngine(app: express.Application) {
@@ -40,27 +45,16 @@ function initMiddlewares(app: express.Application) {
         .use('/static', express.static('./bin/web/static'));
 };
 
-function initMessageConsumers(socket: SocketIO.Server) {
-    const connStr = process.env.RABBIT,
-        exchangeName = "barfs",
-        queueName = "barfs-ready",
-        routingKey = "barf.ready";
-    amqplib.connect(connStr).then(conn => {
-        conn.createChannel().then(ch => {
-            ch.assertExchange(exchangeName, 'direct', { durable: false });
-            //ch.prefetch(1);
-            ch.assertQueue(queueName, { exclusive: false }).then(q => {
-                ch.bindQueue(q.queue, exchangeName, routingKey);
-                ch.consume(q.queue, (msg: amqplib.Message) => {
-                    let msgData = msg.content.toString(),
-                        task = JSON.parse(msgData) as Task;
-                    socket.emit(routingKey, task.data);
+function initMessageConsumers(socketServer: SocketIO.Server) {
+    const options = new SubscriberOptions("barfs", "barfs-ready", "barf.ready", task => {
+        let barf = task.data as Queries.Barf;
+        //TODO: this will be sent to all connected clients
+        socketServer.emit(options.routingKey, barf);
+        return Promise.resolve();
+    }),
+        subscriber = new Subscriber(process.env.RABBIT);
 
-                    console.log("barf details ready: " + JSON.stringify(task.data));
-                });
-            });
-        });
-    });
+    subscriber.consume(options);
 }
 
 function startServer() {
@@ -75,9 +69,9 @@ function startServer() {
     barfsApi(app);
 
     let server = app.listen(port),
-        socket = startSocket(server);
+        socketServer = startSocket(server);
 
-    initMessageConsumers(socket);
+    initMessageConsumers(socketServer);
 
     console.log('Web Client started on: ' + port);
 };

@@ -20,6 +20,8 @@ export interface IQueriesDbContext {
 export class QueriesDbContext implements IQueriesDbContext {
     public constructor(private connString: string, private repoFactory: IRepositoryFactory) {
         this.Barfs = repoFactory.create({ collectionName: "barfsQueries", connectionString: connString });
+        this.Users = repoFactory.create({ collectionName: "usersQueries", connectionString: connString });
     }
     public readonly Barfs: Promise<IRepository<Queries.Barf>>;
+    public readonly Users: Promise<IRepository<Queries.User>>;
 }

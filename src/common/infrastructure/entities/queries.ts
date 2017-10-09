@@ -2,11 +2,19 @@ import { ObjectId } from 'mongodb';
 
 export namespace Queries {
     export class Barf {
-        constructor(public readonly id: ObjectId,
-            public readonly userId: string,
-            public readonly userName: string,
-            public readonly text: string,
-            public readonly creationDate: Number) {
-        }
+        public id: ObjectId;
+        public userId: string;
+        public userName: string;
+        public text: string;
+        public creationDate: Number;
+    }
+
+    export class User {
+        public userId: string;
+        public nickname: string;
+        public email: string;
+        public name: string;
+        public picture: string;
+        public barfsCount: Number;
     }
 } 
