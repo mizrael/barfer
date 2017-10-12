@@ -7,6 +7,7 @@ import * as cors from 'cors';
 import * as bodyParser from 'body-parser';
 import * as jwt from 'express-jwt';
 import * as jwks from 'jwks-rsa';
+import * as pathToRegexp from 'path-to-regexp';
 import { IPublisher, Publisher } from '../common/services/publisher';
 import { IRepository, RepositoryFactory } from '../common/infrastructure/db';
 import { CommandsDbContext, QueriesDbContext } from '../common/infrastructure/dbContext';
@@ -41,7 +42,8 @@ function startServer() {
         }).unless({
             path: [
                 { url: '/barfs', methods: ['GET'] },
-                { url: '/users/top', methods: ['GET'] }
+                { url: '/users/top', methods: ['GET'] },
+                { url: pathToRegexp('/users/:userId/barfs'), methods: ['GET'] }
             ]
         }),
         port = process.env.PORT || 3000;

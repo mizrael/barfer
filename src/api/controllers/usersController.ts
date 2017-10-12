@@ -1,3 +1,4 @@
+import { PagedCollection } from '../../common/dto/pagedCollection';
 import * as express from 'express';
 
 import { QueriesDbContext } from '../../common/infrastructure/dbContext';
@@ -15,6 +16,9 @@ export class UsersController {
 
         app.route('/users/top')
             .get(this.getTopUsers.bind(this));
+
+        app.route('/users/:userId/barfs')
+            .get(this.getUserBarfs.bind(this));
     }
 
     private getUsers(req: express.Request, res: express.Response) {
@@ -26,6 +30,20 @@ export class UsersController {
 
     private getRecommendedUsers(req: express.Request, res: express.Response) {
 
+    }
+
+    private getUserBarfs(req: express.Request, res: express.Response) {
+        let userId = req.params.userId,
+            pageSize = Math.min(100, parseInt(req.query.pageSize)),
+            page = parseInt(req.query.page) || 0;
+
+        this.queriesDbCtx.Barfs.then(repo => {
+            let query = new Query({ userId: userId }, { _id: -1 }, pageSize, page);
+
+            repo.find(query).then(items => {
+                res.json(items);
+            });
+        });
     }
 
     private getTopUsers(req: express.Request, res: express.Response) {

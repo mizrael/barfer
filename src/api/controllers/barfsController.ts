@@ -20,14 +20,12 @@ export class BarfsController {
 
     private getBarfs(req: express.Request, res: express.Response) {
         this.queriesDbCtx.Barfs.then(repo => {
-            let pageSize = 100,
-                query = new Query({}, { _id: -1 }, pageSize);
+            let pageSize = Math.min(100, parseInt(req.query.pageSize)),
+                page = parseInt(req.query.page) || 0,
+                query = new Query({}, { _id: -1 }, pageSize, page);
 
-            repo.count(query.filter).then(count => {
-                repo.find(query).then(items => {
-                    let result = new PagedCollection(items, 0, pageSize, count);
-                    res.json(result);
-                });
+            repo.find(query).then(items => {
+                res.json(items);
             });
         });
     }
