@@ -7,8 +7,7 @@ export class UsersController implements IController {
     }
 
     private top(req: express.Request, res: express.Response) {
-        res.locals.area = 'home';
-        res.render('areas/home');
+
     }
 
 }
