@@ -7,7 +7,7 @@ export class AuthController implements IController {
         app.route('/login').get(this.authService.authenticate(), this.login.bind(this));
         app.route('/logout').get(this.logout.bind(this));
 
-        app.route('/callback').get(this.authService.authenticate(), this.login.bind(this));
+        app.route('/callback').get(this.authService.authenticate(), this.callback.bind(this));
     }
 
     private login(req: express.Request, res: express.Response) {
@@ -17,5 +17,9 @@ export class AuthController implements IController {
 
     private logout(req: express.Request, res: express.Response) {
         res.redirect('/');
+    }
+
+    private callback(req: express.Request, res: express.Response) {
+        res.redirect(req.session.returnTo || '/');
     }
 }
