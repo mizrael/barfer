@@ -2,7 +2,7 @@ import * as express from 'express';
 import { IController } from '../../common/web/IController';
 
 export class HomeController implements IController {
-    constructor(private app: express.Application) {
+    constructor(private readonly app: express.Application) {
         app.route('/').get(this.index.bind(this));
     }
 

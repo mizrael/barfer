@@ -6,7 +6,7 @@ import { NumberUtils } from '../../common/utils/numberUtils';
 import { IBarfService } from '../services/barfService';
 
 export class BarfsController implements IController {
-    constructor(private app: express.Application, private barfService: IBarfService) {
+    constructor(private readonly app: express.Application, private readonly barfService: IBarfService) {
         app.route('/barfs')
             .get(this.getBarfs.bind(this))
             .post(ensureLoggedIn('/login'), this.postBarf.bind(this));;

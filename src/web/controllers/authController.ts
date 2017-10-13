@@ -3,7 +3,7 @@ import { IController } from '../../common/web/IController';
 import { IAuthService } from '../services/authService';
 
 export class AuthController implements IController {
-    constructor(private app: express.Application, private authService: IAuthService) {
+    constructor(private readonly app: express.Application, private readonly authService: IAuthService) {
         app.route('/login').get(this.authService.authenticate(), this.login.bind(this));
         app.route('/logout').get(this.logout.bind(this));
 
