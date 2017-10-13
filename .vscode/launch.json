@@ -38,6 +38,8 @@
             "program": "${workspaceRoot}/bin/web/main.js",
             "cwd": "${workspaceRoot}",
             "env": {
+                "BARFER_SERVICE_URL": "http://localhost:3000",
+                "USER_SERVICE_URL": "http://localhost:3000",
                 "PORT": "3100",
                 "RABBIT": "amqp://ttbpnbfu:7hfcmVuEDM4d-47mgZntCOceiXkMz9b3@lark.rmq.cloudamqp.com/ttbpnbfu",
                 "AUTH0_CLIENT_ID": "J0rv26KV7CarQk2lf16UF6PMg8E6UczL",

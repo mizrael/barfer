@@ -1,7 +1,13 @@
 extends ../layout
 
 block content
-  div(class="home jsHome")
+  div(class="home jsHome container")
     if user
-      include ../partials/_createBarf.pug
-    div(class="barfs jsBarfs")
+      div(class="row")
+        div(class="col")
+          include ../partials/_createBarf.pug
+    div(class="row")
+      div(class="leftCol col")
+        div(class="topUsers jsTopUsers")  
+      div(class="main col-9")
+        div(class="barfs jsBarfs")

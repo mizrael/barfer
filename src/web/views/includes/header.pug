@@ -8,11 +8,15 @@ nav(class="navbar navbar-expand-lg navbar-light bg-light")
       li(class="nav-item active")
         a(class="nav-link" href="/") Home 
     
-    form(class="form-inline my-2 my-lg-0")
+    ul(class="navbar-nav")
       if user
+        
         if user.picture
-          img(src=user.picture)
-        span welcome #{user.name}! 
-        a(class="nav-link" href="/logout") Logout
+          li(class="nav-item")
+            img(src=user.picture, class="img-thumbnail rounded-circle", style="max-height:50px", alt=user.name, title=user.name)
+
+        li(class="nav-item")
+          a(class="nav-link" href="/logout") Logout
       else
-        a(class="nav-link" href="/login") Login
+        li(class="nav-item")
+          a(class="nav-link" href="/login") Login

@@ -13,14 +13,14 @@ export interface IUser {
 }
 
 export interface IUserService {
-    readTopUsers(page: number, pageSize: number): Promise<PagedCollection<IUser>>;
+    readTopUsers(): Promise<PagedCollection<IUser>>;
 }
 
 export class UserService implements IUserService {
     constructor(private readonly serviceUrl: string, private readonly restClient: IRestClient) { }
 
-    public readTopUsers(page: number, pageSize: number): Promise<PagedCollection<IUser>> {
-        let url = this.serviceUrl + "?pageSize=" + pageSize + "&page=" + page;
+    public readTopUsers(): Promise<PagedCollection<IUser>> {
+        let url = this.serviceUrl + "/top";
         return this.restClient.get<PagedCollection<IUser>>(url);
     }
 }

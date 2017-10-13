@@ -19,6 +19,19 @@ barfer.controllers.barfsArchive = function ($container) {
     };
 };
 
+barfer.controllers.topUsers = function ($container) {
+    var read = function () {
+        $container.empty();
+        $.get("/users/top").then(function (data) {
+            $container.html(data);
+        });
+    };
+
+    return {
+        read: read
+    };
+};
+
 barfer.controllers.createBarf = function ($container, options) {
     var $form = $container.find('form'),
         $text = $form.find('textarea'),
