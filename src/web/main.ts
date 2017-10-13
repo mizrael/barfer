@@ -7,12 +7,15 @@ import * as path from 'path';
 import * as amqplib from 'amqplib';
 import * as io from 'socket.io';
 
-import auth from './routes/auth';
-import barfsApi from './routes/api/barfs';
+import { HomeController } from './controllers/homeController';
+import { AuthController } from './controllers/authController';
+import { BarfsController } from './controllers/barfsController';
+
 import { Subscriber, SubscriberOptions } from '../common/services/subscriber';
 import { Task } from '../common/services/task';
 import { Queries } from '../common/infrastructure/entities/queries';
 import { Publisher } from '../common/services/publisher';
+import { AuthService } from './services/authService';
 
 function startSocket(server: Server): SocketIO.Server {
     let socketServer = io(server);
@@ -45,6 +48,15 @@ function initMiddlewares(app: express.Application) {
         .use('/static', express.static('./bin/web/static'));
 };
 
+function initControllers(app: express.Application) {
+    let authService = new AuthService();
+    authService.init(app);
+
+    new HomeController(app);
+    new AuthController(app, authService);
+    new BarfsController(app, authService);
+}
+
 function initMessageConsumers(socketServer: SocketIO.Server) {
     const options = new SubscriberOptions("barfs", "barfs-ready", "barf.ready", task => {
         let barf = task.data as Queries.Barf;
@@ -65,8 +77,7 @@ function startServer() {
 
     initViewEngine(app);
 
-    auth(app);
-    barfsApi(app);
+    initControllers(app);
 
     let server = app.listen(port),
         socketServer = startSocket(server);

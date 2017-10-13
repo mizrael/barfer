@@ -4,9 +4,11 @@ import * as express from 'express';
 import { QueriesDbContext } from '../../common/infrastructure/dbContext';
 import { Query } from '../../common/infrastructure/db';
 import { Queries } from '../../common/infrastructure/entities/queries';
+import { IController } from '../../common/web/IController';
+import { NumberUtils } from '../../common/utils/numberUtils';
 
 
-export class UsersController {
+export class UsersController implements IController {
     constructor(private app: express.Application, private queriesDbCtx: QueriesDbContext) {
         app.route('/users')
             .get(this.getUsers.bind(this));
@@ -34,8 +36,8 @@ export class UsersController {
 
     private getUserBarfs(req: express.Request, res: express.Response) {
         let userId = req.params.userId,
-            pageSize = Math.min(100, parseInt(req.query.pageSize)),
-            page = parseInt(req.query.page) || 0;
+            pageSize = Math.min(100, NumberUtils.safeParseInt(req.query.pageSize)),
+            page = NumberUtils.safeParseInt(req.query.page);
 
         this.queriesDbCtx.Barfs.then(repo => {
             let query = new Query({ userId: userId }, { _id: -1 }, pageSize, page);

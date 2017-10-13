@@ -9,7 +9,7 @@ barfer.controllers = barfer.controllers || {};
 barfer.controllers.barfsArchive = function ($container) {
     var read = function () {
         $container.empty();
-        $.get("/api/barfs").then(function (data) {
+        $.get("/barfs").then(function (data) {
             $container.html(data);
         });
     };
@@ -45,7 +45,7 @@ barfer.controllers.createBarf = function ($container, options) {
         $submit.prop("disabled", true);
 
         $.ajax({
-            url: "/api/barfs",
+            url: "/barfs",
             type: "post",
             data: JSON.stringify(payload),
             contentType: 'application/json',
