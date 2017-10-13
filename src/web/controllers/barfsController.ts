@@ -1,19 +1,15 @@
 import * as express from 'express';
-import * as ensureLoggedIn from 'connect-ensure-login';
-import * as request from 'request-promise';
+import { ensureLoggedIn } from 'connect-ensure-login';
 import { IController } from '../../common/web/IController';
 import { IAuthService } from '../services/authService';
 import { NumberUtils } from '../../common/utils/numberUtils';
 import { IBarfService } from '../services/barfService';
 
-const router = express.Router(),
-    serviceUrl = 'http://localhost:3000/barfs';
-
 export class BarfsController implements IController {
     constructor(private app: express.Application, private barfService: IBarfService) {
         app.route('/barfs')
             .get(this.getBarfs.bind(this))
-            .post(this.postBarf.bind(this));;
+            .post(ensureLoggedIn('/login'), this.postBarf.bind(this));;
     }
 
     private getBarfs(req: express.Request, res: express.Response) {

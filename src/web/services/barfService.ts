@@ -1,3 +1,4 @@
+import { PagedCollection } from '../../common/dto/pagedCollection';
 import * as request from 'request-promise';
 import * as Promise from 'bluebird';
 import { IAuthService } from './authService';
@@ -12,23 +13,15 @@ export interface IBarf {
     userName: string;
 }
 
-export interface IBarfCollection {
-    page: number;
-    pageSize: number;
-    totalPages: number;
-    totalCount: number;
-    items: IBarf[];
-}
-
 export interface IBarfService {
-    read(page: number, pageSize: number): Promise<IBarfCollection>;
+    read(page: number, pageSize: number): Promise<PagedCollection<IBarf>>;
     save(dto: ICreateBarfCommand): Promise<void>;
 }
 
 export class BarfService implements IBarfService {
     constructor(private readonly authService: IAuthService, private readonly serviceUrl: string) { }
 
-    public read(page: number, pageSize: number): Promise<IBarfCollection> {
+    public read(page: number, pageSize: number): Promise<PagedCollection<IBarf>> {
         let url = this.serviceUrl + "?pageSize=" + pageSize + "&page=" + page,
             headers = {
                 'content-type': 'application/json'
@@ -39,7 +32,7 @@ export class BarfService implements IBarfService {
                 headers: headers
             };
         return request(options).then(json => {
-            let result = JSON.parse(json) as IBarfCollection;
+            let result = JSON.parse(json) as PagedCollection<IBarf>;
             return Promise.resolve(result);
         });
     }
