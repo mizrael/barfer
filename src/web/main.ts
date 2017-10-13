@@ -16,6 +16,7 @@ import { Task } from '../common/services/task';
 import { Queries } from '../common/infrastructure/entities/queries';
 import { Publisher } from '../common/services/publisher';
 import { AuthService } from './services/authService';
+import { BarfService } from './services/barfService';
 
 function startSocket(server: Server): SocketIO.Server {
     let socketServer = io(server);
@@ -49,12 +50,13 @@ function initMiddlewares(app: express.Application) {
 };
 
 function initControllers(app: express.Application) {
-    let authService = new AuthService();
+    let authService = new AuthService(),
+        barfService = new BarfService(authService, "http://localhost:3000/barfs");
     authService.init(app);
 
     new HomeController(app);
     new AuthController(app, authService);
-    new BarfsController(app, authService);
+    new BarfsController(app, barfService);
 }
 
 function initMessageConsumers(socketServer: SocketIO.Server) {
