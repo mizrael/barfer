@@ -6,7 +6,7 @@ import { IPublisher } from '../../../src/common/services/publisher';
 import { CreateBarfCommandHandler, CreateBarf } from '../../../src/barfsService/commands/createBarf';
 import { IRepository } from '../../../src/common/infrastructure/db';
 import { Commands } from '../../../src/common/infrastructure/entities/commands';
-import { Task } from '../../../src/common/services/task';
+import { Message } from '../../../src/common/services/message';
 
 const mockBarfsRepo = new Mock<IRepository<Commands.Barf>>(),
     mockCommandsDb = new Mock<ICommandsDbContext>(),
@@ -36,7 +36,7 @@ describe('CreateBarfCommandHandler', () => {
         let command = new CreateBarf("lorem", "ipsum");
 
         return sut.handle(command).then(() => {
-            mockPublisher.verify(p => p.publish(It.Is<Task>(t => t.context == "barfs" && t.type == "create.barf" && t.data != '')),
+            mockPublisher.verify(p => p.publish(It.Is<Message>(t => t.exchangeName == "barfs" && t.routingKey == "create.barf" && t.data != '')),
                 Times.AtMostOnce());
         });
     });

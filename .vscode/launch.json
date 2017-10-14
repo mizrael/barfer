@@ -40,8 +40,8 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Barfs processor",
-            "program": "${workspaceRoot}/bin/barfsProcessor/main.js",
+            "name": "Message Processor",
+            "program": "${workspaceRoot}/bin/messageProcessor/main.js",
             "cwd": "${workspaceRoot}",
             "env": {
                 "AUTH0_DOMAIN": "mizrael.auth0.com",
@@ -69,6 +69,6 @@
     ],
     "compounds": [{
         "name": "All services",
-        "configurations": ["Users Service", "Barfs Service", "Barfs processor", "Web Client"]
+        "configurations": ["Users Service", "Barfs Service", "Message Processor", "Web Client"]
     }]
 }

@@ -9,7 +9,7 @@ import { NumberUtils } from '../../common/utils/numberUtils';
 import { IPublisher } from '../../common/services/publisher';
 import { Commands } from '../../common/infrastructure/entities/commands';
 
-import { Task } from '../../common/services/task';
+import { Message } from '../../common/services/message';
 import { IQueryHandler } from '../../common/cqrs/query';
 import { TopUsers } from '../queries/topUsers';
 import { UserBarfs } from '../queries/userBarfs';

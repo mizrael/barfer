@@ -1,21 +1,21 @@
 import * as amqplib from 'amqplib';
-import { Task } from './task';
+import { Message } from './message';
 
 export interface IPublisher {
-    publish(task: Task);
+    publish(task: Message);
 }
 
 export class Publisher implements IPublisher {
     constructor(private connStr: string) { }
 
-    public publish(task: Task) {
+    public publish(task: Message) {
         let jsonData = JSON.stringify(task),
             buffer = new Buffer(jsonData);
 
         amqplib.connect(this.connStr).then(conn => {
             conn.createChannel().then(ch => {
-                ch.assertExchange(task.context, 'direct', { durable: true });
-                ch.publish(task.context, task.type, buffer, { persistent: true });
+                ch.assertExchange(task.exchangeName, 'direct', { durable: true });
+                ch.publish(task.exchangeName, task.routingKey, buffer, { persistent: true });
 
                 setTimeout(function () { conn.close(); }, 500);
             });

@@ -12,7 +12,7 @@ import { AuthController } from './controllers/authController';
 import { BarfsController } from './controllers/barfsController';
 
 import { Subscriber, SubscriberOptions } from '../common/services/subscriber';
-import { Task } from '../common/services/task';
+import { Message } from '../common/services/message';
 import { Queries } from '../common/infrastructure/entities/queries';
 import { Publisher } from '../common/services/publisher';
 import { AuthService } from './services/authService';
@@ -27,7 +27,7 @@ function startSocket(server: Server): SocketIO.Server {
     socketServer.on('connection', (socket) => {
         socket.on('auth', function (data) {
             let publisher = new Publisher(process.env.RABBIT),
-                task = new Task("users", "user.logged", data.user);
+                task = new Message("users", "user.logged", data.user);
             publisher.publish(task);
         });
     });

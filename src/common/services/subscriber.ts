@@ -1,11 +1,11 @@
 import * as amqplib from 'amqplib';
-import { Task } from './task';
+import { Message } from './message';
 
 export class SubscriberOptions {
     constructor(public readonly exchangeName: string,
         public readonly queueName: string,
         public readonly routingKey: string,
-        public readonly onMessage: (t: Task) => Promise<void>) { }
+        public readonly onMessage: (t: Message) => Promise<void>) { }
 }
 
 export interface ISubscriber {
@@ -30,7 +30,7 @@ export class Subscriber implements ISubscriber {
             }
 
             let msgData = msg.content.toString(),
-                task = JSON.parse(msgData) as Task;
+                task = JSON.parse(msgData) as Message;
 
             options.onMessage(task).then(() => {
                 ch.ack(msg);
