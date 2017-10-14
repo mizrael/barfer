@@ -1,20 +1,28 @@
 import { PagedCollection } from '../../common/dto/pagedCollection';
 import * as express from 'express';
 
-import { QueriesDbContext } from '../../common/infrastructure/dbContext';
+import { QueriesDbContext, CommandsDbContext } from '../../common/infrastructure/dbContext';
 import { Query } from '../../common/infrastructure/db';
 import { Queries } from '../../common/infrastructure/entities/queries';
 import { IController } from '../../common/web/IController';
 import { NumberUtils } from '../../common/utils/numberUtils';
+import { IPublisher } from '../../common/services/publisher';
+import { Commands } from '../../common/infrastructure/entities/commands';
 
+import { Task } from '../../common/services/task';
+import { IQueryHandler } from '../../common/cqrs/query';
+import { TopUsers } from '../queries/topUsers';
+import { UserBarfs } from '../queries/userBarfs';
 
 export class UsersController implements IController {
-    constructor(private app: express.Application, private queriesDbCtx: QueriesDbContext) {
-        app.route('/users')
-            .get(this.getUsers.bind(this));
+    constructor(private readonly app: express.Application,
+        private readonly topUsersHandler: IQueryHandler<TopUsers, Queries.User[]>,
+        private readonly userBarfsHandler: IQueryHandler<UserBarfs, PagedCollection<Queries.Barf>>,
+        private readonly commandsDbCtx: CommandsDbContext,
+        private readonly publisher: IPublisher) {
 
-        app.route('/users/recommended')
-            .get(this.getRecommendedUsers.bind(this));
+        app.route('/users/:userId/follow')
+            .post(this.postFollow.bind(this));
 
         app.route('/users/top')
             .get(this.getTopUsers.bind(this));
@@ -23,35 +31,33 @@ export class UsersController implements IController {
             .get(this.getUserBarfs.bind(this));
     }
 
-    private getUsers(req: express.Request, res: express.Response) {
-        this.queriesDbCtx.Users.then(repo => {
-            let query = new Query({}, { _id: -1 });
-            repo.find(query).then(items => { res.json(items); });
-        });
-    }
-
-    private getRecommendedUsers(req: express.Request, res: express.Response) {
-
+    private getTopUsers(req: express.Request, res: express.Response) {
+        this.topUsersHandler.handle({}).then(items => { res.json(items); });
     }
 
     private getUserBarfs(req: express.Request, res: express.Response) {
         let userId = req.params.userId,
-            pageSize = Math.min(100, NumberUtils.safeParseInt(req.query.pageSize)),
+            pageSize = NumberUtils.safeParseInt(req.query.pageSize),
             page = NumberUtils.safeParseInt(req.query.page);
 
-        this.queriesDbCtx.Barfs.then(repo => {
-            let query = new Query({ userId: userId }, { _id: -1 }, pageSize, page);
-
-            repo.find(query).then(items => {
-                res.json(items);
-            });
+        this.userBarfsHandler.handle(new UserBarfs(userId, page, pageSize)).then(items => {
+            res.json(items);
         });
     }
 
-    private getTopUsers(req: express.Request, res: express.Response) {
-        this.queriesDbCtx.Users.then(repo => {
-            let query = new Query({}, { barfsCount: -1 }, 10);
-            repo.find(query).then(items => { res.json(items); });
-        });
+    private postFollow(req: express.Request, res: express.Response) {
+        // this.commandsDbCtx.Following.then(repo => {
+        //     let me = this,
+        //         command = req.body as IFollow,
+        //         entity = new Commands.Following(command.follower, command.followed);
+
+        //     repo.insert(entity)
+        //         .then((result) => {
+        //             let task = new Task("user", "following", entity.id.toHexString());
+        //             me.publisher.publish(task);
+        //             res.status(201).json(true);
+        //         });
+        // });
     }
+
 }

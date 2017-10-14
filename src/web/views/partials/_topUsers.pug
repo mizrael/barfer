@@ -1,7 +1,8 @@
 h4 Top Users
 ul(class="list-group")
-  each item in topUsers.items
+  each item in topUsers
       li(class="list-group-item")
-        img(src=item.picture)
-        span #{item.name}
-        span @#{item.nickname}
+        p
+          img(src=item.picture, title=item.name, alt=item.name)
+          span  #{item.name}
+        p @#{item.nickname}

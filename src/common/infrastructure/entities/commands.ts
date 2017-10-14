@@ -8,4 +8,12 @@ export namespace Commands {
         public creationDate: Number;
         public id: ObjectId;
     }
+
+    export class Following {
+        constructor(public readonly follower: string, public readonly followed: string) {
+            this.creationDate = Date.now();
+        }
+        public creationDate: Number;
+        public id: ObjectId;
+    }
 }
