@@ -1,5 +1,5 @@
 import { ICommandHandler, ICommand } from "../../common/cqrs/command";
-import { CommandsDbContext } from "../../common/infrastructure/dbContext";
+import { ICommandsDbContext } from "../../common/infrastructure/dbContext";
 import { IPublisher } from "../../common/services/publisher";
 import { Commands } from "../../common/infrastructure/entities/commands";
 import { Task } from "../../common/services/task";
@@ -10,7 +10,7 @@ export class CreateBarf implements ICommand {
 }
 
 export class CreateBarfCommandHandler implements ICommandHandler<CreateBarf>{
-    constructor(private readonly commandsDbCtx: CommandsDbContext,
+    constructor(private readonly commandsDbCtx: ICommandsDbContext,
         private readonly publisher: IPublisher) { }
 
     handle(command: CreateBarf): Promise<void> {

@@ -18,6 +18,7 @@ export class CommandsDbContext implements ICommandsDbContext {
 
 export interface IQueriesDbContext {
     Barfs: Promise<IRepository<Queries.Barf>>;
+    Users: Promise<IRepository<Queries.User>>;
 }
 
 export class QueriesDbContext implements IQueriesDbContext {

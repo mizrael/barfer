@@ -1,7 +1,7 @@
 import { PagedCollection } from '../../common/dto/pagedCollection';
 import * as express from 'express';
 
-import { QueriesDbContext, CommandsDbContext } from '../../common/infrastructure/dbContext';
+import { ICommandsDbContext } from '../../common/infrastructure/dbContext';
 import { Query } from '../../common/infrastructure/db';
 import { Queries } from '../../common/infrastructure/entities/queries';
 import { IController } from '../../common/web/IController';
@@ -18,7 +18,7 @@ export class UsersController implements IController {
     constructor(private readonly app: express.Application,
         private readonly topUsersHandler: IQueryHandler<TopUsers, Queries.User[]>,
         private readonly userBarfsHandler: IQueryHandler<UserBarfs, PagedCollection<Queries.Barf>>,
-        private readonly commandsDbCtx: CommandsDbContext,
+        private readonly commandsDbCtx: ICommandsDbContext,
         private readonly publisher: IPublisher) {
 
         app.route('/users/:userId/follow')

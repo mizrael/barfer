@@ -1,7 +1,7 @@
 import { IQueryHandler, IQuery } from "../../common/cqrs/query";
 import { Queries } from "../../common/infrastructure/entities/queries";
 import { Query } from "../../common/infrastructure/db";
-import { QueriesDbContext } from "../../common/infrastructure/dbContext";
+import { IQueriesDbContext } from "../../common/infrastructure/dbContext";
 import { PagedCollection } from "../../common/dto/pagedCollection";
 
 export class UserBarfs implements IQuery {
@@ -9,7 +9,7 @@ export class UserBarfs implements IQuery {
 }
 
 export class UserBarfsQueryHandler implements IQueryHandler<UserBarfs, PagedCollection<Queries.Barf>>{
-    constructor(private readonly queriesDbCtx: QueriesDbContext) { }
+    constructor(private readonly queriesDbCtx: IQueriesDbContext) { }
 
     handle(query: UserBarfs): Promise<PagedCollection<Queries.Barf>> {
         let pageSize = Math.min(100, query.pageSize);
