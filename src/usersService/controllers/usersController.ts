@@ -6,8 +6,7 @@ import { Query } from '../../common/infrastructure/db';
 import { Queries } from '../../common/infrastructure/entities/queries';
 import { IController } from '../../common/web/IController';
 import { NumberUtils } from '../../common/utils/numberUtils';
-import { IPublisher } from '../../common/services/publisher';
-import { Commands } from '../../common/infrastructure/entities/commands';
+
 
 import { Message } from '../../common/services/message';
 import { IQueryHandler } from '../../common/cqrs/query';
@@ -17,9 +16,7 @@ import { UserBarfs } from '../queries/userBarfs';
 export class UsersController implements IController {
     constructor(private readonly app: express.Application,
         private readonly topUsersHandler: IQueryHandler<TopUsers, Queries.User[]>,
-        private readonly userBarfsHandler: IQueryHandler<UserBarfs, PagedCollection<Queries.Barf>>,
-        private readonly commandsDbCtx: ICommandsDbContext,
-        private readonly publisher: IPublisher) {
+        private readonly userBarfsHandler: IQueryHandler<UserBarfs, PagedCollection<Queries.Barf>>) {
 
         app.route('/users/:userId/follow')
             .post(this.postFollow.bind(this));

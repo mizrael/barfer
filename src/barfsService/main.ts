@@ -41,10 +41,6 @@ function startServer() {
             audience: process.env.JWT_AUDIENCE,
             issuer: process.env.JWT_ISSUER,
             algorithms: ['RS256']
-        }).unless({
-            path: [
-                { url: '/barfs', methods: ['GET'] }
-            ]
         }),
         port = process.env.PORT || 3000;
 

@@ -12,17 +12,23 @@ export interface IBarf {
     userName: string;
 }
 
+export interface IBarfsArchiveQuery {
+    forUser: string;
+    page: number;
+    pageSize: number;
+}
+
 export interface IBarfService {
-    read(page: number, pageSize: number): Promise<PagedCollection<IBarf>>;
+    read(query: IBarfsArchiveQuery): Promise<PagedCollection<IBarf>>;
     save(dto: ICreateBarfCommand): Promise<void>;
 }
 
 export class BarfService implements IBarfService {
     constructor(private readonly serviceUrl: string, private readonly restClient: IRestClient) { }
 
-    public read(page: number, pageSize: number): Promise<PagedCollection<IBarf>> {
-        let url = this.serviceUrl + "?pageSize=" + pageSize + "&page=" + page;
-        return this.restClient.get<PagedCollection<IBarf>>(url);
+    public read(query: IBarfsArchiveQuery): Promise<PagedCollection<IBarf>> {
+        let url = this.serviceUrl + "?pageSize=" + query.pageSize + "&page=" + query.page + "&forUser=" + query.forUser;
+        return this.restClient.get<PagedCollection<IBarf>>(url, RequestOptions.PrivateJson);
     }
 
     public save(dto: ICreateBarfCommand): Promise<void> {

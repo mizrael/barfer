@@ -1,14 +1,17 @@
-barfer.areas.home = function (context) {
+barfer.areas.home = function () {
     var _init = function (index, container) {
         var $container = $(container),
             archive = new barfer.controllers.barfsArchive($container.find('.jsBarfs')),
             topUsers = new barfer.controllers.topUsers($container.find('.jsTopUsers'))
         createBarf = new barfer.controllers.createBarf($container.find('.jsBarfer'));
 
-        archive.read();
+        if (barfer.context.user) {
+            archive.read();
+        }
+
         topUsers.read();
 
-        context.socket.on('barf.ready', function (data) {
+        barfer.context.socket.on('barf.ready', function (data) {
             archive.read();
         });
     };

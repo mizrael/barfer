@@ -22,7 +22,7 @@ function initRoutes(app: express.Application) {
         queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),
         topUsersHandler = new TopUsersQueryHandler(queriesDbContext),
         userBarfsHandler = new UserBarfsQueryHandler(queriesDbContext),
-        usersController = new UsersController(app, topUsersHandler, userBarfsHandler, commandsDbContext, publisher);
+        usersController = new UsersController(app, topUsersHandler, userBarfsHandler);
 }
 
 function startServer() {

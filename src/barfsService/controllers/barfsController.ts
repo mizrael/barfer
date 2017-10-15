@@ -24,9 +24,10 @@ export class BarfsController implements IController {
     }
 
     private getBarfs(req: express.Request, res: express.Response) {
-        let pageSize = Math.min(100, NumberUtils.safeParseInt(req.query.pageSize)),
+        const forUser = req.query.forUser as string,
+            pageSize = Math.min(100, NumberUtils.safeParseInt(req.query.pageSize)),
             page = NumberUtils.safeParseInt(req.query.page),
-            query = new BarfsArchive(pageSize, page);
+            query = new BarfsArchive(forUser, pageSize, page);
         this.barfsArchiveHandler.handle(query).then((items) => {
             res.json(items);
         });
