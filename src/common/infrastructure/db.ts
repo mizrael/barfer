@@ -5,8 +5,15 @@ export class Query {
     constructor(public readonly filter: any, public readonly sortby?: any, public readonly limit: number = 0, public readonly page: number = 0) { }
 }
 
+export class IndexOptions {
+    public unique?: boolean;
+    public static readonly empty: IndexOptions = {
+        unique: false
+    };
+}
+
 export interface IRepository<T> {
-    createIndex(index): Promise<string>;
+    createIndex(index, options?: IndexOptions): Promise<string>;
 
     find(query: Query): Promise<PagedCollection<T>>;
     findOne(filter: any): Promise<T>;
@@ -19,8 +26,9 @@ export interface IRepository<T> {
 export class BaseRepository<T> implements IRepository<T> {
     public constructor(private coll: Collection<T>) { }
 
-    public createIndex(index): Promise<string> {
-        return this.coll.createIndex(index);
+    public createIndex(index, options?: IndexOptions): Promise<string> {
+        options = options || IndexOptions.empty;
+        return this.coll.createIndex(index, { unique: options.unique });
     }
 
     public findOne(filter: any): Promise<T> {

@@ -65,14 +65,14 @@ export class QueriesDbContext extends BaseDbContext implements IQueriesDbContext
     private _users: IRepository<Queries.User> = null;
     public get Users(): Promise<IRepository<Queries.User>> {
         return this.initRepo<Queries.User>("usersQueries", "_users", async (r) => {
-            await r.createIndex({ userId: 1 });
+            await r.createIndex({ userId: 1 }, { unique: true });
         });
     }
 
     private _following: IRepository<Queries.Follow> = null;
     public get Following(): Promise<IRepository<Queries.Follow>> {
         return this.initRepo<Queries.Follow>("following", "_following", async (r) => {
-            await r.createIndex({ userId: 1 });
+            await r.createIndex({ userId: 1 }, { unique: true });
         });
     }
 
