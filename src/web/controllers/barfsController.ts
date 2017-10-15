@@ -17,7 +17,6 @@ export class BarfsController implements IController {
             page = NumberUtils.safeParseInt(req.query.page);
 
         this.barfService.read({ forUser: req.user['_json'].sub, page: page, pageSize: pageSize }).then(results => {
-            console.log(results);
             res.render('partials/_barfs', { barfs: results });
         }).catch(err => {
             res.json(err);
