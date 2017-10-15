@@ -6,6 +6,8 @@ export class Query {
 }
 
 export interface IRepository<T> {
+    createIndex(index): Promise<string>;
+
     find(query: Query): Promise<PagedCollection<T>>;
     findOne(filter: any): Promise<T>;
     insert(entity: T): Promise<void>;
@@ -16,6 +18,10 @@ export interface IRepository<T> {
 
 export class BaseRepository<T> implements IRepository<T> {
     public constructor(private coll: Collection<T>) { }
+
+    public createIndex(index): Promise<string> {
+        return this.coll.createIndex(index);
+    }
 
     public findOne(filter: any): Promise<T> {
         return this.coll.findOne(filter);
