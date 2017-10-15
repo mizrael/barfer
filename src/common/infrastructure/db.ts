@@ -10,7 +10,7 @@ export interface IRepository<T> {
     findOne(filter: any): Promise<T>;
     insert(entity: T): Promise<void>;
     count(filter: any): Promise<number>;
-    upsertOne(filter: any, entity: T): Promise<void>;
+    upsertOne(filter: any, entity: any): Promise<void>;
     deleteMany(filter: any): Promise<number>;
 }
 
@@ -47,7 +47,7 @@ export class BaseRepository<T> implements IRepository<T> {
         });
     }
 
-    public upsertOne(filter: any, entity: T): Promise<void> {
+    public upsertOne(filter: any, entity: any): Promise<void> {
         return this.coll.updateOne(filter, entity, { upsert: true }).then(result => {
             this.renameId(entity);
         });
