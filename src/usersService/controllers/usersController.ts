@@ -12,11 +12,14 @@ import { Message } from '../../common/services/message';
 import { IQueryHandler } from '../../common/cqrs/query';
 import { TopUsers } from '../queries/topUsers';
 import { UserBarfs } from '../queries/userBarfs';
+import { ICommandHandler } from '../../common/cqrs/command';
+import { FollowUser } from '../commands/followUser';
 
 export class UsersController implements IController {
     constructor(private readonly app: express.Application,
         private readonly topUsersHandler: IQueryHandler<TopUsers, Queries.User[]>,
-        private readonly userBarfsHandler: IQueryHandler<UserBarfs, PagedCollection<Queries.Barf>>) {
+        private readonly userBarfsHandler: IQueryHandler<UserBarfs, PagedCollection<Queries.Barf>>,
+        private readonly followUserHandler: ICommandHandler<FollowUser>) {
 
         app.route('/users/:userId/follow')
             .post(this.postFollow.bind(this));
@@ -43,18 +46,12 @@ export class UsersController implements IController {
     }
 
     private postFollow(req: express.Request, res: express.Response) {
-        // this.commandsDbCtx.Following.then(repo => {
-        //     let me = this,
-        //         command = req.body as IFollow,
-        //         entity = new Commands.Following(command.follower, command.followed);
+        let userToFollow = req.params.userId,
+            followerId = req.body.followerId,
+            command = new FollowUser(followerId, userToFollow);
 
-        //     repo.insert(entity)
-        //         .then((result) => {
-        //             let task = new Task("user", "following", entity.id.toHexString());
-        //             me.publisher.publish(task);
-        //             res.status(201).json(true);
-        //         });
-        // });
+        console.log("service: " + JSON.stringify(command));
+        this.followUserHandler.handle(command).then(() => res.status(201).json());
     }
 
 }

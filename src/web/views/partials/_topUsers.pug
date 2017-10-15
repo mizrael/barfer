@@ -5,4 +5,8 @@ ul(class="list-group")
         p
           img(src=item.picture, title=item.name, alt=item.name, style="width:50px")
           span  #{item.name} barfed #{item.barfsCount} times
-        p @#{item.nickname}
+        p 
+          span @#{item.nickname}
+          if user
+            button(class="btn btn-success btn-sm jsFollow", data-id=item.userId) Follow
+          

@@ -24,7 +24,6 @@ export class BarfsController implements IController {
     }
 
     private postBarf(req: express.Request, res: express.Response) {
-
         let dto = { text: req.body.text, authorId: req.user['_json'].sub };
         this.barfService.save(dto).then(() => {
             res.json(true);

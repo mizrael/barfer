@@ -14,6 +14,8 @@ import { CommandsDbContext, QueriesDbContext } from '../common/infrastructure/db
 import { UsersController } from './controllers/usersController';
 import { TopUsersQueryHandler } from './queries/topUsers';
 import { UserBarfsQueryHandler } from './queries/userBarfs';
+import { FollowUserCommandHandler } from './commands/followUser';
+import { IsUserFollowingQueryHandler } from './queries/isUserFollowing';
 
 function initRoutes(app: express.Application) {
     let publisher = new Publisher(process.env.RABBIT),
@@ -22,7 +24,9 @@ function initRoutes(app: express.Application) {
         queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),
         topUsersHandler = new TopUsersQueryHandler(queriesDbContext),
         userBarfsHandler = new UserBarfsQueryHandler(queriesDbContext),
-        usersController = new UsersController(app, topUsersHandler, userBarfsHandler);
+        isUserFollowingHandler = new IsUserFollowingQueryHandler(queriesDbContext),
+        followUserHandler = new FollowUserCommandHandler(queriesDbContext, isUserFollowingHandler),
+        usersController = new UsersController(app, topUsersHandler, userBarfsHandler, followUserHandler);
 }
 
 function startServer() {

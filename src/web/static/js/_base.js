@@ -32,6 +32,26 @@ barfer.controllers.topUsers = function ($container) {
     };
 };
 
+barfer.controllers.follow = function ($container) {
+    $container.on('click', '.jsFollow', function (e) {
+        var $btn = $(this),
+            payload = {
+                followedId: $btn.data('id')
+            };
+        $.ajax({
+            url: "/users/follow",
+            type: "post",
+            data: JSON.stringify(payload),
+            contentType: 'application/json',
+            dataType: "json"
+        }).then(function (response) {
+            $btn.remove();
+        });
+
+        e.preventDefault();
+    });
+};
+
 barfer.controllers.createBarf = function ($container, options) {
     var $form = $container.find('form'),
         $text = $form.find('textarea'),

@@ -1,7 +1,7 @@
 import { PagedCollection } from '../../common/dto/pagedCollection';
 import * as request from 'request-promise';
 import * as Promise from 'bluebird';
-import { IRestClient } from '../utils/restClient';
+import { IRestClient, RequestOptions } from '../utils/restClient';
 
 export interface IUser {
     userId: string;
@@ -12,8 +12,14 @@ export interface IUser {
     barfsCount: Number;
 }
 
+export interface IFollowUser {
+    followerId: string;
+    followedId: string;
+}
+
 export interface IUserService {
     readTopUsers(): Promise<PagedCollection<IUser>>;
+    follow(command: IFollowUser): Promise<void>;
 }
 
 export class UserService implements IUserService {
@@ -22,5 +28,10 @@ export class UserService implements IUserService {
     public readTopUsers(): Promise<PagedCollection<IUser>> {
         let url = this.serviceUrl + "/top";
         return this.restClient.get<PagedCollection<IUser>>(url);
+    }
+
+    public follow(command: IFollowUser): Promise<void> {
+        let url = this.serviceUrl + "/" + command.followedId + "/follow";
+        return this.restClient.post(url, { followerId: command.followerId }, RequestOptions.PrivateJson);
     }
 }
