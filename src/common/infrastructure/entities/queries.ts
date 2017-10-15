@@ -18,7 +18,12 @@ export namespace Queries {
         barfsCount: Number;
     }
 
-    export interface Follow {
+    export interface FollowingItem {
+        entityId: string;
+    }
 
+    export interface Follow {
+        userId: string;
+        following: FollowingItem[];
     }
 } 
