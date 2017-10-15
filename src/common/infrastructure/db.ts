@@ -93,10 +93,9 @@ export class DbFactory implements IDbFactory {
 
     public async close(connectionString: string): Promise<void> {
         let db = await this.getDb(connectionString);
-        if (!this._dbs[connectionString]) {
-            delete this._dbs[connectionString];
-        }
-        return await db.close();
+        if (!db) return;
+        delete this._dbs[connectionString];
+        return db.close();
     }
 }
 
@@ -118,6 +117,7 @@ export class RepositoryFactory implements IRepositoryFactory {
         let db = await this._dbFactory.getDb(options.connectionString),
             coll = db.collection<T>(options.collectionName),
             repo = new BaseRepository<T>(coll);
+
         return repo;
     }
 }

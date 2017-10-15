@@ -2,15 +2,35 @@ import { Commands } from './entities/commands';
 import { Queries } from './entities/queries';
 import { BaseRepository, IRepository, IRepositoryFactory } from './db';
 
+abstract class BaseDbContext {
+    public constructor(private readonly connString: string, private readonly repoFactory: IRepositoryFactory) { }
+
+    protected initRepo<T>(collName: string, repoName: string): Promise<IRepository<T>> {
+        if (this[repoName]) return Promise.resolve(this[repoName]);
+        return this.getRepo<T>(collName).then(repo => {
+            this[repoName] = repo;
+            return this[repoName];
+        });
+    }
+
+    protected getRepo<T>(collName: string) {
+        return this.repoFactory.create<Queries.Barf>({ collectionName: collName, connectionString: this.connString });
+    }
+}
+
 export interface ICommandsDbContext {
     Barfs: Promise<IRepository<Commands.Barf>>;
 }
 
-export class CommandsDbContext implements ICommandsDbContext {
-    public constructor(private connString: string, private repoFactory: IRepositoryFactory) {
-        this.Barfs = repoFactory.create({ collectionName: "barfs", connectionString: connString });
+export class CommandsDbContext extends BaseDbContext implements ICommandsDbContext {
+    public constructor(connString: string, repoFactory: IRepositoryFactory) {
+        super(connString, repoFactory);
     }
-    public readonly Barfs: Promise<IRepository<Commands.Barf>>;
+
+    private _barfs: IRepository<Commands.Barf> = null;
+    public get Barfs(): Promise<IRepository<Commands.Barf>> {
+        return this.initRepo<Commands.Barf>("barfs", "_barfs");
+    }
 }
 
 export interface IQueriesDbContext {
@@ -19,13 +39,24 @@ export interface IQueriesDbContext {
     Following: Promise<IRepository<Queries.Follow>>;
 }
 
-export class QueriesDbContext implements IQueriesDbContext {
-    public constructor(private connString: string, private repoFactory: IRepositoryFactory) {
-        this.Barfs = repoFactory.create({ collectionName: "barfsQueries", connectionString: connString });
-        this.Users = repoFactory.create({ collectionName: "usersQueries", connectionString: connString });
-        this.Following = repoFactory.create({ collectionName: "following", connectionString: connString });
+export class QueriesDbContext extends BaseDbContext implements IQueriesDbContext {
+    public constructor(connString: string, repoFactory: IRepositoryFactory) {
+        super(connString, repoFactory);
     }
-    public readonly Barfs: Promise<IRepository<Queries.Barf>>;
-    public readonly Users: Promise<IRepository<Queries.User>>;
-    public readonly Following: Promise<IRepository<Queries.Follow>>;
+
+    private _barfs: IRepository<Queries.Barf> = null;
+    public get Barfs(): Promise<IRepository<Queries.Barf>> {
+        return this.initRepo<Queries.Barf>("barfsQueries", "_barfs");
+    }
+
+    private _users: IRepository<Queries.User> = null;
+    public get Users(): Promise<IRepository<Queries.User>> {
+        return this.initRepo<Queries.User>("usersQueries", "_users");
+    }
+
+    private _following: IRepository<Queries.Follow> = null;
+    public get Following(): Promise<IRepository<Queries.Follow>> {
+        return this.initRepo<Queries.Follow>("following", "_following");
+    }
+
 }
