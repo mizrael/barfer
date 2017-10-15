@@ -16,7 +16,8 @@ export class AuthController implements IController {
     }
 
     private logout(req: express.Request, res: express.Response) {
-        res.redirect('/');
+        req.logout();
+        res.redirect(req.session.returnTo || '/');
     }
 
     private callback(req: express.Request, res: express.Response) {

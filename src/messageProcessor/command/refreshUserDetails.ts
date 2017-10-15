@@ -13,6 +13,8 @@ export class RefreshUserDetailsCommandHandler implements ICommandHandler<Refresh
         private readonly _queriesDbContext: IQueriesDbContext) { }
 
     public async handle(command: RefreshUserDetails) {
+        console.log("refreshing user details for " + command.userId);
+
         let user = await this._userService.readUser(command.userId);
         if (!user)
             return;

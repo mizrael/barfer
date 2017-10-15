@@ -1,6 +1,8 @@
 import * as express from 'express';
 import * as request from 'request-promise';
 import * as passport from 'passport';
+import { IPublisher } from '../../common/services/publisher';
+import { Message } from '../../common/services/message';
 
 const Auth0Strategy = require('passport-auth0'),
     authOptions = {
@@ -31,15 +33,19 @@ export interface IAuthService {
 }
 
 export class AuthService implements IAuthService {
+    constructor(private readonly publisher: IPublisher) { }
+
     public init(app: express.Application) {
         passport.use(strategy);
 
-        // This can be used to keep a smaller payload
-        passport.serializeUser(function (user, done) {
+        passport.serializeUser((user, done) => {
+            let task = new Message("users", "user.logged", user['_json'].sub);
+            this.publisher.publish(task);
+
             done(null, user);
         });
 
-        passport.deserializeUser(function (user, done) {
+        passport.deserializeUser((user, done) => {
             done(null, user);
         });
 

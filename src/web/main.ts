@@ -24,14 +24,6 @@ import { UsersController } from './controllers/usersController';
 function startSocket(server: Server): SocketIO.Server {
     let socketServer = io(server);
 
-    socketServer.on('connection', (socket) => {
-        socket.on('auth', function (data) {
-            let publisher = new Publisher(process.env.RABBIT),
-                task = new Message("users", "user.logged", data.user);
-            publisher.publish(task);
-        });
-    });
-
     return socketServer;
 };
 
@@ -53,7 +45,8 @@ function initMiddlewares(app: express.Application) {
 };
 
 function initControllers(app: express.Application) {
-    let authService = new AuthService(),
+    let publisher = new Publisher(process.env.RABBIT),
+        authService = new AuthService(publisher),
         restClient = new RestClient(authService),
         barfService = new BarfService(process.env.BARFER_SERVICE_URL + "/barfs", restClient),
         userService = new UserService(process.env.USER_SERVICE_URL + "/users", restClient);

@@ -6,12 +6,6 @@ barfer.init = function (options) {
         user: options.user
     };
 
-    if (barfer.user && barfer.user != '') {
-        barfer.context.socket.emit('auth', {
-            user: barfer.user
-        });
-    }
-
     if (barfer.areas[options.area]) {
         barfer.areas[options.area]();
     }
