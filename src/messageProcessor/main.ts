@@ -5,11 +5,11 @@ import { RepositoryFactory } from '../common/infrastructure/db';
 import { CommandsDbContext, QueriesDbContext } from '../common/infrastructure/dbContext';
 
 import { ICommand, ICommandHandler } from '../common/cqrs/command';
-import { CreateBarfDetailsHandler, CreateBarfDetails } from './commandHandlers/createBarfDetails'
+import { CreateBarfDetailsHandler, CreateBarfDetails } from './command/createBarfDetails'
 import { AuthService } from './services/authService';
 import { UserService } from './services/userService';
 import { Queries } from '../common/infrastructure/entities/queries';
-import { RefreshUserDetails, RefreshUserDetailsCommandHandler } from './commandHandlers/refreshUserDetails';
+import { RefreshUserDetails, RefreshUserDetailsCommandHandler } from './command/refreshUserDetails';
 
 function commandHandlerFactory(commandName: string): ICommandHandler<ICommand> {
     const factories = {
