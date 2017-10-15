@@ -16,7 +16,12 @@ export class CreateBarfCommandHandler implements ICommandHandler<CreateBarf>{
     handle(command: CreateBarf): Promise<void> {
         return this.commandsDbCtx.Barfs.then(repo => {
             let me = this,
-                barf = new Commands.Barf(command.authorId, command.text);
+                barf: Commands.Barf = {
+                    id: null,
+                    userId: command.authorId,
+                    text: command.text,
+                    creationDate: Date.now()
+                };
 
             repo.insert(barf)
                 .then((result) => {

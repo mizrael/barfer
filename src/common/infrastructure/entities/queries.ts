@@ -1,20 +1,24 @@
 import { ObjectId } from 'mongodb';
 
 export namespace Queries {
-    export class Barf {
-        public id: ObjectId;
-        public userId: string;
-        public userName: string;
-        public text: string;
-        public creationDate: Number;
+    export interface Barf {
+        id: ObjectId;
+        userId: string;
+        userName: string;
+        text: string;
+        creationDate: Number;
     }
 
-    export class User {
-        public userId: string;
-        public nickname: string;
-        public email: string;
-        public name: string;
-        public picture: string;
-        public barfsCount: Number;
+    export interface User {
+        userId: string;
+        nickname: string;
+        email: string;
+        name: string;
+        picture: string;
+        barfsCount: Number;
+    }
+
+    export interface Follow {
+
     }
 } 

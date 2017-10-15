@@ -21,13 +21,15 @@ const mockBarfsRepo = new Mock<IRepository<Commands.Barf>>(),
     user = {
         user_id: "123134234",
         nickname: "mizrael"
-    }, creationDate = Date.now(),
-    barfId = ObjectId.createFromTime(creationDate),
-    barf = new Commands.Barf(user.user_id, "lorem ipsum dolor amet"),
+    },
+    creationDate = Date.now(),
+    barf = {
+        id: ObjectId.createFromTime(creationDate),
+        userId: user.user_id,
+        creationDate: creationDate,
+        text: "lorem ipsum dolor amet"
+    },
     sut = new CreateBarfDetailsHandler(mockUserService.object(), mockPublisher.object(), mockCommandsDb.object(), mockQueriesDb.object());
-
-barf.id = barfId;
-barf.creationDate = creationDate;
 
 describe('CreateBarfDetailsHandler', () => {
     beforeEach(() => {
@@ -48,7 +50,7 @@ describe('CreateBarfDetailsHandler', () => {
     });
 
     it('should create entity', () => {
-        let command = new CreateBarfDetails(barfId.toHexString());
+        let command = new CreateBarfDetails(barf.id.toHexString());
 
         return sut.handle(command).then(() => {
             mockBarfsQueryRepo.verify(repo => repo.insert(It.Is<Queries.Barf>(e => e.id == barf.id && e.userName == user.nickname && e.userId == user.user_id && e.text == barf.text)),
@@ -57,7 +59,7 @@ describe('CreateBarfDetailsHandler', () => {
     });
 
     it('should publish barf ready event', () => {
-        let command = new CreateBarfDetails(barfId.toHexString());;
+        let command = new CreateBarfDetails(barf.id.toHexString());;
 
         return sut.handle(command).then(() => {
             mockPublisher.verify(p => p.publish(It.Is<Message>(t => t.exchangeName == "barfs" && t.routingKey == "barf.ready" && t.data != '')),

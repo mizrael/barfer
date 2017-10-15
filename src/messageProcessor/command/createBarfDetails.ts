@@ -26,13 +26,13 @@ export class CreateBarfDetailsHandler implements ICommandHandler<CreateBarfDetai
             barfsQueryRepo = await this._queriesDbContext.Barfs,
             barf = await barfsCmdRepo.findOne({ _id: barfId }),
             user = await this._userService.readUser(barf.userId),
-            barfDetails = new Queries.Barf();
-
-        barfDetails.id = barf.id;
-        barfDetails.userId = user.user_id;
-        barfDetails.userName = user.nickname;
-        barfDetails.text = barf.text;
-        barfDetails.creationDate = barf.creationDate;
+            barfDetails: Queries.Barf = {
+                id: barf.id,
+                userId: user.user_id,
+                userName: user.nickname,
+                text: barf.text,
+                creationDate: barf.creationDate
+            };
 
         await barfsQueryRepo.insert(barfDetails);
 
