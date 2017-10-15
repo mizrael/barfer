@@ -12,10 +12,10 @@ export class RefreshUserDetailsCommandHandler implements ICommandHandler<Refresh
     public constructor(private readonly _userService: IUserService,
         private readonly _queriesDbContext: IQueriesDbContext) { }
 
-    public async handle(command: RefreshUserDetails): Promise<void> {
+    public async handle(command: RefreshUserDetails) {
         let user = await this._userService.readUser(command.userId);
         if (!user)
-            return Promise.resolve();
+            return;
 
         let barfsRepo = await this._queriesDbContext.Barfs,
             barfsCount = await barfsRepo.count({
@@ -27,14 +27,11 @@ export class RefreshUserDetailsCommandHandler implements ICommandHandler<Refresh
         userDetails.name = user.name;
         userDetails.nickname = user.nickname;
         userDetails.picture = user.picture;
-        userDetails.userId = user.user_id;
         userDetails.barfsCount = barfsCount;
 
         let usersRepo = await this._queriesDbContext.Users;
 
         await usersRepo.upsertOne({ userId: userDetails.userId }, userDetails);
-
-        return Promise.resolve();
     }
 
 }

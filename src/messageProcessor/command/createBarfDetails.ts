@@ -39,29 +39,5 @@ export class CreateBarfDetailsHandler implements ICommandHandler<CreateBarfDetai
         this._publisher.publish(new Message("barfs", "barf.ready", barfDetails));
 
         console.log("barf details created: " + JSON.stringify(barfDetails));
-
-        // return this._commandsDbContext.Barfs.then(repo => {
-        //     repo.findOne({ _id: barfId }).then((barf: Commands.Barf) => {
-        //         console.log("processing barf: " + JSON.stringify(barf));
-
-        //         this._userService.readUser(barf.userId).then(user => {
-        //             let barfDetails = new Queries.Barf();
-        //             barfDetails.id = barf.id;
-        //             barfDetails.userId = user.user_id;
-        //             barfDetails.userName = user.nickname;
-        //             barfDetails.text = barf.text;
-        //             barfDetails.creationDate = barf.creationDate;
-
-        //             this._queriesDbContext.Barfs.then(repo => {
-        //                 repo.insert(barfDetails).then(() => {
-        //                     let task = new Message("barfs", "barf.ready", barfDetails);
-        //                     this._publisher.publish(task);
-
-        //                     console.log("barf details created: " + JSON.stringify(barfDetails));
-        //                 });
-        //             });
-        //         });
-        //     });
-        // });
     }
 }

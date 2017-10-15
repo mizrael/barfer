@@ -39,13 +39,13 @@ function commandHandlerFactory(commandName: string): ICommandHandler<ICommand> {
 function listenToBarfs() {
     const subscriber = new Subscriber(process.env.RABBIT),
         createBarfOptions = new SubscriberOptions("barfs", "create-barfs", "create.barf", task => {
-            let handler = commandHandlerFactory("create-barfs"),
-                command = new CreateBarfDetails(task.data);
-            return (handler) ? handler.handle(command) : Promise.resolve();
+            let command = new CreateBarfDetails(task.data),
+                handler = commandHandlerFactory("create-barfs");
+            return handler.handle(command);
         }), updateUserOptions = new SubscriberOptions("users", "user-details", "user.logged", task => {
             let handler = commandHandlerFactory("user-details"),
                 command = new RefreshUserDetails(task.data);
-            return (handler) ? handler.handle(command) : Promise.resolve();
+            return handler.handle(command);
         });
     subscriber.consume(createBarfOptions);
     subscriber.consume(updateUserOptions);
