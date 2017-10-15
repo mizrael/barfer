@@ -2,7 +2,7 @@ import { PagedCollection } from '../dto/pagedCollection';
 import { MongoClient, Db, Collection } from 'mongodb';
 
 export class Query {
-    constructor(public readonly filter: any, public readonly sortby: any, public readonly limit: number = 0, public readonly page: number = 0) { }
+    constructor(public readonly filter: any, public readonly sortby?: any, public readonly limit: number = 0, public readonly page: number = 0) { }
 }
 
 export interface IRepository<T> {
@@ -11,6 +11,7 @@ export interface IRepository<T> {
     insert(entity: T): Promise<void>;
     count(filter: any): Promise<number>;
     upsertOne(filter: any, entity: T): Promise<void>;
+    deleteMany(filter: any): Promise<number>;
 }
 
 export class BaseRepository<T> implements IRepository<T> {
@@ -56,12 +57,50 @@ export class BaseRepository<T> implements IRepository<T> {
         return this.coll.count(filter);
     }
 
+    public deleteMany(filter: any): Promise<number> {
+        return this.coll.deleteMany(filter).then(res => res.deletedCount);
+    }
+
     private renameId(entity: any) {
         entity.id = entity._id;
         delete entity._id;
         return entity;
     }
 }
+
+/*******************************/
+
+export interface IDbFactory {
+    getDb(connectionString: string): Promise<Db>;
+    close(connectionString: string): Promise<void>;
+}
+
+export class DbFactory implements IDbFactory {
+    private _dbs: any;
+
+    public constructor() {
+        this._dbs = {};
+    }
+
+    public async getDb(connectionString: string): Promise<Db> {
+        let db = this._dbs[connectionString] as Db;
+        if (db)
+            return db;
+        db = await MongoClient.connect(connectionString);
+        this._dbs[connectionString] = db;
+        return db;
+    }
+
+    public async close(connectionString: string): Promise<void> {
+        let db = await this.getDb(connectionString);
+        if (!this._dbs[connectionString]) {
+            delete this._dbs[connectionString];
+        }
+        return await db.close();
+    }
+}
+
+/*******************************/
 
 export interface IRepositoryOptions {
     connectionString: string;
@@ -73,22 +112,10 @@ export interface IRepositoryFactory {
 }
 
 export class RepositoryFactory implements IRepositoryFactory {
-    private _dbs: any;
-
-    public constructor() {
-        this._dbs = {};
-    }
-
-    private async getDb(connectionString: string): Promise<Db> {
-        let db = this._dbs[connectionString];
-        if (db) return Promise.resolve(db);
-        db = await MongoClient.connect(connectionString);
-        this._dbs[connectionString] = db;
-        return db;
-    }
+    constructor(private readonly _dbFactory: IDbFactory) { }
 
     public async create<T>(options: IRepositoryOptions): Promise<IRepository<T>> {
-        let db = await this.getDb(options.connectionString),
+        let db = await this._dbFactory.getDb(options.connectionString),
             coll = db.collection<T>(options.collectionName),
             repo = new BaseRepository<T>(coll);
         return repo;

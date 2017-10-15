@@ -1,7 +1,7 @@
 import { Subscriber, SubscriberOptions } from '../common/services/subscriber';
 
 import { Publisher } from '../common/services/publisher';
-import { RepositoryFactory } from '../common/infrastructure/db';
+import { RepositoryFactory, DbFactory } from '../common/infrastructure/db';
 import { CommandsDbContext, QueriesDbContext } from '../common/infrastructure/dbContext';
 
 import { ICommand, ICommandHandler } from '../common/cqrs/command';
@@ -15,7 +15,7 @@ function commandHandlerFactory(commandName: string): ICommandHandler<ICommand> {
     const factories = {
         "create-barfs": function () {
             let publisher = new Publisher(process.env.RABBIT),
-                repoFactory = new RepositoryFactory(),
+                repoFactory = new RepositoryFactory(new DbFactory()),
                 commandsDbContext = new CommandsDbContext(process.env.MONGO, repoFactory),
                 queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),
                 authService = new AuthService(),
@@ -26,7 +26,7 @@ function commandHandlerFactory(commandName: string): ICommandHandler<ICommand> {
         "user-details": function () {
             let authService = new AuthService(),
                 userService = new UserService(authService),
-                repoFactory = new RepositoryFactory(),
+                repoFactory = new RepositoryFactory(new DbFactory()),
                 queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),
                 handler = new RefreshUserDetailsCommandHandler(userService, queriesDbContext);
             return handler;
