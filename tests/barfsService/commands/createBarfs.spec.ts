@@ -14,7 +14,7 @@ const mockBarfsRepo = new Mock<IRepository<Commands.Barf>>(),
     sut = new CreateBarfCommandHandler(mockCommandsDb.object(), mockPublisher.object());
 
 describe('CreateBarfCommandHandler', () => {
-    beforeEach(() => {
+    before(() => {
         mockBarfsRepo.setup(repo => repo.insert)
             .returns((e) => Promise.resolve());
         mockCommandsDb.setup(ctx => ctx.Barfs)

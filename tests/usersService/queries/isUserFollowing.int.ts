@@ -7,15 +7,15 @@ import { QueriesDbContext } from '../../../src/common/infrastructure/dbContext';
 import { Queries } from '../../../src/common/infrastructure/entities/queries';
 import { RepositoryFactory, DbFactory } from '../../../src/common/infrastructure/db';
 import { IsUserFollowingQueryHandler, IsUserFollowing } from '../../../src/usersService/queries/isUserFollowing';
-
-const connStr = "mongodb://barfer:fRYXFCmd8IF6KhVw@cluster0-shard-00-00-yuik9.mongodb.net:27017,cluster0-shard-00-01-yuik9.mongodb.net:27017,cluster0-shard-00-02-yuik9.mongodb.net:27017/barferTests?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin",
-    userId = uuid.v4(),
-    followedUserId = uuid.v4();
+import { IntegrationTestsConfig } from '../../config';
 
 describe('IsUserFollowingQueryHandler', () => {
+    const userId = uuid.v4(),
+        followedUserId = uuid.v4();
+
     let dbFactory = new DbFactory(),
         repoFactory = new RepositoryFactory(dbFactory),
-        queriesDbContext = new QueriesDbContext(connStr, repoFactory),
+        queriesDbContext = new QueriesDbContext(IntegrationTestsConfig.mongoConnectionString, repoFactory),
         sut = new IsUserFollowingQueryHandler(queriesDbContext);
 
     before(() => {
@@ -63,6 +63,6 @@ describe('IsUserFollowingQueryHandler', () => {
     after(async () => {
         let repo = await queriesDbContext.Following;
         await repo.deleteMany({ userId: userId });
-        await dbFactory.close(connStr);
+        await dbFactory.close(IntegrationTestsConfig.mongoConnectionString);
     });
 });

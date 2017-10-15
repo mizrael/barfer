@@ -1,6 +1,9 @@
 import { ICommand, ICommandHandler } from "../../common/cqrs/command";
 import { IQueriesDbContext } from "../../common/infrastructure/dbContext";
 import { IPublisher } from "../../common/services/publisher";
+import { IsUserFollowing } from "../queries/isUserFollowing";
+import { IQueryHandler } from "../../common/cqrs/query";
+import { Queries } from "../../common/infrastructure/entities/queries";
 
 export class FollowUser implements ICommand {
     constructor(public readonly followerId: string, public readonly followedId: string) { }
@@ -8,20 +11,24 @@ export class FollowUser implements ICommand {
 
 export class FollowUserCommandHandler implements ICommandHandler<FollowUser>{
     constructor(private readonly _queriesDbContext: IQueriesDbContext,
-        private readonly publisher: IPublisher) { }
+        private readonly _isUserFollowingHandler: IQueryHandler<IsUserFollowing, boolean>) { }
 
-    handle(command: FollowUser): Promise<void> {
-        return null;
-        // return this.commandsDbCtx.Barfs.then(repo => {
-        //     let me = this,
-        //         barf = new Commands.Barf(command.authorId, command.text);
+    public async handle(command: FollowUser): Promise<void> {
+        let isFollowing = await this._isUserFollowingHandler.handle({ followerId: command.followerId, followedId: command.followedId });
+        if (isFollowing) return;
 
-        //     repo.insert(barf)
-        //         .then((result) => {
-        //             let task = new Message("barfs", "create.barf", barf.id.toHexString());
-        //             me.publisher.publish(task);
-        //         });
-        // });
+        let filter = { userId: command.followerId },
+            repo = await this._queriesDbContext.Following,
+            entity = await repo.findOne(filter),
+            newItem: Queries.FollowingItem = { entityId: command.followedId };
+        if (entity) {
+            await repo.upsertOne(filter, { $push: { following: newItem } })
+        } else {
+            await repo.insert({
+                userId: command.followerId,
+                following: [newItem]
+            });
+        }
     }
 
 }
