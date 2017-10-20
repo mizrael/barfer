@@ -68,7 +68,8 @@
   "scripts": {
     "unit": "mocha -r ts-node/register tests/**/*.spec.ts",
     "integration": "mocha -r ts-node/register tests/**/*.int.ts",
-    "test": "mocha -r ts-node/register tests/**/*.spec.ts && mocha -r ts-node/register tests/**/*.int.ts"
+    "test": "mocha -r ts-node/register tests/**/*.spec.ts && mocha -r ts-node/register tests/**/*.int.ts",
+    "start": "node ./bin/web/main.js"
   },
   "author": "MizRaeL",
   "license": "ISC"
