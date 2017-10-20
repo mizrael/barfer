@@ -5,6 +5,6 @@ node_js:
 before_install:
   - npm install -g typescript
 install:
-  - npm install --save-dev
-  - npm install --dev
   - npm install 
+notifications:
+  - email: false
