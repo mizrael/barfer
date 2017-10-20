@@ -1,9 +1,16 @@
 language: node_js
 node_js:
-  - "node"
-  - "8"
+- node
+- '8'
 cache:
   directories:
-    - node_modules
+  - node_modules
 notifications:
-  - email: false
+- email: false
+deploy:
+  provider: heroku
+  api_key:
+    secure: m+5VdaZYab1Hi+EtMYGIS43pi2Vp/LtG0YHBZgJKvfDc1/Mni/cSZztFoGWVIDXavKWD0S9noSuptrPUlzGqbQyzKmYIdfzKv4bzpT5wo1kN7XkF/5V1l3ih+u/0f7fTzcS0wxjhAxEmFQ/pn60UvdT0kv9wZh9HItBvMz2OoBeirI7FHBFz5Vwhz3d2meEg4Rm5lqrLC4zoWtkqMEGU5R5q/ehbN6LOl/rD7judaNYjOHeu6GBhPsRqw51IlCKJZY+XfFWZKNQwCwHnbUqXJf3FYzImDMVn6l4OBG7MVwxLsYqrMWVSXTXQxdY8ylvUgTq9vCD0Gd78SlW6fA++cWezLFFrco5MZbDK3WMoz4ZTbZlPf+FCBonPmHOmUgSDy7GyeUP0luv64wJWEbT13xWdOTrp77vNl9WaBQ/etKesKn9QkO267/xBD726qStySexkqaXLDDiAJj/TxuWecCabx4+I/yLYb8u/FKG3OuvSRGGuk41zMTeK0KRHUsdREZmRoek/VPnEJlBO0OzdOkGmH6pzJnJZCdtb7OivMOZt8zBVhpZYZ06hkoxjDg+ALNNIn1tji12HS8TN9dI+xmdJ4vCGbyHPdzswtgnzLlExZPeKzcOKWf4yuD8RGcTltrUVA9tie4Lp6uuh0GSkVxQuBQKwSubsITGlEFdn60M=
+  app: mizrael-barfer
+  on:
+    repo: mizrael/barfer
