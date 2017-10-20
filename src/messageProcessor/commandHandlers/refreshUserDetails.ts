@@ -21,14 +21,14 @@ export class RefreshUserDetailsCommandHandler implements ICommandHandler<Refresh
             barfsCount = await barfsRepo.count({
                 userId: user.user_id
             }),
-            userDetails = new Queries.User();
-
-        userDetails.email = user.email;
-        userDetails.name = user.name;
-        userDetails.nickname = user.nickname;
-        userDetails.picture = user.picture;
-        userDetails.userId = user.user_id;
-        userDetails.barfsCount = barfsCount;
+            userDetails:Queries.User = {
+                email: user.email,
+                name : user.name,
+                nickname: user.nickname,
+                picture : user.picture,
+                userId : user.user_id,
+                barfsCount: barfsCount
+            };
 
         let usersRepo = await this._queriesDbContext.Users;
 

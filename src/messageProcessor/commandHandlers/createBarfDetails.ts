@@ -28,12 +28,13 @@ export class CreateBarfDetailsHandler implements ICommandHandler<CreateBarfDetai
                 console.log("processing barf: " + JSON.stringify(barf));
 
                 this._userService.readUser(barf.userId).then(user => {
-                    let barfDetails = new Queries.Barf();
-                    barfDetails.id = barf.id;
-                    barfDetails.userId = user.user_id;
-                    barfDetails.userName = user.nickname;
-                    barfDetails.text = barf.text;
-                    barfDetails.creationDate = barf.creationDate;
+                    let barfDetails:Queries.Barf = {
+                        id: barf.id,
+                        userId: user.user_id,
+                        userName : user.nickname,
+                        text : barf.text,
+                        creationDate: barf.creationDate
+                    };                    
 
                     this._queriesDbContext.Barfs.then(repo => {
                         repo.insert(barfDetails).then(() => {
