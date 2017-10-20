@@ -1,4 +1,4 @@
-# Barfer
+# Barfer [![Build Status](https://travis-ci.org/mizrael/barfer.svg?branch=master)](https://travis-ci.org/mizrael/barfer)
 Barfer is a Twitter clone, plain and simple. I started this project just for fun and for learning purpose: I was looking for a way to improve my NodeJS skills and to learn how to use RabbitMQ.
 
 I have used NodeJS with Typescript to write all the projects, with a CQRS + Publish/Subscribe + Multiservices architecture to display barfs (tweets), user details and the necessary interactions.
