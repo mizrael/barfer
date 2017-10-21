@@ -13,6 +13,8 @@ before_script:
   - gulp build
 script:
   - npm test
+before_deploy: "git push origin master:refs/heads/master"
 deploy:
  provider: azure_web_apps
  skip_cleanup: true
+ verbose: true
