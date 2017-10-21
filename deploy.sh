@@ -117,7 +117,10 @@ if [ -e "$DEPLOYMENT_TARGET/package.json" ]; then
   cd - > /dev/null
 fi
 
-# 4. run tests
+# 4. install packages
+npm install
+
+# 5. run tests
 npm test
 
 ##################################################################################################################################
