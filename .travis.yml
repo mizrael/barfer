@@ -1,10 +1,12 @@
-branches:  
-  only:
-    - master
 language: node_js
 node_js:
 - node
 - '8'
+git:
+  depth: 9999999
+branches:  
+  only:
+    - master
 cache:
   directories:
   - node_modules
