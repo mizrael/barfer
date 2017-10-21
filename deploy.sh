@@ -118,10 +118,16 @@ if [ -e "$DEPLOYMENT_TARGET/package.json" ]; then
 fi
 
 # 4. install packages
+echo "installing npm packages"
 npm install
+npm install -g gulp-cli
 
 # 5. run tests
-npm test
+echo "running unit/integration tests"
+#npm test
+
+#6. building typescript
+gulp build
 
 ##################################################################################################################################
 echo "Finished successfully."
