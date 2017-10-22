@@ -117,6 +117,9 @@ if [ -e "$DEPLOYMENT_TARGET/package.json" ]; then
   cd - > /dev/null
 fi
 
+npm install
+npm install -g gulp-cli
+gulp build
 npm start
 
 ##################################################################################################################################

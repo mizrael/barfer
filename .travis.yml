@@ -12,10 +12,6 @@ cache:
   - node_modules
 notifications:
 - email: false
-before_install:
-  - npm install -g gulp-cli
-before_script:
-  - gulp build
 script:
   - npm test
 deploy:
