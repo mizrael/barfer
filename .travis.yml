@@ -16,5 +16,5 @@ script:
   - npm test
 deploy:
  provider: azure_web_apps
- skip_cleanup: true
+ skip_cleanup: false
  verbose: true
