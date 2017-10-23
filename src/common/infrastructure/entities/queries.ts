@@ -18,12 +18,8 @@ export namespace Queries {
         barfsCount: Number;
     }
 
-    export interface FollowingItem {
-        entityId: string;
-    }
-
-    export interface Follow {
-        userId: string;
-        following: FollowingItem[];
+    export interface Relationship {
+        fromId: string;
+        toId: string;
     }
 } 

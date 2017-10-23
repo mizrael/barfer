@@ -11,10 +11,10 @@ export class IsUserFollowingQueryHandler implements IQueryHandler<IsUserFollowin
     constructor(private readonly queriesDbCtx: IQueriesDbContext) { }
 
     public async handle(query: IsUserFollowing): Promise<boolean> {
-        let repo = await this.queriesDbCtx.Following,
+        let repo = await this.queriesDbCtx.Relationships,
             filter = {
-                userId: query.followerId,
-                "following.entityId": query.followedId
+                fromId: query.followerId,
+                toId: query.followedId
             },
             result = await repo.findOne(filter);
 

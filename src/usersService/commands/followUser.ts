@@ -17,17 +17,11 @@ export class FollowUserCommandHandler implements ICommandHandler<FollowUser>{
         let isFollowing = await this._isUserFollowingHandler.handle({ followerId: command.followerId, followedId: command.followedId });
         if (isFollowing) return;
 
-        let filter = { userId: command.followerId },
-            repo = await this._queriesDbContext.Following,
-            entity = await repo.findOne(filter),
-            newItem: Queries.FollowingItem = { entityId: command.followedId };
-        if (entity) {
-            await repo.upsertOne(filter, { $push: { following: newItem } })
-        } else {
-            await repo.insert({
-                userId: command.followerId,
-                following: [newItem]
-            });
+        let filter = { from: command.followerId },
+            repo = await this._queriesDbContext.Relationships,
+            entity = await repo.findOne(filter);
+        if (!entity) {
+            await repo.insert({ fromId: command.followerId, toId: command.followedId });
         }
     }
 

@@ -25,50 +25,33 @@ describe('FollowUserCommandHandler', () => {
         sut = new FollowUserCommandHandler(queriesDbContext, isUserFollowingHandler);
 
     before(async () => {
-        let repo = await queriesDbContext.Following,
-            entity: Queries.Follow = {
-                userId: userId,
-                following: [{
-                    entityId: followedUserId
-                }]
-            };
-        await repo.insert(entity);
+        let repo = await queriesDbContext.Relationships;
+        await repo.insert({ fromId: userId, toId: followedUserId });
     });
 
     it('should do nothing when user is already following', async () => {
         let command = new FollowUser(userId, followedUserId),
-            followingRepo = await queriesDbContext.Following,
-            followingRepoSpy = chai.spy.on(followingRepo, "findOne");
+            followingRepo = await queriesDbContext.Relationships,
+            followingRepoSpy = chai.spy.on(followingRepo, "insert");
 
         await sut.handle(command);
 
         expect(followingRepoSpy).to.not.have.been.called;
     });
 
-    it('should append new followed user when not following', async () => {
-        let command = new FollowUser(userId, uuid.v4()),
-            followingRepo = await queriesDbContext.Following;
-
-        await sut.handle(command);
-
-        let entity = await followingRepo.findOne({ userId: userId });
-        expect(entity.following.length).to.be.eq(2);
-    });
-
     it('should create new entity when not existing', async () => {
         let command = new FollowUser(notFollowingUser, uuid.v4()),
-            followingRepo = await queriesDbContext.Following;
+            followingRepo = await queriesDbContext.Relationships;
 
         await sut.handle(command);
 
-        let count = await followingRepo.count({ userId: notFollowingUser });
+        let count = await followingRepo.count({ fromId: notFollowingUser });
         expect(count).to.be.eq(1);
     });
 
     after(async () => {
-        let repo = await queriesDbContext.Following;
-        await repo.deleteMany({ userId: notFollowingUser });
-        await repo.deleteMany({ userId: userId });
+        let repo = await queriesDbContext.Relationships;
+        await repo.drop();
         await dbFactory.close(IntegrationTestsConfig.mongoConnectionString);
     });
 

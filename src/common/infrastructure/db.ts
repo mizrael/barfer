@@ -21,6 +21,7 @@ export interface IRepository<T> {
     count(filter: any): Promise<number>;
     upsertOne(filter: any, entity: any): Promise<void>;
     deleteMany(filter: any): Promise<number>;
+    drop(): Promise<void>;
 }
 
 export class BaseRepository<T> implements IRepository<T> {
@@ -69,6 +70,10 @@ export class BaseRepository<T> implements IRepository<T> {
 
     public count(filter: any): Promise<number> {
         return this.coll.count(filter);
+    }
+
+    public drop(): Promise<void> {
+        return this.coll.drop();
     }
 
     public deleteMany(filter: any): Promise<number> {

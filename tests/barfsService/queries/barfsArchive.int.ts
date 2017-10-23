@@ -22,17 +22,9 @@ describe('BarfsArchiveQueryHandler', () => {
         sut = new BarfsArchiveQueryHandler(queriesDbContext);
 
     before(async () => {
-        let followRepo = await queriesDbContext.Following,
+        let followRepo = await queriesDbContext.Relationships,
             barfsRepo = await queriesDbContext.Barfs,
-            entity: Queries.Follow = {
-                userId: userId,
-                following: [{
-                    entityId: followedUserId
-                },
-                {
-                    entityId: followedUser2Id
-                }]
-            }, createBarfs = async (authorId, barfsRepo, count) => {
+            createBarfs = async (authorId, barfsRepo, count) => {
                 for (let i = 0; i != count; ++i) {
                     let creationDate = Date.now();
                     await barfsRepo.insert({
@@ -44,7 +36,8 @@ describe('BarfsArchiveQueryHandler', () => {
                     });
                 }
             };;
-        await followRepo.insert(entity);
+        await followRepo.insert({ fromId: userId, toId: followedUserId });
+        await followRepo.insert({ fromId: userId, toId: followedUser2Id });
         await createBarfs(followedUserId, barfsRepo, 2);
         await createBarfs(followedUser2Id, barfsRepo, 2);
         await createBarfs(notFollowedUserId, barfsRepo, 2);
@@ -70,12 +63,12 @@ describe('BarfsArchiveQueryHandler', () => {
     });
 
     after(async () => {
-        let followRepo = await queriesDbContext.Following,
+        let followRepo = await queriesDbContext.Relationships,
             barfsRepo = await queriesDbContext.Barfs;
-        await followRepo.deleteMany({ userId: userId });
-        await barfsRepo.deleteMany({ userId: followedUserId });
-        await barfsRepo.deleteMany({ userId: followedUser2Id });
-        await barfsRepo.deleteMany({ userId: notFollowedUserId });
+
+        await followRepo.drop();
+        await barfsRepo.drop();
+
         await dbFactory.close(IntegrationTestsConfig.mongoConnectionString);
     });
 

@@ -12,16 +12,17 @@ export class BarfsArchiveQueryHandler implements IQueryHandler<BarfsArchive, Pag
     constructor(private readonly queriesDbCtx: QueriesDbContext) { }
 
     async handle(query: BarfsArchive): Promise<PagedCollection<Queries.Barf>> {
-        let followingRepo = await this.queriesDbCtx.Following,
-            following = await followingRepo.findOne({ userId: query.forUser });
-        if (!following || !following.following || 0 === following.following.length)
+        let relsRepo = await this.queriesDbCtx.Relationships,
+            relsQuery = new Query({ fromId: query.forUser }, null, 0, 0),
+            rels = await relsRepo.find(relsQuery);
+        if (!rels || 0 === rels.totalCount)
             return PagedCollection.empty<Queries.Barf>();
 
-        let followed = following.following.map((v, i) => {
-            return v.entityId;
+        let followed = rels.items.map((v, i) => {
+            return v.toId;
         }), barfsRepo = await this.queriesDbCtx.Barfs,
-            mongoQuery = new Query({ userId: { $in: followed } }, { _id: -1 }, !query.pageSize ? 10 : query.pageSize, query.page),
-            barfs = await barfsRepo.find(mongoQuery);
+            barfsQuery = new Query({ userId: { $in: followed } }, { _id: -1 }, !query.pageSize ? 10 : query.pageSize, query.page),
+            barfs = await barfsRepo.find(barfsQuery);
 
         return barfs;
     }

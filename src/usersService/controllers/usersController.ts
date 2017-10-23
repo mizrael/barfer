@@ -27,8 +27,15 @@ export class UsersController implements IController {
         app.route('/users/top')
             .get(this.getTopUsers.bind(this));
 
+        app.route('/users/:userId/checkIfFollows')
+            .get(this.checkIfFollows.bind(this));
+
         app.route('/users/:userId/barfs')
             .get(this.getUserBarfs.bind(this));
+    }
+
+    private checkIfFollows(req: express.Request, res: express.Response) {
+        this.topUsersHandler.handle({}).then(items => { res.json(items); });
     }
 
     private getTopUsers(req: express.Request, res: express.Response) {
