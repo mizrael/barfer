@@ -49,7 +49,7 @@ function initControllers(app: express.Application) {
         authService = new AuthService(publisher),
         restClient = new RestClient(authService),
         barfService = new BarfService(process.env.BARFER_SERVICE_URL + "/barfs", restClient),
-        userService = new UserService(process.env.USER_SERVICE_URL + "/users", restClient);
+        userService = new UserService(process.env.USER_SERVICE_URL, restClient);
     authService.init(app);
 
     new HomeController(app);
@@ -67,7 +67,7 @@ function initMessageConsumers(socketServer: SocketIO.Server) {
     }),
         subscriber = new Subscriber(process.env.RABBIT);
 
-    subscriber.consume(options);
+    subscriber.register(options);
 }
 
 function startServer() {

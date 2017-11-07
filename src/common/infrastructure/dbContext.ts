@@ -29,6 +29,7 @@ abstract class BaseDbContext {
 
 export interface ICommandsDbContext {
     Barfs: Promise<IRepository<Commands.Barf>>;
+    Relationships: Promise<IRepository<Commands.Relationship>>;
 }
 
 export class CommandsDbContext extends BaseDbContext implements ICommandsDbContext {
@@ -39,6 +40,11 @@ export class CommandsDbContext extends BaseDbContext implements ICommandsDbConte
     private _barfs: IRepository<Commands.Barf> = null;
     public get Barfs(): Promise<IRepository<Commands.Barf>> {
         return this.initRepo<Commands.Barf>("barfs", "_barfs");
+    }
+
+    private _relationships: IRepository<Commands.Relationship> = null;
+    public get Relationships(): Promise<IRepository<Commands.Relationship>> {
+        return this.initRepo<Commands.Relationship>("relationshipsCommands", "_relationships");
     }
 }
 
@@ -71,7 +77,7 @@ export class QueriesDbContext extends BaseDbContext implements IQueriesDbContext
 
     private _relationships: IRepository<Queries.Relationship> = null;
     public get Relationships(): Promise<IRepository<Queries.Relationship>> {
-        return this.initRepo<Queries.Relationship>("relationships", "_relationships", async (r) => {
+        return this.initRepo<Queries.Relationship>("relationshipsQueries", "_relationships", async (r) => {
             await r.createIndex({ from: 1 }, { unique: false });
             await r.createIndex({ to: 1 }, { unique: false });
         });

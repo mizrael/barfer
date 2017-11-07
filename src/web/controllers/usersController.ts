@@ -11,7 +11,11 @@ export class UsersController implements IController {
     }
 
     private top(req: express.Request, res: express.Response) {
-        this.userService.readTopUsers().then(results => {
+        let loggedUserId = "";
+        if (req.user) {
+            loggedUserId = req.user['_json'].sub;
+        }
+        this.userService.readTopUsers(loggedUserId).then(results => {
             res.render('partials/_topUsers', { topUsers: results });
         }).catch(err => {
             res.json(err);
@@ -19,10 +23,11 @@ export class UsersController implements IController {
     }
 
     private follow(req: express.Request, res: express.Response) {
-        let command = { followedId: req.body.followedId, followerId: req.user['_json'].sub };
+        let status: boolean = req.body.status as boolean,
+            command = { followedId: req.body.followedId, followerId: req.user['_json'].sub, status: status };
 
         this.userService.follow(command).then(() => {
-            res.status(201).json();
+            res.status(201).json({ status: status });
         });
     }
 }

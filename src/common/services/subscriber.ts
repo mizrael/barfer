@@ -9,16 +9,16 @@ export class SubscriberOptions {
 }
 
 export interface ISubscriber {
-    consume(options: SubscriberOptions);
+    register(options: SubscriberOptions);
 }
 
 export class Subscriber implements ISubscriber {
     constructor(private connStr: string) { }
 
-    public async consume(options: SubscriberOptions) {
+    public async register(options: SubscriberOptions) {
         let conn = await amqplib.connect(this.connStr),
             ch = await conn.createChannel(),
-            exchange = await ch.assertExchange(options.exchangeName, 'direct', { durable: true }),
+            exchange = await ch.assertExchange(options.exchangeName, 'topic', { durable: true }),
             queue = await ch.assertQueue(options.queueName, { exclusive: false });
         //ch.prefetch(1);
 

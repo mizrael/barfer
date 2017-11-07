@@ -14,6 +14,8 @@ import { CommandsDbContext, QueriesDbContext } from '../common/infrastructure/db
 import { BarfsController } from './controllers/barfsController';
 import { CreateBarfCommandHandler } from './commands/createBarf';
 import { BarfsArchiveQueryHandler } from './queries/barfsArchive';
+import { UserBarfsQueryHandler } from './queries/userBarfs';
+import { UsersController } from './controllers/usersController';
 
 function initRoutes(app: express.Application) {
     let publisher = new Publisher(process.env.RABBIT),
@@ -22,7 +24,9 @@ function initRoutes(app: express.Application) {
         queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),
         createBarfHandler = new CreateBarfCommandHandler(commandsDbContext, publisher),
         barfsArchiveHandler = new BarfsArchiveQueryHandler(queriesDbContext),
-        barfsCtrl = new BarfsController(app, createBarfHandler, barfsArchiveHandler);
+        userBarfsHandler = new UserBarfsQueryHandler(queriesDbContext),
+        barfsCtrl = new BarfsController(app, createBarfHandler, barfsArchiveHandler),
+        usersCtrl = new UsersController(app, userBarfsHandler);
 }
 
 function startServer() {

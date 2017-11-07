@@ -35,7 +35,8 @@ export class TopUsersQueryHandler implements IQueryHandler<TopUsers, User[]>{
 
     private mapFollowedEntity(e: Queries.User, followedUserIdsDict: {}): User {
         let u = this.mapEntity(e);
-        u.followed = (null !== followedUserIdsDict[e.userId]);
+        u.followed = followedUserIdsDict[e.userId];
+
         return u;
     }
 

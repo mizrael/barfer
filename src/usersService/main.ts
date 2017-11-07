@@ -13,7 +13,6 @@ import { RepositoryFactory, DbFactory } from '../common/infrastructure/db';
 import { CommandsDbContext, QueriesDbContext } from '../common/infrastructure/dbContext';
 import { UsersController } from './controllers/usersController';
 import { TopUsersQueryHandler } from './queries/topUsers';
-import { UserBarfsQueryHandler } from './queries/userBarfs';
 import { FollowUserCommandHandler } from './commands/followUser';
 import { IsUserFollowingQueryHandler } from './queries/isUserFollowing';
 
@@ -23,10 +22,9 @@ function initRoutes(app: express.Application) {
         commandsDbContext = new CommandsDbContext(process.env.MONGO, repoFactory),
         queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),
         topUsersHandler = new TopUsersQueryHandler(queriesDbContext),
-        userBarfsHandler = new UserBarfsQueryHandler(queriesDbContext),
         isUserFollowingHandler = new IsUserFollowingQueryHandler(queriesDbContext),
-        followUserHandler = new FollowUserCommandHandler(queriesDbContext, isUserFollowingHandler),
-        usersController = new UsersController(app, topUsersHandler, userBarfsHandler, followUserHandler);
+        followUserHandler = new FollowUserCommandHandler(commandsDbContext, publisher),
+        usersController = new UsersController(app, topUsersHandler, followUserHandler);
 }
 
 function startServer() {

@@ -8,5 +8,5 @@ ul(class="list-group")
         p 
           span @#{item.nickname}
           if user
-            button(class="btn btn-success btn-sm jsFollow", data-id=item.userId) Follow
+            button(class="btn btn-success btn-sm jsFollow", data-id=item.userId, data-followed=item.followed ? 'true' : 'false') Follow
           

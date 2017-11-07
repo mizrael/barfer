@@ -1,28 +1,45 @@
 import { ICommand, ICommandHandler } from "../../common/cqrs/command";
-import { IQueriesDbContext } from "../../common/infrastructure/dbContext";
+import { ICommandsDbContext } from "../../common/infrastructure/dbContext";
 import { IPublisher } from "../../common/services/publisher";
-import { IsUserFollowing } from "../queries/isUserFollowing";
-import { IQueryHandler } from "../../common/cqrs/query";
-import { Queries } from "../../common/infrastructure/entities/queries";
+import { Commands } from "../../common/infrastructure/entities/commands";
+import { ObjectId } from "mongodb";
+import { Message } from "../../common/services/message";
 
 export class FollowUser implements ICommand {
-    constructor(public readonly followerId: string, public readonly followedId: string) { }
+    constructor(public readonly followerId: string, public readonly followedId: string, public readonly status: boolean) { }
 }
 
 export class FollowUserCommandHandler implements ICommandHandler<FollowUser>{
-    constructor(private readonly _queriesDbContext: IQueriesDbContext,
-        private readonly _isUserFollowingHandler: IQueryHandler<IsUserFollowing, boolean>) { }
+    constructor(private readonly _dbContext: ICommandsDbContext, private readonly _publisher: IPublisher) { }
 
     public async handle(command: FollowUser): Promise<void> {
-        let isFollowing = await this._isUserFollowingHandler.handle({ followerId: command.followerId, followedId: command.followedId });
-        if (isFollowing) return;
+        console.log("user api: " + JSON.stringify(command));
 
-        let filter = { from: command.followerId },
-            repo = await this._queriesDbContext.Relationships,
-            entity = await repo.findOne(filter);
-        if (!entity) {
-            await repo.insert({ fromId: command.followerId, toId: command.followedId });
+        let entity: Commands.Relationship = {
+            fromId: command.followerId,
+            toId: command.followedId
+        },
+            repo = await this._dbContext.Relationships;
+        if (!command.status) {
+
+            console.log("user api: unfollow");
+
+            let deletedCount = await repo.deleteMany(entity);
+            if (0 !== deletedCount) {
+                let task = new Message("users", "user.unfollow", command);
+                await this._publisher.publish(task);
+            }
+            return;
         }
-    }
 
+        console.log("user api: follow");
+
+        let isFollowing = await repo.findOne(entity);
+        if (!isFollowing) {
+            await repo.insert(entity);
+        }
+
+        let task = new Message("users", "user.follow", command);
+        await this._publisher.publish(task);
+    }
 }

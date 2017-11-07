@@ -5,6 +5,7 @@ export interface IAuthService {
 }
 
 export class AuthService implements IAuthService {
+    public constructor(private readonly _authDomain: string) { }
     public requestAccessToken() {
         let headers = { 'content-type': 'application/json' },
             options = {
@@ -13,7 +14,7 @@ export class AuthService implements IAuthService {
                 headers: headers,
                 json: true,
                 body: {
-                    audience: "https://mizrael.auth0.com/api/v2/",
+                    audience: "https://" + this._authDomain + "/api/v2/",
                     grant_type: 'client_credentials',
                     client_id: 'gLxvdWo4jDcgld7l1rocJmSlJu5lbglt',
                     client_secret: 'A8-KZ041ePuSakFODkUlNG7OOLjMFh-r0ZqIoIgF2VIr7eIuTG5bad00tkfcud0j'

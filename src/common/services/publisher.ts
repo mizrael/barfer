@@ -14,7 +14,7 @@ export class Publisher implements IPublisher {
 
         amqplib.connect(this.connStr).then(conn => {
             conn.createChannel().then(ch => {
-                ch.assertExchange(task.exchangeName, 'direct', { durable: true });
+                ch.assertExchange(task.exchangeName, 'topic', { durable: true });
                 ch.publish(task.exchangeName, task.routingKey, buffer, { persistent: true });
 
                 setTimeout(function () { conn.close(); }, 500);

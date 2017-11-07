@@ -7,8 +7,6 @@ barfer.init = function (options) {
         user: options.user
     };
 
-    new barfer.controllers.follow($('.jsMain'));
-
     if (barfer.areas[options.area]) {
         barfer.areas[options.area]();
     }

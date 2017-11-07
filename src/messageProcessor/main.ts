@@ -10,6 +10,8 @@ import { AuthService } from './services/authService';
 import { UserService } from './services/userService';
 import { Queries } from '../common/infrastructure/entities/queries';
 import { RefreshUserDetails, RefreshUserDetailsCommandHandler } from './command/refreshUserDetails';
+import { Follow, FollowCommandHandler } from './command/follow';
+import { Unfollow, UnfollowCommandHandler } from './command/unfollow';
 
 function commandHandlerFactory(commandName: string): ICommandHandler<ICommand> {
     const factories = {
@@ -18,17 +20,29 @@ function commandHandlerFactory(commandName: string): ICommandHandler<ICommand> {
                 repoFactory = new RepositoryFactory(new DbFactory()),
                 commandsDbContext = new CommandsDbContext(process.env.MONGO, repoFactory),
                 queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),
-                authService = new AuthService(),
-                userService = new UserService(authService),
+                authService = new AuthService(process.env.AUTH0_DOMAIN),
+                userService = new UserService(authService, process.env.AUTH0_DOMAIN),
                 handler = new CreateBarfDetailsHandler(userService, publisher, commandsDbContext, queriesDbContext);
             return handler;
         },
         "user-details": function () {
-            let authService = new AuthService(),
-                userService = new UserService(authService),
+            let authService = new AuthService(process.env.AUTH0_DOMAIN),
+                userService = new UserService(authService, process.env.AUTH0_DOMAIN),
                 repoFactory = new RepositoryFactory(new DbFactory()),
                 queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),
                 handler = new RefreshUserDetailsCommandHandler(userService, queriesDbContext);
+            return handler;
+        },
+        "follow": function () {
+            let repoFactory = new RepositoryFactory(new DbFactory()),
+                queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),
+                handler = new FollowCommandHandler(queriesDbContext);
+            return handler;
+        },
+        "unfollow": function () {
+            let repoFactory = new RepositoryFactory(new DbFactory()),
+                queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),
+                handler = new UnfollowCommandHandler(queriesDbContext);
             return handler;
         }
     };
@@ -46,9 +60,19 @@ function listenToBarfs() {
             let handler = commandHandlerFactory("user-details"),
                 command = new RefreshUserDetails(task.data);
             return handler.handle(command);
+        }), followOptions = new SubscriberOptions("users", "user-follow", "user.follow", task => {
+            let handler = commandHandlerFactory("follow"),
+                command = new Follow(task.data.followerId, task.data.followedId);
+            return handler.handle(command);
+        }), unFollowOptions = new SubscriberOptions("users", "user-unfollow", "user.unfollow", task => {
+            let handler = commandHandlerFactory("unfollow"),
+                command = new Unfollow(task.data.followerId, task.data.followedId);
+            return handler.handle(command);
         });
-    subscriber.consume(createBarfOptions);
-    subscriber.consume(updateUserOptions);
+    subscriber.register(createBarfOptions);
+    subscriber.register(updateUserOptions);
+    subscriber.register(followOptions);
+    subscriber.register(unFollowOptions);
 
     console.log("Message Processor running...");
 };

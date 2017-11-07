@@ -8,4 +8,8 @@ export namespace Commands {
         id: ObjectId;
     }
 
+    export interface Relationship {
+        fromId: string;
+        toId: string;
+    }
 }

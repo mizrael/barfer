@@ -15,7 +15,7 @@ export interface IUserService {
 }
 
 export class UserService implements IUserService {
-    constructor(private readonly _authService: IAuthService) { }
+    constructor(private readonly _authService: IAuthService, private readonly _authDomain: string) { }
 
     private parseAuth0UserId(id: string) {
         let parts = id.split('|');
@@ -23,7 +23,7 @@ export class UserService implements IUserService {
         return parts[1];
     }
 
-    public readUser(id: string) {
+    public readUser(id: string): Bluebird<IUser> {
         return this._authService.requestAccessToken()
             .then(data => {
                 let userId = this.parseAuth0UserId(id),
@@ -31,7 +31,7 @@ export class UserService implements IUserService {
                         'Authorization': 'Bearer ' + data['access_token']
                     },
                     options = {
-                        url: "https://mizrael.auth0.com/api/v2/users?q=" + userId,
+                        url: "https://" + this._authDomain + "/api/v2/users?q=" + userId,
                         method: 'GET',
                         headers: headers
                     };
@@ -40,9 +40,11 @@ export class UserService implements IUserService {
                     return (users.length) ? users[0] : null;
                 }).catch(err => {
                     console.log(err);
+                    return null;
                 });
             }).catch(err => {
                 console.log(err);
+                return null;
             });
     };
 }

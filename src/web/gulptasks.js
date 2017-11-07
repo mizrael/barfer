@@ -28,7 +28,7 @@ module.exports = function (gulp, plugins) {
         return gulp.src(paths.js.input)
             .pipe(plugins.debug())
             .pipe(plugins.concat('scripts.js'))
-            .pipe(plugins.uglify())
+            //  .pipe(plugins.uglify())
             .pipe(gulp.dest(paths.js.output));
     });
 

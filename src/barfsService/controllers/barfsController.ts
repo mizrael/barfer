@@ -1,11 +1,6 @@
 import * as express from 'express';
 import * as jwtAuthz from 'express-jwt-authz';
 
-import { QueriesDbContext } from '../../common/infrastructure/dbContext';
-import { Query } from '../../common/infrastructure/db';
-
-import { Queries } from '../../common/infrastructure/entities/queries';
-
 import { PagedCollection } from '../../common/dto/pagedCollection';
 import { IController } from '../../common/web/IController';
 import { NumberUtils } from '../../common/utils/numberUtils';
@@ -13,6 +8,7 @@ import { ICommandHandler } from '../../common/cqrs/command';
 import { CreateBarf } from '../commands/createBarf';
 import { BarfsArchive } from '../queries/barfsArchive';
 import { IQueryHandler } from '../../common/cqrs/query';
+import { Queries } from '../../common/infrastructure/entities/queries';
 
 export class BarfsController implements IController {
     constructor(private readonly app: express.Application,
