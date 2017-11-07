@@ -1,54 +1,63 @@
 import { expect } from 'chai';
-import { Mock, It, Times, ExpectedGetPropertyExpression } from 'moq.ts';
 import 'mocha';
 import { IRepository } from '../../../src/common/infrastructure/db';
 import { Queries } from '../../../src/common/infrastructure/entities/queries';
 import { ICommandsDbContext, IQueriesDbContext } from '../../../src/common/infrastructure/dbContext';
 import { IUserService } from '../../../src/messageProcessor/services/userService';
 import { RefreshUserDetailsCommandHandler, RefreshUserDetails } from '../../../src/messageProcessor/command/refreshUserDetails';
+import * as sinon from 'sinon';
 
-const mockUsersRepo = new Mock<IRepository<Queries.User>>(),
-    mockBarfsRepo = new Mock<IRepository<Queries.Barf>>(),
-    mockQueriesDb = new Mock<IQueriesDbContext>(),
-    mockUserService = new Mock<IUserService>(),
-    userBarfsCount = 42,
+const userBarfsCount = 42,
     user = {
         user_id: "123134234",
         nickname: "mizrael",
         name: "lorem ipsum",
         email: "my@email.com",
         picture: "http://."
-    }, creationDate = Date.now(),
-    sut = new RefreshUserDetailsCommandHandler(mockUserService.object(), mockQueriesDb.object());
+    }, creationDate = Date.now();
+
+let mockUsersRepo,
+    mockBarfsRepo,
+    mockQueriesDb,
+    mockUserService,
+    sut;
 
 describe('CreateBarfDetailsHandler', () => {
     beforeEach(() => {
-        mockUsersRepo.setup(repo => repo.upsertOne)
-            .returns((e) => Promise.resolve());
+        mockUsersRepo = {
+            upsertOne: (f, e) => Promise.resolve(e)
+        };
 
-        mockBarfsRepo.setup(s => s.count)
-            .returns((e) => Promise.resolve(userBarfsCount));
+        mockBarfsRepo = {
+            count: (e) => Promise.resolve(userBarfsCount)
+        };
 
-        mockQueriesDb.setup(ctx => ctx.Barfs)
-            .returns(Promise.resolve(mockBarfsRepo.object()));
-        mockQueriesDb.setup(ctx => ctx.Users)
-            .returns(Promise.resolve(mockUsersRepo.object()));
+        mockQueriesDb = {
+            Barfs: Promise.resolve(mockBarfsRepo),
+            Users: Promise.resolve(mockUsersRepo)
+        };
 
-        mockUserService.setup(s => s.readUser)
-            .returns((e) => Promise.resolve(user));
+        mockUserService = {
+            readUser: (e) => Promise.resolve(user)
+        };
+
+        sut = new RefreshUserDetailsCommandHandler(mockUserService, mockQueriesDb);
     });
 
     it('should update user details', () => {
-        let command = new RefreshUserDetails(user.user_id);
+        let command = new RefreshUserDetails(user.user_id),
+            spy = sinon.spy(mockUsersRepo, 'upsertOne');
 
         return sut.handle(command).then(() => {
-            mockUsersRepo.verify(repo => repo.upsertOne(It.Is(e => e['userId'] == user.user_id),
-                It.Is<Queries.User>(e => e.nickname == user.nickname &&
-                    e.picture == user.picture &&
-                    e.name == user.name &&
-                    e.barfsCount == userBarfsCount &&
-                    e.email == user.email)),
-                Times.AtMostOnce());
+            expect(spy.calledOnce).to.be.true;
+
+            let arg = spy.args[0][1];
+            expect(arg['picture'], 'invalid picture').to.be.eq(user.picture);
+            expect(arg['nickname'], 'invalid nickname').to.be.eq(user.nickname);
+            expect(arg['userId'], 'invalid userId').to.be.eq(user.user_id);
+            expect(arg['name'], 'invalid name').to.be.eq(user.name);
+            expect(arg['email'], 'invalid email').to.be.eq(user.email);
+            expect(arg['barfsCount'], 'invalid barfsCount').to.be.eq(userBarfsCount);
         });
     });
 

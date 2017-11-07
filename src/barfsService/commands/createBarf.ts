@@ -23,8 +23,8 @@ export class CreateBarfCommandHandler implements ICommandHandler<CreateBarf>{
                     creationDate: Date.now()
                 };
 
-            repo.insert(barf)
-                .then((result) => {
+            return repo.insert(barf)
+                .then(() => {
                     let task = new Message("barfs", "create.barf", barf.id.toHexString());
                     me.publisher.publish(task);
                 });

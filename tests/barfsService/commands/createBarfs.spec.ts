@@ -1,34 +1,44 @@
 import { expect } from 'chai';
-import { Mock, It, Times, ExpectedGetPropertyExpression } from 'moq.ts';
 import 'mocha';
+import * as sinon from 'sinon';
 import { ICommandsDbContext } from '../../../src/common/infrastructure/dbContext';
 import { IPublisher } from '../../../src/common/services/publisher';
 import { CreateBarfCommandHandler, CreateBarf } from '../../../src/barfsService/commands/createBarf';
 import { IRepository } from '../../../src/common/infrastructure/db';
 import { Commands } from '../../../src/common/infrastructure/entities/commands';
 import { Message } from '../../../src/common/services/message';
+import { ObjectId } from 'mongodb';
 
-const mockBarfsRepo = new Mock<IRepository<Commands.Barf>>(),
-    mockCommandsDb = new Mock<ICommandsDbContext>(),
-    mockPublisher = new Mock<IPublisher>(),
-    sut = new CreateBarfCommandHandler(mockCommandsDb.object(), mockPublisher.object());
+let mockBarfsRepo, mockBarfsRepoSpy, mockCommandsDb, mockPublisher, mockPublisherSpy, sut;
 
 describe('CreateBarfCommandHandler', () => {
-    before(() => {
-        mockBarfsRepo.setup(repo => repo.insert)
-            .returns((e) => Promise.resolve());
-        mockCommandsDb.setup(ctx => ctx.Barfs)
-            .returns(Promise.resolve(mockBarfsRepo.object()));
-        mockPublisher.setup(p => p.publish)
-            .returns((t) => { });
+    beforeEach(() => {
+        mockBarfsRepo = {
+            insert: (e) => { e.id = ObjectId.createFromTime(Date.now()); return Promise.resolve(); }
+        };
+        mockBarfsRepoSpy = sinon.spy(mockBarfsRepo, 'insert');
+
+        mockCommandsDb = {
+            Barfs: Promise.resolve(mockBarfsRepo)
+        };
+
+        mockPublisher = {
+            publish: (t) => { }
+        };
+        mockPublisherSpy = sinon.spy(mockPublisher, 'publish');
+
+        sut = new CreateBarfCommandHandler(mockCommandsDb as ICommandsDbContext, mockPublisher as IPublisher);
     });
 
     it('should create entity', () => {
         let command = new CreateBarf("lorem", "ipsum");
 
         return sut.handle(command).then(() => {
-            mockBarfsRepo.verify(repo => repo.insert(It.Is<Commands.Barf>(e => e.userId == command.authorId && e.text == command.text)),
-                Times.AtMostOnce());
+            expect(mockBarfsRepoSpy.calledOnce).to.be.true;
+
+            let arg = mockBarfsRepoSpy.args[0][0];
+            expect(arg['userId']).to.be.eq(command.authorId);
+            expect(arg['text']).to.be.eq(command.text);
         });
     });
 
@@ -36,8 +46,12 @@ describe('CreateBarfCommandHandler', () => {
         let command = new CreateBarf("lorem", "ipsum");
 
         return sut.handle(command).then(() => {
-            mockPublisher.verify(p => p.publish(It.Is<Message>(t => t.exchangeName == "barfs" && t.routingKey == "create.barf" && t.data != '')),
-                Times.AtMostOnce());
+            expect(mockPublisherSpy.calledOnce).to.be.true;
+
+            let arg = mockPublisherSpy.args[0][0];
+            expect(arg['routingKey']).to.be.eq("create.barf");
+            expect(arg['exchangeName']).to.be.eq("barfs");
+            expect(arg['data']).to.be.not.null.and.to.be.not.eq('');
         });
     });
 });

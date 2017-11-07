@@ -1,6 +1,5 @@
 import * as uuid from 'uuid';
 import { expect } from 'chai';
-import { Mock, It, Times, ExpectedGetPropertyExpression } from 'moq.ts';
 import 'mocha';
 
 import { IQueriesDbContext, QueriesDbContext } from '../../../src/common/infrastructure/dbContext';

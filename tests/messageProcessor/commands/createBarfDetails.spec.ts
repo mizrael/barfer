@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { Mock, It, Times, ExpectedGetPropertyExpression } from 'moq.ts';
 import 'mocha';
+import * as sinon from 'sinon';
 import { IRepository } from '../../../src/common/infrastructure/db';
 import { Queries } from '../../../src/common/infrastructure/entities/queries';
 import { Commands } from '../../../src/common/infrastructure/entities/commands';
@@ -12,58 +12,80 @@ import { IUserService } from '../../../src/messageProcessor/services/userService
 import { ObjectId } from 'mongodb';
 
 
-const mockBarfsRepo = new Mock<IRepository<Commands.Barf>>(),
-    mockCommandsDb = new Mock<ICommandsDbContext>(),
-    mockBarfsQueryRepo = new Mock<IRepository<Commands.Barf>>(),
-    mockQueriesDb = new Mock<IQueriesDbContext>(),
-    mockPublisher = new Mock<IPublisher>(),
-    mockUserService = new Mock<IUserService>(),
-    user = {
-        user_id: "123134234",
-        nickname: "mizrael"
-    },
+const user = {
+    user_id: "123134234",
+    nickname: "mizrael"
+},
     creationDate = Date.now(),
     barf = {
         id: ObjectId.createFromTime(creationDate),
         userId: user.user_id,
         creationDate: creationDate,
         text: "lorem ipsum dolor amet"
-    },
-    sut = new CreateBarfDetailsHandler(mockUserService.object(), mockPublisher.object(), mockCommandsDb.object(), mockQueriesDb.object());
+    };
+
+let mockBarfsRepo,
+    mockCommandsDb,
+    mockBarfsQueryRepo,
+    mockQueriesDb,
+    mockPublisher,
+    mockUserService,
+    sut;
 
 describe('CreateBarfDetailsHandler', () => {
     beforeEach(() => {
-        mockBarfsRepo.setup(repo => repo.insert)
-            .returns((e) => Promise.resolve());
-        mockCommandsDb.setup(ctx => ctx.Barfs)
-            .returns(Promise.resolve(mockBarfsRepo.object()));
-        mockQueriesDb.setup(ctx => ctx.Barfs)
-            .returns(Promise.resolve(mockBarfsQueryRepo.object()));
-        mockPublisher.setup(p => p.publish)
-            .returns((t) => { });
-        mockBarfsQueryRepo.setup(repo => repo.insert)
-            .returns((e) => Promise.resolve());
-        mockBarfsRepo.setup(repo => repo.findOne)
-            .returns((e) => Promise.resolve(barf));
-        mockUserService.setup(s => s.readUser)
-            .returns((e) => Promise.resolve(user));
+        mockBarfsRepo = {
+            insert: (e) => { e.id = ObjectId.createFromTime(Date.now()); return Promise.resolve(); },
+            findOne: (e) => Promise.resolve(barf)
+        };
+
+        mockCommandsDb = {
+            Barfs: Promise.resolve(mockBarfsRepo)
+        };
+
+        mockBarfsQueryRepo = {
+            insert: (e) => { if (!e.id) e.id = ObjectId.createFromTime(Date.now()); return Promise.resolve(); }
+        };
+
+        mockQueriesDb = {
+            Barfs: Promise.resolve(mockBarfsQueryRepo)
+        };
+
+        mockPublisher = {
+            publish: (t) => { }
+        };
+
+        mockUserService = {
+            readUser: (e) => Promise.resolve(user)
+        };
+
+        sut = new CreateBarfDetailsHandler(mockUserService, mockPublisher, mockCommandsDb, mockQueriesDb);
     });
 
     it('should create entity', () => {
-        let command = new CreateBarfDetails(barf.id.toHexString());
+        let command = new CreateBarfDetails(barf.id.toHexString()),
+            spy = sinon.spy(mockBarfsQueryRepo, 'insert');
 
         return sut.handle(command).then(() => {
-            mockBarfsQueryRepo.verify(repo => repo.insert(It.Is<Queries.Barf>(e => e.id == barf.id && e.userName == user.nickname && e.userId == user.user_id && e.text == barf.text)),
-                Times.AtMostOnce());
+            expect(spy.calledOnce).to.be.true;
+
+            let arg = spy.args[0][0];
+            expect(arg['id']).to.be.eq(barf.id);
+            expect(arg['userName']).to.be.eq(user.nickname);
+            expect(arg['userId']).to.be.eq(user.user_id);
+            expect(arg['text']).to.be.eq(barf.text);
         });
     });
 
     it('should publish barf ready event', () => {
-        let command = new CreateBarfDetails(barf.id.toHexString());;
+        let command = new CreateBarfDetails(barf.id.toHexString()),
+            spy = sinon.spy(mockPublisher, 'publish');
 
         return sut.handle(command).then(() => {
-            mockPublisher.verify(p => p.publish(It.Is<Message>(t => t.exchangeName == "barfs" && t.routingKey == "barf.ready" && t.data != '')),
-                Times.AtMostOnce());
+            let arg = spy.args[0][0];
+            expect(arg['routingKey']).to.be.eq("barf.ready");
+            expect(arg['exchangeName']).to.be.eq("barfs");
+            expect(arg['data']).to.be.not.null.and.to.be.not.eq('');
         });
     });
 });
