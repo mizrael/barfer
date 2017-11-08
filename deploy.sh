@@ -99,6 +99,9 @@ selectNodeVersion () {
 # ----------
 
 echo Handling node.js deployment.
+echo Current Deployment Source: "$DEPLOYMENT_SOURCE"
+echo Current Deployment Target: "$DEPLOYMENT_TARGET"
+echo NPM is "$NPM_CMD"
 
 # 1. KuduSync
 if [[ "$IN_PLACE_DEPLOYMENT" -ne "1" ]]; then
@@ -111,6 +114,7 @@ selectNodeVersion
 
 # 3. Install npm packages
 if [ -e "$DEPLOYMENT_TARGET/package.json" ]; then
+  echo Installing NPM packages 
   cd "$DEPLOYMENT_TARGET"
   eval $NPM_CMD install --production
   exitWithMessageOnError "npm failed"
