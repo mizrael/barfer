@@ -19,5 +19,3 @@ deploy:
  provider: azure_web_apps
  skip_cleanup: false
  verbose: true
-after_deploy:
-  - ./deploy.sh
