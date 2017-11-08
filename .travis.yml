@@ -14,6 +14,7 @@ notifications:
 - email: false
 script:
   - npm test
+  - gulp
 deploy:
  provider: azure_web_apps
  skip_cleanup: false
