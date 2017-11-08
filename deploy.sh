@@ -117,10 +117,13 @@ if [ -e "$DEPLOYMENT_TARGET/package.json" ]; then
   cd - > /dev/null
 fi
 
-npm install -g gulp
-npm install
-gulp build
-npm start
+# 4. Run Gulp Build Task
+if [ -e "$DEPLOYMENT_TARGET/gulpfile.js" ]; then
+  cd "$DEPLOYMENT_TARGET"
+  eval ./node_modules/.bin/gulp build
+  exitWithMessageOnError "gulp failed"
+  cd - > /dev/null
+fi
 
 ##################################################################################################################################
 echo "Finished successfully."
