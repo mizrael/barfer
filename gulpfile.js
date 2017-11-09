@@ -52,4 +52,6 @@ gulp.task('watch', ['scripts_watch', 'build_client_watch_all']);
 
 gulp.task('build', ['scripts_build', 'build_client_build_all']);
 
-gulp.task('default', ['build', 'watch']);
+gulp.task('build:dev', ['build', 'watch']);
+
+gulp.task('default', ['build']);
