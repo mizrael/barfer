@@ -1,21 +1,20 @@
 language: node_js
 node_js:
 - node
-- '8'
 git:
-  depth: 9999999
+  depth: 1
 branches:  
   only:
     - master
-cache:
-  directories:
-  - node_modules
 notifications:
 - email: false
-script:
+before_script:
   - npm test
+script:
   - gulp
+before_cache:
   - rm -rfv ./node_modules
+  - rm -rfv ./tests
   - rm -rfv ./src
   - rm -rfv ./bin/barfsService
   - rm -rfv ./bin/fakeDataFeeder
