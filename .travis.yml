@@ -16,11 +16,18 @@ before_cache:
   - rm -rf ./node_modules
   - rm -rf ./tests
   - rm -rf ./src
-  - rm -rf ./bin/barfsService
   - rm -rf ./bin/fakeDataFeeder
   - rm -rf ./bin/messageProcessor
-  - rm -rf ./bin/usersService
 deploy:
- provider: azure_web_apps
- skip_cleanup: true
- verbose: true
+  - provider: azure_web_apps
+    skip_cleanup: true
+    verbose: true
+    site: barfer
+  - provider: azure_web_apps
+    skip_cleanup: true
+    verbose: true
+    site: api-barfer
+  - provider: azure_web_apps
+    skip_cleanup: true
+    verbose: true
+    site: api-users-barfer
