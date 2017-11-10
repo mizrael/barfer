@@ -2,7 +2,7 @@ language: node_js
 node_js:
 - node
 git:
-  depth: 1
+  depth: 99999
 branches:  
   only:
     - master
@@ -13,13 +13,13 @@ before_script:
 script:
   - gulp
 before_cache:
-  - rm -rfv ./node_modules
-  - rm -rfv ./tests
-  - rm -rfv ./src
-  - rm -rfv ./bin/barfsService
-  - rm -rfv ./bin/fakeDataFeeder
-  - rm -rfv ./bin/messageProcessor
-  - rm -rfv ./bin/usersService
+  - rm -rf ./node_modules
+  - rm -rf ./tests
+  - rm -rf ./src
+  - rm -rf ./bin/barfsService
+  - rm -rf ./bin/fakeDataFeeder
+  - rm -rf ./bin/messageProcessor
+  - rm -rf ./bin/usersService
 deploy:
  provider: azure_web_apps
  skip_cleanup: true
