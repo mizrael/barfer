@@ -22,21 +22,27 @@ jobs:
         - rm -rf ./bin/fakeDataFeeder
         - rm -rf ./bin/messageProcessor
     - stage: deploy web ui
-      script: ./deployment/web.deploy.sh
+      script: 
+        - chmod +x ./deployment/web.deploy.sh
+        - ./deployment/web.deploy.sh
       deploy:
         provider: azure_web_apps
         skip_cleanup: true
         verbose: true
         site: barfer
     - stage: deploy barfs service
-      script: ./deployment/barfsService.deploy.sh
+      script: 
+        - chmod +x ./deployment/barfsService.deploy.sh
+        - ./deployment/barfsService.deploy.sh
       deploy:
         provider: azure_web_apps
         skip_cleanup: true
         verbose: true
         site: api-barfer
     - stage: deploy users service
-      script: ./deployment/usersService.deploy.sh
+      script: 
+        - chmod +x ./deployment/usersService.deploy.sh
+        - ./deployment/usersService.deploy.sh
       deploy:
         provider: azure_web_apps
         skip_cleanup: true
