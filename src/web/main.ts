@@ -33,6 +33,8 @@ function initViewEngine(app: express.Application) {
 };
 
 function initMiddlewares(app: express.Application) {
+    const staticFilesPath = path.join(__dirname, '/static');
+
     app.use(bodyParser.urlencoded({ extended: true }))
         .use(bodyParser.json())
         .use(cookieParser())
@@ -41,7 +43,7 @@ function initMiddlewares(app: express.Application) {
             resave: true,
             saveUninitialized: true
         }))
-        .use('/static', express.static('./bin/web/static'));
+        .use('/static', express.static(staticFilesPath));
 };
 
 function initControllers(app: express.Application) {
