@@ -15,6 +15,12 @@ notifications:
 script:
   - npm test
   - gulp
+  - rm -rfv ./node_modules
+  - rm -rfv ./src
+  - rm -rfv ./bin/barfsService
+  - rm -rfv ./bin/fakeDataFeeder
+  - rm -rfv ./bin/messageProcessor
+  - rm -rfv ./bin/usersService
 deploy:
  provider: azure_web_apps
  skip_cleanup: true
