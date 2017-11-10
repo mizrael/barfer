@@ -13,14 +13,6 @@ jobs:
   include:
     - stage: unit/integration tests
       script: npm test
-    - stage: build
-      script: gulp
-      before_cache:
-        - rm -rf ./node_modules
-        - rm -rf ./tests
-        - rm -rf ./src
-        - rm -rf ./bin/fakeDataFeeder
-        - rm -rf ./bin/messageProcessor
     - stage: deploy web ui
       script: 
         - chmod +x ./deployment/web.deploy.sh
