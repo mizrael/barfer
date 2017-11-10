@@ -23,11 +23,24 @@ deploy:
     skip_cleanup: true
     verbose: true
     site: barfer
+  script:
+      - rm -rf ./bin/usersService
+      - rm -rf ./bin/barfsService
   - provider: azure_web_apps
     skip_cleanup: true
     verbose: true
     site: api-barfer
+  script:
+      - rm -rf ./bin/usersService
+      - rm -rf ./bin/web
+      - rm ./package.json
+      - mv ./package.barfsService.json ./package.json
   - provider: azure_web_apps
     skip_cleanup: true
     verbose: true
     site: api-users-barfer
+    script:
+      - rm -rf ./bin/barfsService
+      - rm -rf ./bin/web
+      - rm ./package.json
+      - mv ./package.usersService.json ./package.json
