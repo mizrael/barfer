@@ -1,141 +1,136 @@
-// import * as uuid from 'uuid';
-// import * as chai from 'chai';
-// import * as spies from 'chai-spies';
-// import { Mock, It, Times, ExpectedGetPropertyExpression } from 'moq.ts';
-// import 'mocha';
-// import { CommandsDbContext } from '../../../src/common/infrastructure/dbContext';
-// import { IRepository, DbFactory, RepositoryFactory } from '../../../src/common/infrastructure/db';
-// import { FollowUserCommandHandler, FollowUser } from '../../../src/usersService/commands/followUser';
-// import { IPublisher } from '../../../src/common/services/publisher';
-// import { IntegrationTestsConfig } from '../../config';
-// import { Message } from '../../../src/common/services/message';
+import * as uuid from 'uuid';
+import * as chai from 'chai';
+import * as sinon from 'sinon';
+import 'mocha';
+import { CommandsDbContext } from '../../../src/common/infrastructure/dbContext';
+import { IRepository, DbFactory, RepositoryFactory } from '../../../src/common/infrastructure/db';
+import { FollowUserCommandHandler, FollowUser } from '../../../src/usersService/commands/followUser';
+import { IPublisher } from '../../../src/common/services/publisher';
+import { IntegrationTestsConfig } from '../../config';
+import { Message } from '../../../src/common/services/message';
 
-// const expect = chai.expect;
-// chai.use(spies);
+const expect = chai.expect;
 
-// const mockPublisher = new Mock<IPublisher>(),
-//     publisher = mockPublisher.setup(p => p.publish)
-//         .returns((t) => { })
-//         .object(),
-//     publisherSpy = chai.spy.on(publisher, 'publish');
 
-// describe('FollowUserCommandHandler', () => {
-//     const userId = uuid.v4(),
-//         notFollowingUser = uuid.v4(),
-//         followedUserId = uuid.v4();
+describe('FollowUserCommandHandler', () => {
+    const userId = uuid.v4(),
+        notFollowingUser = uuid.v4(),
+        followedUserId = uuid.v4(),
+        dbFactory = new DbFactory(),
+        repoFactory = new RepositoryFactory(dbFactory),
+        dbContext = new CommandsDbContext(IntegrationTestsConfig.mongoConnectionString, repoFactory);
 
-//     let dbFactory = new DbFactory(),
-//         repoFactory = new RepositoryFactory(dbFactory),
-//         dbContext = new CommandsDbContext(IntegrationTestsConfig.mongoConnectionString, repoFactory),
-//         sut = new FollowUserCommandHandler(dbContext, publisher);
+    let mockPublisher,
+        sut;
 
-//     before(async (done) => {
-//         let repo = await dbContext.Relationships;
-//         await repo.insert({ fromId: userId, toId: followedUserId });
-//         done();
-//     });
+    before(async () => {
+        let repo = await dbContext.Relationships;
+        await repo.insert({ fromId: userId, toId: followedUserId });
+    });
 
-//     it('should do nothing when relation already exists', async () => {
-//         let command = new FollowUser(userId, followedUserId, true),
-//             followingRepo = await dbContext.Relationships;
+    beforeEach(() => {
+        mockPublisher = {
+            publish: (t) => { }
+        };
 
-//         await sut.handle(command);
+        sut = new FollowUserCommandHandler(dbContext, mockPublisher);
+    });
 
-//         let count = await followingRepo.count({ fromId: userId });
-//         expect(count).to.be.eq(1);
-//     });
+    it('should do nothing when relation already exists', async () => {
+        let command = new FollowUser(userId, followedUserId, true),
+            followingRepo = await dbContext.Relationships;
 
-//     it('should remove relation', async () => {
-//         let newUserId = uuid.v4(),
-//             newFollowedId = uuid.v4(),
-//             command = new FollowUser(newUserId, newFollowedId, true),
-//             followingRepo = await dbContext.Relationships;
+        await sut.handle(command);
 
-//         await sut.handle(command);
+        let count = await followingRepo.count({ fromId: userId });
+        expect(count).to.be.eq(1);
+    });
 
-//         let count = await followingRepo.count({ fromId: newUserId });
-//         expect(count).to.be.eq(1);
+    it('should remove relation', async () => {
+        let newUserId = uuid.v4(),
+            newFollowedId = uuid.v4(),
+            command = new FollowUser(newUserId, newFollowedId, true),
+            followingRepo = await dbContext.Relationships;
 
-//         command = new FollowUser(newUserId, newFollowedId, false);
+        await sut.handle(command);
 
-//         await sut.handle(command);
+        let count = await followingRepo.count({ fromId: newUserId });
+        expect(count).to.be.eq(1);
 
-//         count = await followingRepo.count({ fromId: newUserId });
-//         expect(count).to.be.eq(0);
-//     });
+        command = new FollowUser(newUserId, newFollowedId, false);
 
-//     it('should create new entity when not existing', async () => {
-//         let command = new FollowUser(uuid.v4(), uuid.v4(), true),
-//             followingRepo = await dbContext.Relationships;
+        await sut.handle(command);
 
-//         await sut.handle(command);
+        count = await followingRepo.count({ fromId: newUserId });
+        expect(count).to.be.eq(0);
+    });
 
-//         let count = await followingRepo.count({ fromId: command.followerId });
-//         expect(count).to.be.eq(1);
-//     });
+    it('should create new entity when not existing', async () => {
+        let command = new FollowUser(uuid.v4(), uuid.v4(), true),
+            followingRepo = await dbContext.Relationships;
 
-//     it('should publish follow event', async () => {
-//         let newUserId = uuid.v4(),
-//             newFollowedId = uuid.v4(),
-//             command = new FollowUser(newUserId, newFollowedId, true),
-//             followingRepo = await dbContext.Relationships;
+        await sut.handle(command);
 
-//         publisherSpy.reset();
+        let count = await followingRepo.count({ fromId: command.followerId });
+        expect(count).to.be.eq(1);
+    });
 
-//         await sut.handle(command);
+    it('should publish follow event', async () => {
+        let newUserId = uuid.v4(),
+            newFollowedId = uuid.v4(),
+            command = new FollowUser(newUserId, newFollowedId, true),
+            followingRepo = await dbContext.Relationships,
+            spy = sinon.spy(mockPublisher, 'publish');
 
-//         mockPublisher.verify(pub => pub.publish(It.Is<Message>(e => e.routingKey == "follow" &&
-//             e.exchangeName == "users" &&
-//             e.data.followerId == command.followerId &&
-//             e.data.followedId == command.followedId)),
-//             Times.AtMostOnce());
+        await sut.handle(command);
 
-//         expect(publisherSpy).to.have.been.called.once;
-//     });
+        expect(spy.calledOnce).to.be.true;
 
-//     it('should publish unfollow event', async () => {
-//         let newUserId = uuid.v4(),
-//             newFollowedId = uuid.v4(),
-//             command = new FollowUser(newUserId, newFollowedId, true),
-//             followingRepo = await dbContext.Relationships;
+        let arg = spy.args[0][0];
+        expect(arg['routingKey']).to.be.eq("user.follow");
+        expect(arg['exchangeName']).to.be.eq("users");
+        expect(arg['data']['followerId']).to.be.eq(command.followerId);
+        expect(arg['data']['followedId']).to.be.eq(command.followedId);
+    });
 
-//         await sut.handle(command);
+    it('should publish unfollow event', async () => {
+        let newUserId = uuid.v4(),
+            newFollowedId = uuid.v4(),
+            command = new FollowUser(newUserId, newFollowedId, true),
+            followingRepo = await dbContext.Relationships;
 
-//         publisherSpy.reset();
+        await sut.handle(command);
 
-//         command = new FollowUser(newUserId, newFollowedId, false);
-//         await sut.handle(command);
+        let spy = sinon.spy(mockPublisher, 'publish');
 
-//         mockPublisher.verify(pub => pub.publish(It.Is<Message>(e => e.routingKey == "unfollow" &&
-//             e.exchangeName == "users" &&
-//             e.data.followerId == command.followerId &&
-//             e.data.followedId == command.followedId)),
-//             Times.AtMostOnce());
+        command = new FollowUser(newUserId, newFollowedId, false);
+        await sut.handle(command);
 
-//         expect(publisherSpy).to.have.been.called.once;
-//     });
+        expect(spy.calledOnce).to.be.true;
 
-//     it('should not publish unfollow event if relationship does not exist', async () => {
-//         let newUserId = uuid.v4(),
-//             newFollowedId = uuid.v4(),
-//             command = new FollowUser(newUserId, newFollowedId, false),
-//             followingRepo = await dbContext.Relationships;
+        let arg = spy.args[0][0];
+        expect(arg['routingKey']).to.be.eq("user.unfollow");
+        expect(arg['exchangeName']).to.be.eq("users");
+        expect(arg['data']['followerId']).to.be.eq(command.followerId);
+        expect(arg['data']['followedId']).to.be.eq(command.followedId);
+    });
 
-//         publisherSpy.reset();
+    it('should not publish unfollow event if relationship does not exist', async () => {
+        let newUserId = uuid.v4(),
+            newFollowedId = uuid.v4(),
+            command = new FollowUser(newUserId, newFollowedId, false),
+            followingRepo = await dbContext.Relationships,
+            spy = sinon.spy(mockPublisher, 'publish');
 
-//         await sut.handle(command);
+        await sut.handle(command);
 
-//         mockPublisher.verify(pub => pub.publish(It.Is<Message>(e => e.routingKey == "unfollow")),
-//             Times.Never());
+        expect(spy.called).to.not.be.true;
+    });
 
-//         expect(publisherSpy).to.not.have.been.called();
-//     });
+    after(async () => {
+        let repo = await dbContext.Relationships;
+        await repo.drop();
+        await dbFactory.close(IntegrationTestsConfig.mongoConnectionString);
+    });
 
-//     after(async (done) => {
-//         let repo = await dbContext.Relationships;
-//         await repo.drop();
-//         await dbFactory.close(IntegrationTestsConfig.mongoConnectionString);
-//         done();
-//     });
-
-// });
+});

@@ -11,28 +11,27 @@ import { CreateBarfDetailsHandler, CreateBarfDetails } from '../../../src/messag
 import { IUserService } from '../../../src/messageProcessor/services/userService';
 import { ObjectId } from 'mongodb';
 
-
-const user = {
-    user_id: "123134234",
-    nickname: "mizrael"
-},
-    creationDate = Date.now(),
-    barf = {
-        id: ObjectId.createFromTime(creationDate),
-        userId: user.user_id,
-        creationDate: creationDate,
-        text: "lorem ipsum dolor amet"
-    };
-
-let mockBarfsRepo,
-    mockCommandsDb,
-    mockBarfsQueryRepo,
-    mockQueriesDb,
-    mockPublisher,
-    mockUserService,
-    sut;
-
 describe('CreateBarfDetailsHandler', () => {
+    const user = {
+        user_id: "123134234",
+        nickname: "mizrael"
+    },
+        creationDate = Date.now(),
+        barf = {
+            id: ObjectId.createFromTime(creationDate),
+            userId: user.user_id,
+            creationDate: creationDate,
+            text: "lorem ipsum dolor amet"
+        };
+
+    let mockBarfsRepo,
+        mockCommandsDb,
+        mockBarfsQueryRepo,
+        mockQueriesDb,
+        mockPublisher,
+        mockUserService,
+        sut;
+
     beforeEach(() => {
         mockBarfsRepo = {
             insert: (e) => { e.id = ObjectId.createFromTime(Date.now()); return Promise.resolve(); },
@@ -82,6 +81,8 @@ describe('CreateBarfDetailsHandler', () => {
             spy = sinon.spy(mockPublisher, 'publish');
 
         return sut.handle(command).then(() => {
+            expect(spy.calledOnce).to.be.true;
+
             let arg = spy.args[0][0];
             expect(arg['routingKey']).to.be.eq("barf.ready");
             expect(arg['exchangeName']).to.be.eq("barfs");

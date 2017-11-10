@@ -21,11 +21,11 @@ describe('BarfsArchiveQueryHandler', () => {
         sut = new BarfsArchiveQueryHandler(queriesDbContext);
 
     before(async () => {
-        let followRepo = await queriesDbContext.Relationships,
+        const followRepo = await queriesDbContext.Relationships,
             barfsRepo = await queriesDbContext.Barfs,
             createBarfs = async (authorId, barfsRepo, count) => {
                 for (let i = 0; i != count; ++i) {
-                    let creationDate = Date.now();
+                    const creationDate = Date.now();
                     await barfsRepo.insert({
                         id: ObjectId.createFromTime(creationDate),
                         creationDate: creationDate,
@@ -34,7 +34,7 @@ describe('BarfsArchiveQueryHandler', () => {
                         userName: "lorem"
                     });
                 }
-            };;
+            };
         await followRepo.insert({ fromId: userId, toId: followedUserId });
         await followRepo.insert({ fromId: userId, toId: followedUser2Id });
         await createBarfs(followedUserId, barfsRepo, 2);
