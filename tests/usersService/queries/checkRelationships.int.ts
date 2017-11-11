@@ -5,7 +5,7 @@ import { IntegrationTestsConfig } from '../../config';
 import { QueriesDbContext } from '../../../src/common/infrastructure/dbContext';
 import { Queries } from '../../../src/common/infrastructure/entities/queries';
 import { RepositoryFactory, DbFactory } from '../../../src/common/infrastructure/db';
-import { CheckRelationships, CheckRelationshipsQueryHandler } from '../../../src/usersService/queries/CheckRelationships';
+import { CheckRelationships, CheckRelationshipsQueryHandler } from '../../../src/usersService/queries/checkRelationships';
 
 describe('CheckRelationshipsQueryHandler', () => {
     const userId = uuid.v4(),
