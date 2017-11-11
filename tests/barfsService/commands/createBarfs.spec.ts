@@ -1,3 +1,4 @@
+import * as uuid from 'uuid';
 import { expect } from 'chai';
 import 'mocha';
 import * as sinon from 'sinon';
@@ -7,7 +8,6 @@ import { CreateBarfCommandHandler, CreateBarf } from '../../../src/barfsService/
 import { IRepository } from '../../../src/common/infrastructure/db';
 import { Commands } from '../../../src/common/infrastructure/entities/commands';
 import { Message } from '../../../src/common/services/message';
-import { ObjectId } from 'mongodb';
 import { Events, Exchanges } from '../../../src/common/events';
 
 let mockBarfsRepo, mockBarfsRepoSpy, mockCommandsDb, mockPublisher, mockPublisherSpy, sut;
@@ -15,7 +15,7 @@ let mockBarfsRepo, mockBarfsRepoSpy, mockCommandsDb, mockPublisher, mockPublishe
 describe('CreateBarfCommandHandler', () => {
     beforeEach(() => {
         mockBarfsRepo = {
-            insert: (e) => { e.id = ObjectId.createFromTime(Date.now()); return Promise.resolve(); }
+            insert: (e) => { return Promise.resolve(); }
         };
         mockBarfsRepoSpy = sinon.spy(mockBarfsRepo, 'insert');
 
@@ -32,7 +32,7 @@ describe('CreateBarfCommandHandler', () => {
     });
 
     it('should create entity', () => {
-        let command = new CreateBarf("lorem", "ipsum");
+        const command = new CreateBarf(uuid.v4(), "lorem", "ipsum");
 
         return sut.handle(command).then(() => {
             expect(mockBarfsRepoSpy.calledOnce).to.be.true;
@@ -40,11 +40,12 @@ describe('CreateBarfCommandHandler', () => {
             let arg = mockBarfsRepoSpy.args[0][0];
             expect(arg['userId']).to.be.eq(command.authorId);
             expect(arg['text']).to.be.eq(command.text);
+            expect(arg['id']).to.be.eq(command.id);
         });
     });
 
     it('should publish barf created event', () => {
-        let command = new CreateBarf("lorem", "ipsum");
+        const command = new CreateBarf(uuid.v4(), "lorem", "ipsum");
 
         return sut.handle(command).then(() => {
             expect(mockPublisherSpy.calledOnce).to.be.true;
@@ -52,7 +53,7 @@ describe('CreateBarfCommandHandler', () => {
             let arg = mockPublisherSpy.args[0][0];
             expect(arg['routingKey']).to.be.eq(Events.BarfCreated);
             expect(arg['exchangeName']).to.be.eq(Exchanges.Barfs);
-            expect(arg['data']).to.be.not.null.and.to.be.not.eq('');
+            expect(arg['data']).to.be.eq(command.id);
         });
     });
 });

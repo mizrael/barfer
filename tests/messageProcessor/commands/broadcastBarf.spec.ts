@@ -6,7 +6,6 @@ import * as uuid from 'uuid';
 import { IRepository } from '../../../src/common/infrastructure/db';
 import { Queries } from '../../../src/common/infrastructure/entities/queries';
 import { ICommandsDbContext, IQueriesDbContext } from '../../../src/common/infrastructure/dbContext';
-import { ObjectId } from 'mongodb';
 import { BroadcastBarfCommandHandler, BroadcastBarf } from '../../../src/messageProcessor/command/broadcastBarf';
 import { Exchanges, Events } from '../../../src/common/events';
 
@@ -25,7 +24,7 @@ describe('BroadcastBarfCommandHandler', () => {
             toId: author.user_id
         }],
         barf: Queries.Barf = {
-            id: ObjectId.createFromTime(creationDate),
+            id: uuid.v4(),
             userId: author.user_id,
             userName: author.nickname,
             creationDate: creationDate,
@@ -52,7 +51,7 @@ describe('BroadcastBarfCommandHandler', () => {
     });
 
     it('should broadcast barf to author followers', async () => {
-        const command = new BroadcastBarf(barf.id.toHexString()),
+        const command = new BroadcastBarf(barf.id),
             sut = new BroadcastBarfCommandHandler(mockPublisher, mockQueriesDb),
             spy = sinon.spy(mockPublisher, 'publish');
 

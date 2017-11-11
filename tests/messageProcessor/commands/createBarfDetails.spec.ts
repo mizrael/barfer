@@ -1,3 +1,4 @@
+import * as uuid from 'uuid';
 import { expect } from 'chai';
 import 'mocha';
 import * as sinon from 'sinon';
@@ -9,7 +10,6 @@ import { Message } from '../../../src/common/services/message';
 import { IPublisher } from '../../../src/common/services/publisher';
 import { CreateBarfDetailsHandler, CreateBarfDetails } from '../../../src/messageProcessor/command/createBarfDetails';
 import { IUserService } from '../../../src/messageProcessor/services/userService';
-import { ObjectId } from 'mongodb';
 import { Exchanges, Events } from '../../../src/common/events';
 
 describe('CreateBarfDetailsHandler', () => {
@@ -19,7 +19,7 @@ describe('CreateBarfDetailsHandler', () => {
     },
         creationDate = Date.now(),
         barf = {
-            id: ObjectId.createFromTime(creationDate),
+            id: uuid.v4(),
             userId: user.user_id,
             creationDate: creationDate,
             text: "lorem ipsum dolor amet"
@@ -35,7 +35,7 @@ describe('CreateBarfDetailsHandler', () => {
 
     beforeEach(() => {
         mockBarfsRepo = {
-            insert: (e) => { e.id = ObjectId.createFromTime(Date.now()); return Promise.resolve(); },
+            insert: (e) => { return Promise.resolve(); },
             findOne: (e) => Promise.resolve(barf)
         };
 
@@ -44,7 +44,7 @@ describe('CreateBarfDetailsHandler', () => {
         };
 
         mockBarfsQueryRepo = {
-            insert: (e) => { if (!e.id) e.id = ObjectId.createFromTime(Date.now()); return Promise.resolve(); }
+            insert: (e) => { return Promise.resolve(); }
         };
 
         mockQueriesDb = {
@@ -63,7 +63,7 @@ describe('CreateBarfDetailsHandler', () => {
     });
 
     it('should create entity', () => {
-        let command = new CreateBarfDetails(barf.id.toHexString()),
+        let command = new CreateBarfDetails(barf.id),
             spy = sinon.spy(mockBarfsQueryRepo, 'insert');
 
         return sut.handle(command).then(() => {
@@ -78,7 +78,7 @@ describe('CreateBarfDetailsHandler', () => {
     });
 
     it('should publish barf ready event', () => {
-        let command = new CreateBarfDetails(barf.id.toHexString()),
+        let command = new CreateBarfDetails(barf.id),
             spy = sinon.spy(mockPublisher, 'publish');
 
         return sut.handle(command).then(() => {

@@ -7,7 +7,6 @@ import { Queries } from '../../../src/common/infrastructure/entities/queries';
 import { IRepository, DbFactory, RepositoryFactory } from '../../../src/common/infrastructure/db';
 import { IntegrationTestsConfig } from '../../config';
 import { BarfsArchiveQueryHandler } from '../../../src/barfsService/queries/barfsArchive';
-import { ObjectId } from 'mongodb';
 
 describe('BarfsArchiveQueryHandler', function () {
     this.timeout(10000);
@@ -29,7 +28,7 @@ describe('BarfsArchiveQueryHandler', function () {
             createBarfs = async (authorId, barfsRepo, count) => {
                 for (let i = 0; i != count; ++i) {
                     await barfsRepo.insert({
-                        id: ObjectId.createFromTime(creationDate),
+                        id: uuid.v4(),
                         creationDate: creationDate,
                         text: "lorem ipsum",
                         userId: authorId,

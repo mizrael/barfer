@@ -4,10 +4,10 @@ import { IPublisher } from "../../common/services/publisher";
 import { Commands } from "../../common/infrastructure/entities/commands";
 import { Message } from "../../common/services/message";
 import { Events, Exchanges } from "../../common/events";
-import * as uuid from "uuid";
 
 export class CreateBarf implements ICommand {
-    constructor(public readonly text: string,
+    constructor(public readonly id: string,
+        public readonly text: string,
         public authorId: string) { }
 }
 
@@ -19,7 +19,7 @@ export class CreateBarfCommandHandler implements ICommandHandler<CreateBarf>{
         return this.commandsDbCtx.Barfs.then(repo => {
             let me = this,
                 barf: Commands.Barf = {
-                    id: uuid.v4(),
+                    id: command.id,
                     userId: command.authorId,
                     text: command.text,
                     creationDate: Date.now()

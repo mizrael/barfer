@@ -1,3 +1,4 @@
+import * as uuid from 'uuid';
 import * as express from 'express';
 import * as jwtAuthz from 'express-jwt-authz';
 
@@ -9,6 +10,7 @@ import { CreateBarf } from '../commands/createBarf';
 import { BarfsArchive } from '../queries/barfsArchive';
 import { IQueryHandler } from '../../common/cqrs/query';
 import { Queries } from '../../common/infrastructure/entities/queries';
+import { CreateBarfDto } from './dto';
 
 export class BarfsController implements IController {
     constructor(private readonly app: express.Application,
@@ -30,7 +32,12 @@ export class BarfsController implements IController {
     }
 
     private postBarf(req: express.Request, res: express.Response) {
-        let command = req.body as CreateBarf;
+        const dto = req.body as CreateBarfDto,
+            command: CreateBarf = {
+                authorId: dto.authorId,
+                text: dto.text,
+                id: uuid.v4()
+            };
         this.createBarfHandler.handle(command).then(() => {
             res.status(201).json();
         });
