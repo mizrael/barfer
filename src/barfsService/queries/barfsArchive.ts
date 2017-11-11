@@ -15,8 +15,6 @@ export class BarfsArchiveQueryHandler implements IQueryHandler<BarfsArchive, Pag
         const relsRepo = await this.queriesDbCtx.Relationships,
             relsQuery = new Query({ fromId: query.forUser }, null, 0, 0),
             rels = await relsRepo.find(relsQuery);
-        if (!rels || 0 === rels.totalCount)
-            return PagedCollection.empty<Queries.Barf>();
 
         let followed = rels.items.map((v, i) => {
             return v.toId;

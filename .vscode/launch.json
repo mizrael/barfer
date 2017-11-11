@@ -41,7 +41,7 @@
             "type": "node",
             "request": "launch",
             "name": "Message Processor",
-            "program": "${workspaceRoot}/bin/messageProcessor/main.js",
+            "program": "${workspaceRoot}/bin/messageProcessor/app_data/jobs/continuous/run.js",
             "cwd": "${workspaceRoot}",
             "env": {
                 "AUTH0_DOMAIN": "mizrael.auth0.com",

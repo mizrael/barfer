@@ -3,8 +3,8 @@ import 'mocha';
 import { IRepository } from '../../../src/common/infrastructure/db';
 import { Queries } from '../../../src/common/infrastructure/entities/queries';
 import { ICommandsDbContext, IQueriesDbContext } from '../../../src/common/infrastructure/dbContext';
-import { IUserService } from '../../../src/messageProcessor/services/userService';
-import { RefreshUserDetailsCommandHandler, RefreshUserDetails } from '../../../src/messageProcessor/command/refreshUserDetails';
+import { IUserService } from '../../../src/messageProcessor/app_data/jobs/continuous/services/userService';
+import { RefreshUserDetailsCommandHandler, RefreshUserDetails } from '../../../src/messageProcessor/app_data/jobs/continuous/command/refreshUserDetails';
 import * as sinon from 'sinon';
 
 const userBarfsCount = 42,

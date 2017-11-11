@@ -6,7 +6,7 @@ import * as uuid from 'uuid';
 import { IRepository } from '../../../src/common/infrastructure/db';
 import { Queries } from '../../../src/common/infrastructure/entities/queries';
 import { ICommandsDbContext, IQueriesDbContext } from '../../../src/common/infrastructure/dbContext';
-import { BroadcastBarfCommandHandler, BroadcastBarf } from '../../../src/messageProcessor/command/broadcastBarf';
+import { BroadcastBarfCommandHandler, BroadcastBarf } from '../../../src/messageProcessor/app_data/jobs/continuous/command/broadcastBarf';
 import { Exchanges, Events } from '../../../src/common/events';
 
 describe('BroadcastBarfCommandHandler', () => {

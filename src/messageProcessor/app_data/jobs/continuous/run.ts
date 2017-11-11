@@ -1,19 +1,21 @@
-import { Subscriber, SubscriberOptions } from '../common/services/subscriber';
+import { Subscriber, SubscriberOptions } from '../../../../common/services/subscriber';
 
-import { Publisher } from '../common/services/publisher';
-import { RepositoryFactory, DbFactory } from '../common/infrastructure/db';
-import { CommandsDbContext, QueriesDbContext } from '../common/infrastructure/dbContext';
+import { Publisher } from '../../../../common/services/publisher';
+import { RepositoryFactory, DbFactory } from '../../../../common/infrastructure/db';
+import { CommandsDbContext, QueriesDbContext } from '../../../../common/infrastructure/dbContext';
 
-import { ICommand, ICommandHandler } from '../common/cqrs/command';
+import { ICommand, ICommandHandler } from '../../../../common/cqrs/command';
 import { CreateBarfDetailsHandler, CreateBarfDetails } from './command/createBarfDetails'
 import { AuthService } from './services/authService';
 import { UserService } from './services/userService';
-import { Queries } from '../common/infrastructure/entities/queries';
+import { Queries } from '../../../../common/infrastructure/entities/queries';
 import { RefreshUserDetails, RefreshUserDetailsCommandHandler } from './command/refreshUserDetails';
 import { Follow, FollowCommandHandler } from './command/follow';
 import { Unfollow, UnfollowCommandHandler } from './command/unfollow';
-import { Exchanges, Events } from '../common/events';
+import { Exchanges, Events } from '../../../../common/events';
 import { BroadcastBarfCommandHandler, BroadcastBarf } from './command/broadcastBarf';
+
+import * as logger from '../../../../common/services/logger';
 
 function commandHandlerFactory<TC extends ICommand>(commandName: string): ICommandHandler<TC> {
     const factories = {
@@ -90,6 +92,7 @@ function listenToBarfs() {
     subscriber.register(unFollowOptions);
 
     console.log("Message Processor running...");
+    logger.info("Message Processor running...");
 };
 
 listenToBarfs();
