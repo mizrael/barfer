@@ -12,6 +12,8 @@ branches:
 notifications:
 - email: false
 
+script: npm test
+
 jobs:
   include:
     - stage: deploy web ui
