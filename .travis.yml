@@ -12,10 +12,9 @@ branches:
 notifications:
 - email: false
 
-script: npm test
-
 jobs:
   include:
+    - script: npm test
     - stage: deploy web ui
       script: 
         - chmod +x ./deployment/web.deploy.sh
