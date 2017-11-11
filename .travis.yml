@@ -1,6 +1,5 @@
 language: node_js
 node_js:
-- node
 - "8"
 cache:
   directories:
@@ -15,8 +14,6 @@ notifications:
 
 jobs:
   include:
-    - stage: unit/integration tests
-      script: npm test
     - stage: deploy web ui
       script: 
         - chmod +x ./deployment/web.deploy.sh
