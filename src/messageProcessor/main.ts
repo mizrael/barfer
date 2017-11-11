@@ -12,11 +12,13 @@ import { Queries } from '../common/infrastructure/entities/queries';
 import { RefreshUserDetails, RefreshUserDetailsCommandHandler } from './command/refreshUserDetails';
 import { Follow, FollowCommandHandler } from './command/follow';
 import { Unfollow, UnfollowCommandHandler } from './command/unfollow';
+import { Exchanges, Events } from '../common/events';
+import { BroadcastBarfCommandHandler, BroadcastBarf } from './command/broadcastBarf';
 
-function commandHandlerFactory(commandName: string): ICommandHandler<ICommand> {
+function commandHandlerFactory<TC extends ICommand>(commandName: string): ICommandHandler<TC> {
     const factories = {
-        "create-barfs": function () {
-            let publisher = new Publisher(process.env.RABBIT),
+        "barf-create": function () {
+            const publisher = new Publisher(process.env.RABBIT),
                 repoFactory = new RepositoryFactory(new DbFactory()),
                 commandsDbContext = new CommandsDbContext(process.env.MONGO, repoFactory),
                 queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),
@@ -25,22 +27,29 @@ function commandHandlerFactory(commandName: string): ICommandHandler<ICommand> {
                 handler = new CreateBarfDetailsHandler(userService, publisher, commandsDbContext, queriesDbContext);
             return handler;
         },
+        "broadcast-barf": function () {
+            const publisher = new Publisher(process.env.RABBIT),
+                repoFactory = new RepositoryFactory(new DbFactory()),
+                queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),
+                handler = new BroadcastBarfCommandHandler(publisher, queriesDbContext);
+            return handler;
+        },
         "user-details": function () {
-            let authService = new AuthService(process.env.AUTH0_DOMAIN),
+            const authService = new AuthService(process.env.AUTH0_DOMAIN),
                 userService = new UserService(authService, process.env.AUTH0_DOMAIN),
                 repoFactory = new RepositoryFactory(new DbFactory()),
                 queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),
                 handler = new RefreshUserDetailsCommandHandler(userService, queriesDbContext);
             return handler;
         },
-        "follow": function () {
-            let repoFactory = new RepositoryFactory(new DbFactory()),
+        "user-follow": function () {
+            const repoFactory = new RepositoryFactory(new DbFactory()),
                 queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),
                 handler = new FollowCommandHandler(queriesDbContext);
             return handler;
         },
-        "unfollow": function () {
-            let repoFactory = new RepositoryFactory(new DbFactory()),
+        "user-unfollow": function () {
+            const repoFactory = new RepositoryFactory(new DbFactory()),
                 queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),
                 handler = new UnfollowCommandHandler(queriesDbContext);
             return handler;
@@ -52,24 +61,30 @@ function commandHandlerFactory(commandName: string): ICommandHandler<ICommand> {
 
 function listenToBarfs() {
     const subscriber = new Subscriber(process.env.RABBIT),
-        createBarfOptions = new SubscriberOptions("barfs", "create-barfs", "create.barf", task => {
-            let command = new CreateBarfDetails(task.data),
-                handler = commandHandlerFactory("create-barfs");
+        createBarfOptions = new SubscriberOptions(Exchanges.Barfs, "barf-create", Events.BarfCreated, task => {
+            const command = new CreateBarfDetails(task.data),
+                handler = commandHandlerFactory<CreateBarfDetails>("barf-create");
             return handler.handle(command);
-        }), updateUserOptions = new SubscriberOptions("users", "user-details", "user.logged", task => {
-            let handler = commandHandlerFactory("user-details"),
+        }),
+        broadcastBarfOptions = new SubscriberOptions(Exchanges.Barfs, "broadcast-barf", Events.BarfReady, task => {
+            const command = new BroadcastBarf(task.data),
+                handler = commandHandlerFactory<BroadcastBarf>("broadcast-barf");
+            return handler.handle(command);
+        }), updateUserOptions = new SubscriberOptions(Exchanges.Users, "user-details", Events.UserLogged, task => {
+            const handler = commandHandlerFactory<RefreshUserDetails>("user-details"),
                 command = new RefreshUserDetails(task.data);
             return handler.handle(command);
-        }), followOptions = new SubscriberOptions("users", "user-follow", "user.follow", task => {
-            let handler = commandHandlerFactory("follow"),
+        }), followOptions = new SubscriberOptions(Exchanges.Users, "user-follow", Events.UserFollowed, task => {
+            const handler = commandHandlerFactory<Follow>("user-follow"),
                 command = new Follow(task.data.followerId, task.data.followedId);
             return handler.handle(command);
-        }), unFollowOptions = new SubscriberOptions("users", "user-unfollow", "user.unfollow", task => {
-            let handler = commandHandlerFactory("unfollow"),
+        }), unFollowOptions = new SubscriberOptions(Exchanges.Users, "user-unfollow", Events.UserUnfollowed, task => {
+            const handler = commandHandlerFactory<Unfollow>("user-unfollow"),
                 command = new Unfollow(task.data.followerId, task.data.followedId);
             return handler.handle(command);
         });
     subscriber.register(createBarfOptions);
+    subscriber.register(broadcastBarfOptions);
     subscriber.register(updateUserOptions);
     subscriber.register(followOptions);
     subscriber.register(unFollowOptions);

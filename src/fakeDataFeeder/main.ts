@@ -1,10 +1,10 @@
+import * as uuid from 'uuid';
 import { Subscriber, SubscriberOptions } from '../common/services/subscriber';
 
 import { Publisher } from '../common/services/publisher';
 import { RepositoryFactory, DbFactory } from '../common/infrastructure/db';
 import { CommandsDbContext, QueriesDbContext } from '../common/infrastructure/dbContext';
 import { Queries } from '../common/infrastructure/entities/queries';
-import { ObjectId } from 'mongodb';
 
 function initFakeData() {
     var fs = require("fs"),
@@ -37,7 +37,7 @@ function initFakeData() {
                 let barf = user.barfs[b],
                     creationDate = Date.now(),
                     barfDetails: Queries.Barf = {
-                        id: ObjectId.createFromTime(creationDate),
+                        id: uuid.v4(),
                         userId: userDetails.userId,
                         userName: userDetails.nickname,
                         text: barf.text,

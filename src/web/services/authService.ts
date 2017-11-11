@@ -1,8 +1,12 @@
+import { ISubscriber, SubscriberOptions } from '../../common/services/subscriber';
 import * as express from 'express';
 import * as request from 'request-promise';
 import * as passport from 'passport';
 import { IPublisher } from '../../common/services/publisher';
 import { Message } from '../../common/services/message';
+import { Exchanges, Events } from '../../common/events';
+import { RequestUtils } from '../../common/utils/requestUtils';
+import { Queries } from '../../common/infrastructure/entities/queries';
 
 const Auth0Strategy = require('passport-auth0'),
     authOptions = {
@@ -33,14 +37,17 @@ export interface IAuthService {
 }
 
 export class AuthService implements IAuthService {
-    constructor(private readonly publisher: IPublisher) { }
+    constructor(private readonly publisher: IPublisher, private readonly subscriber: ISubscriber, private readonly socketServer: SocketIO.Server) { }
 
     public init(app: express.Application) {
         passport.use(strategy);
 
         passport.serializeUser((user, done) => {
-            let task = new Message("users", "user.logged", user['_json'].sub);
-            this.publisher.publish(task);
+            const userId = user['_json'].sub,
+                msg = new Message(Exchanges.Users, Events.UserLogged, userId);
+            this.publisher.publish(msg);
+
+            this.listenForBarfs(userId);
 
             done(null, user);
         });
@@ -54,7 +61,8 @@ export class AuthService implements IAuthService {
 
         app.use((req, res, next) => {
             if (req.user) {
-                res.locals.user = { id: req.user['_json'].sub, name: req.user.nickname, picture: req.user.picture };
+                const loggedUserId = RequestUtils.getLoggedUserId(req);
+                res.locals.user = { id: loggedUserId, name: req.user.nickname, picture: req.user.picture };
             }
 
             next();
@@ -81,4 +89,20 @@ export class AuthService implements IAuthService {
             };
         return request(options);
     };
+
+    private listenForBarfs(loggedUserId: string) {
+        console.log("listening for barfs for user " + loggedUserId);
+
+        const key = Events.BarfFor + loggedUserId,
+            options = new SubscriberOptions(Exchanges.Barfs, "barf-ready", key, task => {
+                let barf = task.data as Queries.Barf;
+
+                console.log("received new barf: " + JSON.stringify(barf));
+
+                this.socketServer.emit(key, barf);
+                return Promise.resolve();
+            });
+
+        this.subscriber.register(options);
+    }
 }

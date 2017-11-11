@@ -3,6 +3,8 @@ import { ICommandsDbContext } from "../../common/infrastructure/dbContext";
 import { IPublisher } from "../../common/services/publisher";
 import { Commands } from "../../common/infrastructure/entities/commands";
 import { Message } from "../../common/services/message";
+import { Events, Exchanges } from "../../common/events";
+import * as uuid from "uuid";
 
 export class CreateBarf implements ICommand {
     constructor(public readonly text: string,
@@ -17,7 +19,7 @@ export class CreateBarfCommandHandler implements ICommandHandler<CreateBarf>{
         return this.commandsDbCtx.Barfs.then(repo => {
             let me = this,
                 barf: Commands.Barf = {
-                    id: null,
+                    id: uuid.v4(),
                     userId: command.authorId,
                     text: command.text,
                     creationDate: Date.now()
@@ -25,7 +27,9 @@ export class CreateBarfCommandHandler implements ICommandHandler<CreateBarf>{
 
             return repo.insert(barf)
                 .then(() => {
-                    let task = new Message("barfs", "create.barf", barf.id.toHexString());
+                    console.log("new barf created: '" + barf.id + "', publishing event...");
+
+                    let task = new Message(Exchanges.Barfs, Events.BarfCreated, barf.id);
                     me.publisher.publish(task);
                 });
         });

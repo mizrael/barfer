@@ -24,9 +24,12 @@ barfer.areas.home = function () {
 
         topUsers.read();
 
-        barfer.context.socket.on('barf.ready', function (data) {
-            archive.read();
-        });
+        if (barfer.context.user) {
+            var key = 'barf.for.' + barfer.context.user;
+            barfer.context.socket.on(key, function (data) {
+                archive.read();
+            });
+        }
     };
     $('.jsHome').each(_init);
 };

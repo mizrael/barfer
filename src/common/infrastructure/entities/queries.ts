@@ -1,8 +1,6 @@
-import { ObjectId } from 'mongodb';
-
 export namespace Queries {
     export interface Barf {
-        id: ObjectId;
+        id: string;
         userId: string;
         userName: string;
         text: string;

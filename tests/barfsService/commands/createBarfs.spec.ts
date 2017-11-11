@@ -8,6 +8,7 @@ import { IRepository } from '../../../src/common/infrastructure/db';
 import { Commands } from '../../../src/common/infrastructure/entities/commands';
 import { Message } from '../../../src/common/services/message';
 import { ObjectId } from 'mongodb';
+import { Events, Exchanges } from '../../../src/common/events';
 
 let mockBarfsRepo, mockBarfsRepoSpy, mockCommandsDb, mockPublisher, mockPublisherSpy, sut;
 
@@ -49,8 +50,8 @@ describe('CreateBarfCommandHandler', () => {
             expect(mockPublisherSpy.calledOnce).to.be.true;
 
             let arg = mockPublisherSpy.args[0][0];
-            expect(arg['routingKey']).to.be.eq("create.barf");
-            expect(arg['exchangeName']).to.be.eq("barfs");
+            expect(arg['routingKey']).to.be.eq(Events.BarfCreated);
+            expect(arg['exchangeName']).to.be.eq(Exchanges.Barfs);
             expect(arg['data']).to.be.not.null.and.to.be.not.eq('');
         });
     });

@@ -18,7 +18,7 @@ export class Subscriber implements ISubscriber {
     public async register(options: SubscriberOptions) {
         let conn = await amqplib.connect(this.connStr),
             ch = await conn.createChannel(),
-            exchange = await ch.assertExchange(options.exchangeName, 'topic', { durable: true }),
+            exchange = await ch.assertExchange(options.exchangeName, 'direct', { durable: true }),
             queue = await ch.assertQueue(options.queueName, { exclusive: false });
         //ch.prefetch(1);
 
@@ -29,8 +29,10 @@ export class Subscriber implements ISubscriber {
                 return;
             }
 
-            let msgData = msg.content.toString(),
+            const msgData = msg.content.toString(),
                 task = JSON.parse(msgData) as Message;
+
+            console.log("new message received on queue '" + queue.queue + "' : " + JSON.stringify(task));
 
             options.onMessage(task).then(() => {
                 ch.ack(msg);

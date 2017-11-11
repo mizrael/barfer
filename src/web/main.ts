@@ -22,8 +22,7 @@ import { UserService } from './services/userService';
 import { UsersController } from './controllers/usersController';
 
 function startSocket(server: Server): SocketIO.Server {
-    let socketServer = io(server);
-
+    const socketServer = io(server);
     return socketServer;
 };
 
@@ -46,9 +45,10 @@ function initMiddlewares(app: express.Application) {
         .use('/static', express.static(staticFilesPath));
 };
 
-function initControllers(app: express.Application) {
+function initControllers(app: express.Application, socketServer: SocketIO.Server) {
     let publisher = new Publisher(process.env.RABBIT),
-        authService = new AuthService(publisher),
+        subscriber = new Subscriber(process.env.RABBIT),
+        authService = new AuthService(publisher, subscriber, socketServer),
         restClient = new RestClient(authService),
         barfService = new BarfService(process.env.BARFER_SERVICE_URL + "/barfs", restClient),
         userService = new UserService(process.env.USER_SERVICE_URL, restClient);
@@ -60,18 +60,6 @@ function initControllers(app: express.Application) {
     new UsersController(app, userService);
 }
 
-function initMessageConsumers(socketServer: SocketIO.Server) {
-    const options = new SubscriberOptions("barfs", "barfs-ready", "barf.ready", task => {
-        let barf = task.data as Queries.Barf;
-        //TODO: this will be sent to all connected clients
-        socketServer.emit(options.routingKey, barf);
-        return Promise.resolve();
-    }),
-        subscriber = new Subscriber(process.env.RABBIT);
-
-    subscriber.register(options);
-}
-
 function startServer() {
     let app = express(),
         port = process.env.PORT || 3100;
@@ -80,12 +68,10 @@ function startServer() {
 
     initViewEngine(app);
 
-    initControllers(app);
-
-    let server = app.listen(port),
+    const server = app.listen(port),
         socketServer = startSocket(server);
 
-    initMessageConsumers(socketServer);
+    initControllers(app, socketServer);
 
     console.log('Web Client started on: ' + port);
 };

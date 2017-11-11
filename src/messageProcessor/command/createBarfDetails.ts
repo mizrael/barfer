@@ -1,5 +1,3 @@
-import { ObjectId } from 'mongodb';
-
 import { IUserService } from '../services/userService';
 import { Commands } from '../../common/infrastructure/entities/commands';
 import { Queries } from '../../common/infrastructure/entities/queries';
@@ -9,6 +7,7 @@ import { Message } from '../../common/services/message';
 import { IPublisher } from '../../common/services/publisher';
 
 import { ICommand, ICommandHandler } from '../../common/cqrs/command';
+import { Exchanges, Events } from '../../common/events';
 
 export class CreateBarfDetails implements ICommand {
     constructor(public readonly barfId: string) { }
@@ -21,10 +20,9 @@ export class CreateBarfDetailsHandler implements ICommandHandler<CreateBarfDetai
         private readonly _queriesDbContext: IQueriesDbContext) { }
 
     public async handle(command: CreateBarfDetails): Promise<void> {
-        let barfId = new ObjectId(command.barfId),
-            barfsCmdRepo = await this._commandsDbContext.Barfs,
+        let barfsCmdRepo = await this._commandsDbContext.Barfs,
             barfsQueryRepo = await this._queriesDbContext.Barfs,
-            barf = await barfsCmdRepo.findOne({ _id: barfId }),
+            barf = await barfsCmdRepo.findOne({ id: command.barfId }),
             user = await this._userService.readUser(barf.userId),
             barfDetails: Queries.Barf = {
                 id: barf.id,
@@ -36,7 +34,7 @@ export class CreateBarfDetailsHandler implements ICommandHandler<CreateBarfDetai
 
         await barfsQueryRepo.insert(barfDetails);
 
-        this._publisher.publish(new Message("barfs", "barf.ready", barfDetails));
+        this._publisher.publish(new Message(Exchanges.Barfs, Events.BarfReady, command.barfId));
 
         console.log("barf details created: " + JSON.stringify(barfDetails));
     }

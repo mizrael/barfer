@@ -3,7 +3,7 @@ barfer.init = function (options) {
 
     var socketAddress = window.location.protocol + "//" + window.location.host;
     barfer.context = {
-        socket: io.connect(socketAddress),
+        socket: io(), // io.connect(socketAddress),
         user: options.user
     };
 

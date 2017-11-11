@@ -12,7 +12,7 @@ export class BarfsArchiveQueryHandler implements IQueryHandler<BarfsArchive, Pag
     constructor(private readonly queriesDbCtx: QueriesDbContext) { }
 
     async handle(query: BarfsArchive): Promise<PagedCollection<Queries.Barf>> {
-        let relsRepo = await this.queriesDbCtx.Relationships,
+        const relsRepo = await this.queriesDbCtx.Relationships,
             relsQuery = new Query({ fromId: query.forUser }, null, 0, 0),
             rels = await relsRepo.find(relsQuery);
         if (!rels || 0 === rels.totalCount)
@@ -20,7 +20,11 @@ export class BarfsArchiveQueryHandler implements IQueryHandler<BarfsArchive, Pag
 
         let followed = rels.items.map((v, i) => {
             return v.toId;
-        }), barfsRepo = await this.queriesDbCtx.Barfs,
+        });
+
+        followed.push(query.forUser);
+
+        const barfsRepo = await this.queriesDbCtx.Barfs,
             barfsQuery = new Query({ userId: { $in: followed } }, { _id: -1 }, !query.pageSize ? 10 : query.pageSize, query.page),
             barfs = await barfsRepo.find(barfsQuery);
 

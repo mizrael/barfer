@@ -8,6 +8,7 @@ import { FollowUserCommandHandler, FollowUser } from '../../../src/usersService/
 import { IPublisher } from '../../../src/common/services/publisher';
 import { IntegrationTestsConfig } from '../../config';
 import { Message } from '../../../src/common/services/message';
+import { Events, Exchanges } from '../../../src/common/events';
 
 const expect = chai.expect;
 
@@ -87,8 +88,8 @@ describe('FollowUserCommandHandler', () => {
         expect(spy.calledOnce).to.be.true;
 
         let arg = spy.args[0][0];
-        expect(arg['routingKey']).to.be.eq("user.follow");
-        expect(arg['exchangeName']).to.be.eq("users");
+        expect(arg['routingKey']).to.be.eq(Events.UserFollowed);
+        expect(arg['exchangeName']).to.be.eq(Exchanges.Users);
         expect(arg['data']['followerId']).to.be.eq(command.followerId);
         expect(arg['data']['followedId']).to.be.eq(command.followedId);
     });
@@ -109,8 +110,8 @@ describe('FollowUserCommandHandler', () => {
         expect(spy.calledOnce).to.be.true;
 
         let arg = spy.args[0][0];
-        expect(arg['routingKey']).to.be.eq("user.unfollow");
-        expect(arg['exchangeName']).to.be.eq("users");
+        expect(arg['routingKey']).to.be.eq(Events.UserUnfollowed);
+        expect(arg['exchangeName']).to.be.eq(Exchanges.Users);
         expect(arg['data']['followerId']).to.be.eq(command.followerId);
         expect(arg['data']['followedId']).to.be.eq(command.followedId);
     });

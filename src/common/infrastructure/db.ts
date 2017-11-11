@@ -45,7 +45,7 @@ export class BaseRepository<T> implements IRepository<T> {
             cursor = cursor.skip(query.limit * query.page).limit(query.limit);
 
         return cursor.map(item => {
-            return this.renameId(item);
+            return this.removeMongoId(item);
         }).toArray().then(items => {
             if (!isPaging)
                 return new PagedCollection<T>(items, 0, items.length, items.length);
@@ -58,13 +58,13 @@ export class BaseRepository<T> implements IRepository<T> {
 
     public insert(entity: T): Promise<void> {
         return this.coll.insertOne(entity).then(result => {
-            this.renameId(entity);
+            this.removeMongoId(entity);
         });
     }
 
     public upsertOne(filter: any, entity: any): Promise<void> {
         return this.coll.updateOne(filter, entity, { upsert: true }).then(result => {
-            this.renameId(entity);
+            this.removeMongoId(entity);
         });
     }
 
@@ -80,9 +80,11 @@ export class BaseRepository<T> implements IRepository<T> {
         return this.coll.deleteMany(filter).then(res => res.deletedCount);
     }
 
-    private renameId(entity: any) {
-        entity.id = entity._id;
-        delete entity._id;
+    private removeMongoId(entity: any) {
+        if (entity._id) {
+            delete entity._id;
+        }
+
         return entity;
     }
 }

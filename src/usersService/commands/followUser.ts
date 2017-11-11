@@ -2,8 +2,8 @@ import { ICommand, ICommandHandler } from "../../common/cqrs/command";
 import { ICommandsDbContext } from "../../common/infrastructure/dbContext";
 import { IPublisher } from "../../common/services/publisher";
 import { Commands } from "../../common/infrastructure/entities/commands";
-import { ObjectId } from "mongodb";
 import { Message } from "../../common/services/message";
+import { Events, Exchanges } from "../../common/events";
 
 export class FollowUser implements ICommand {
     constructor(public readonly followerId: string, public readonly followedId: string, public readonly status: boolean) { }
@@ -21,12 +21,11 @@ export class FollowUserCommandHandler implements ICommandHandler<FollowUser>{
         },
             repo = await this._dbContext.Relationships;
         if (!command.status) {
-
             console.log("user api: unfollow");
 
             let deletedCount = await repo.deleteMany(entity);
             if (0 !== deletedCount) {
-                let task = new Message("users", "user.unfollow", command);
+                let task = new Message(Exchanges.Users, Events.UserUnfollowed, command);
                 await this._publisher.publish(task);
             }
             return;
@@ -39,7 +38,7 @@ export class FollowUserCommandHandler implements ICommandHandler<FollowUser>{
             await repo.insert(entity);
         }
 
-        let task = new Message("users", "user.follow", command);
+        let task = new Message(Exchanges.Users, Events.UserFollowed, command);
         await this._publisher.publish(task);
     }
 }

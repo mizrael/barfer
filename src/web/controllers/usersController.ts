@@ -3,6 +3,7 @@ import { IController } from '../../common/web/IController';
 import { IUserService } from '../services/userService';
 import { NumberUtils } from '../../common/utils/numberUtils';
 import { ensureLoggedIn } from 'connect-ensure-login';
+import { RequestUtils } from '../../common/utils/requestUtils';
 
 export class UsersController implements IController {
     constructor(private readonly app: express.Application, private readonly userService: IUserService) {
@@ -11,10 +12,7 @@ export class UsersController implements IController {
     }
 
     private top(req: express.Request, res: express.Response) {
-        let loggedUserId = "";
-        if (req.user) {
-            loggedUserId = req.user['_json'].sub;
-        }
+        const loggedUserId = RequestUtils.getLoggedUserId(req);
         this.userService.readTopUsers(loggedUserId).then(results => {
             res.render('partials/_topUsers', { topUsers: results });
         }).catch(err => {

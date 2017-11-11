@@ -10,6 +10,7 @@ import { IPublisher } from '../../../src/common/services/publisher';
 import { CreateBarfDetailsHandler, CreateBarfDetails } from '../../../src/messageProcessor/command/createBarfDetails';
 import { IUserService } from '../../../src/messageProcessor/services/userService';
 import { ObjectId } from 'mongodb';
+import { Exchanges, Events } from '../../../src/common/events';
 
 describe('CreateBarfDetailsHandler', () => {
     const user = {
@@ -84,8 +85,8 @@ describe('CreateBarfDetailsHandler', () => {
             expect(spy.calledOnce).to.be.true;
 
             let arg = spy.args[0][0];
-            expect(arg['routingKey']).to.be.eq("barf.ready");
-            expect(arg['exchangeName']).to.be.eq("barfs");
+            expect(arg['routingKey']).to.be.eq(Events.BarfReady);
+            expect(arg['exchangeName']).to.be.eq(Exchanges.Barfs);
             expect(arg['data']).to.be.not.null.and.to.be.not.eq('');
         });
     });
