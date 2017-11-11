@@ -2,7 +2,7 @@ import { IQueryHandler, IQuery } from "../../common/cqrs/query";
 import { Queries } from "../../common/infrastructure/entities/queries";
 import { Query } from "../../common/infrastructure/db";
 import { IQueriesDbContext } from "../../common/infrastructure/dbContext";
-import { IsUserFollowingMultiple, IsUserFollowingMultipleQueryHandler } from "./isUserFollowingMultiple";
+import { CheckRelationships, CheckRelationshipsQueryHandler } from "./checkRelationships";
 
 export interface User {
     userId: string;
@@ -52,8 +52,8 @@ export class TopUsersQueryHandler implements IQueryHandler<TopUsers, User[]>{
             return entities.items.map(this.mapEntity);
 
         const userIds = entities.items.map(e => e.userId),
-            followedQuery = new IsUserFollowingMultiple(query.forUser, userIds),
-            followedQueryHandler = new IsUserFollowingMultipleQueryHandler(this.queriesDbCtx),
+            followedQuery = new CheckRelationships(query.forUser, userIds),
+            followedQueryHandler = new CheckRelationshipsQueryHandler(this.queriesDbCtx),
             followedUserIds = await followedQueryHandler.handle(followedQuery);
 
         if (!followedUserIds || 0 === followedUserIds.length)

@@ -9,7 +9,9 @@ import { IntegrationTestsConfig } from '../../config';
 import { BarfsArchiveQueryHandler } from '../../../src/barfsService/queries/barfsArchive';
 import { ObjectId } from 'mongodb';
 
-describe('BarfsArchiveQueryHandler', () => {
+describe('BarfsArchiveQueryHandler', function () {
+    this.timeout(10000);
+
     const userId = uuid.v4(),
         followedUserId = uuid.v4(),
         followedUser2Id = uuid.v4(),
@@ -23,9 +25,9 @@ describe('BarfsArchiveQueryHandler', () => {
     before(async () => {
         const followRepo = await queriesDbContext.Relationships,
             barfsRepo = await queriesDbContext.Barfs,
+            creationDate = Date.now(),
             createBarfs = async (authorId, barfsRepo, count) => {
                 for (let i = 0; i != count; ++i) {
-                    const creationDate = Date.now();
                     await barfsRepo.insert({
                         id: ObjectId.createFromTime(creationDate),
                         creationDate: creationDate,
@@ -35,11 +37,13 @@ describe('BarfsArchiveQueryHandler', () => {
                     });
                 }
             };
-        await followRepo.insert({ fromId: userId, toId: followedUserId });
-        await followRepo.insert({ fromId: userId, toId: followedUser2Id });
-        await createBarfs(followedUserId, barfsRepo, 2);
-        await createBarfs(followedUser2Id, barfsRepo, 2);
-        await createBarfs(notFollowedUserId, barfsRepo, 2);
+
+        await Promise.all([followRepo.insert({ fromId: userId, toId: followedUserId }),
+        followRepo.insert({ fromId: userId, toId: followedUser2Id })]);
+
+        await Promise.all([createBarfs(followedUserId, barfsRepo, 2),
+        createBarfs(followedUser2Id, barfsRepo, 2),
+        createBarfs(notFollowedUserId, barfsRepo, 2)]);
     });
 
     it('should return only followed users barfs', async () => {

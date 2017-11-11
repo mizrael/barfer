@@ -3,14 +3,14 @@ import { Queries } from "../../common/infrastructure/entities/queries";
 import { Query } from "../../common/infrastructure/db";
 import { IQueriesDbContext } from "../../common/infrastructure/dbContext";
 
-export class IsUserFollowingMultiple implements IQuery {
+export class CheckRelationships implements IQuery {
     constructor(public readonly followerId: string, public readonly followedIds: string[]) { }
 }
 
-export class IsUserFollowingMultipleQueryHandler implements IQueryHandler<IsUserFollowingMultiple, string[]>{
+export class CheckRelationshipsQueryHandler implements IQueryHandler<CheckRelationships, string[]>{
     constructor(private readonly queriesDbCtx: IQueriesDbContext) { }
 
-    public async handle(query: IsUserFollowingMultiple): Promise<string[]> {
+    public async handle(query: CheckRelationships): Promise<string[]> {
         let filter = new Query({
             fromId: query.followerId,
             toId: { $in: query.followedIds }
