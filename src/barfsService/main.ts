@@ -16,6 +16,7 @@ import { CreateBarfCommandHandler } from './commands/createBarf';
 import { BarfsArchiveQueryHandler } from './queries/barfsArchive';
 import { UserBarfsQueryHandler } from './queries/userBarfs';
 import { UsersController } from './controllers/usersController';
+import * as logger from '../common/services/logger';
 
 function initRoutes(app: express.Application) {
     let publisher = new Publisher(process.env.RABBIT),
@@ -57,7 +58,7 @@ function startServer() {
 
     app.listen(port);
 
-    console.log('Barfs Service started on: ' + port);
+    logger.info('Barfs Service started on: ' + port);
 };
 
 startServer();

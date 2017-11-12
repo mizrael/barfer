@@ -7,6 +7,7 @@ import { Message } from '../../common/services/message';
 import { Exchanges, Events } from '../../common/events';
 import { RequestUtils } from '../../common/utils/requestUtils';
 import { Queries } from '../../common/infrastructure/entities/queries';
+import * as logger from '../../common/services/logger';
 
 const Auth0Strategy = require('passport-auth0'),
     authOptions = {
@@ -91,13 +92,13 @@ export class AuthService implements IAuthService {
     };
 
     private listenForBarfs(loggedUserId: string) {
-        console.log("listening for barfs for user " + loggedUserId);
+        logger.info("listening for barfs for user " + loggedUserId);
 
         const key = Events.BarfFor + loggedUserId,
             options = new SubscriberOptions(Exchanges.Barfs, "barf-ready", key, task => {
                 let barf = task.data as Queries.Barf;
 
-                console.log("received new barf: " + JSON.stringify(barf));
+                logger.info("received new barf: " + JSON.stringify(barf));
 
                 this.socketServer.emit(key, barf);
                 return Promise.resolve();

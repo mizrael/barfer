@@ -4,6 +4,7 @@ import { IPublisher } from "../../common/services/publisher";
 import { Commands } from "../../common/infrastructure/entities/commands";
 import { Message } from "../../common/services/message";
 import { Events, Exchanges } from "../../common/events";
+import * as logger from '../../common/services/logger';
 
 export class CreateBarf implements ICommand {
     constructor(public readonly id: string,
@@ -27,7 +28,7 @@ export class CreateBarfCommandHandler implements ICommandHandler<CreateBarf>{
 
             return repo.insert(barf)
                 .then(() => {
-                    console.log("new barf created: '" + barf.id + "', publishing event...");
+                    logger.info("new barf created: '" + barf.id + "', publishing event...");
 
                     let task = new Message(Exchanges.Barfs, Events.BarfCreated, barf.id);
                     me.publisher.publish(task);

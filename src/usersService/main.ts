@@ -15,6 +15,7 @@ import { UsersController } from './controllers/usersController';
 import { TopUsersQueryHandler } from './queries/topUsers';
 import { FollowUserCommandHandler } from './commands/followUser';
 import { IsUserFollowingQueryHandler } from './queries/isUserFollowing';
+import * as logger from '../common/services/logger';
 
 function initRoutes(app: express.Application) {
     let publisher = new Publisher(process.env.RABBIT),
@@ -60,7 +61,7 @@ function startServer() {
 
     app.listen(port);
 
-    console.log('Users Service started on: ' + port);
+    logger.info('Users Service started on: ' + port);
 };
 
 startServer();

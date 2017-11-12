@@ -1,5 +1,6 @@
 import * as amqplib from 'amqplib';
 import { Message } from './message';
+import * as logger from './logger';
 
 export class SubscriberOptions {
     constructor(public readonly exchangeName: string,
@@ -25,19 +26,19 @@ export class Subscriber implements ISubscriber {
         ch.bindQueue(queue.queue, exchange.exchange, options.routingKey);
         ch.consume(queue.queue, (msg: amqplib.Message) => {
             if (!msg || !msg.content) {
-                console.log("empty message received");
+                logger.warning("empty message received");
                 return;
             }
 
             const msgData = msg.content.toString(),
                 task = JSON.parse(msgData) as Message;
 
-            console.log("new message received on queue '" + queue.queue + "' : " + JSON.stringify(task));
+            logger.info("new message received on queue '" + queue.queue + "' : " + JSON.stringify(task));
 
             options.onMessage(task).then(() => {
                 ch.ack(msg);
             }).catch(reason => {
-                console.log("task failed: " + JSON.stringify(reason));
+                logger.error("task failed: " + JSON.stringify(reason));
             });
         }, { noAck: false });
     }

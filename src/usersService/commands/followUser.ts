@@ -13,16 +13,12 @@ export class FollowUserCommandHandler implements ICommandHandler<FollowUser>{
     constructor(private readonly _dbContext: ICommandsDbContext, private readonly _publisher: IPublisher) { }
 
     public async handle(command: FollowUser): Promise<void> {
-        console.log("user api: " + JSON.stringify(command));
-
         let entity: Commands.Relationship = {
             fromId: command.followerId,
             toId: command.followedId
         },
             repo = await this._dbContext.Relationships;
         if (!command.status) {
-            console.log("user api: unfollow");
-
             let deletedCount = await repo.deleteMany(entity);
             if (0 !== deletedCount) {
                 let task = new Message(Exchanges.Users, Events.UserUnfollowed, command);
@@ -30,8 +26,6 @@ export class FollowUserCommandHandler implements ICommandHandler<FollowUser>{
             }
             return;
         }
-
-        console.log("user api: follow");
 
         let isFollowing = await repo.findOne(entity);
         if (!isFollowing) {

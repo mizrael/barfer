@@ -21,6 +21,8 @@ import { RestClient } from './utils/restClient';
 import { UserService } from './services/userService';
 import { UsersController } from './controllers/usersController';
 
+import * as logger from '../common/services/logger';
+
 function startSocket(server: Server): SocketIO.Server {
     const socketServer = io(server);
     return socketServer;
@@ -73,7 +75,7 @@ function startServer() {
 
     initControllers(app, socketServer);
 
-    console.log('Web Client started on: ' + port);
+    logger.info('Web Client started on: ' + port);
 };
 
 startServer();

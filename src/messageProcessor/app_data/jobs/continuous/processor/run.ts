@@ -91,7 +91,6 @@ function listenToBarfs() {
     subscriber.register(followOptions);
     subscriber.register(unFollowOptions);
 
-    console.log("Message Processor running...");
     logger.info("Message Processor running...");
 };
 

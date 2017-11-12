@@ -5,6 +5,7 @@ import { IAuthService } from '../services/authService';
 import { Queries } from '../../common/infrastructure/entities/queries';
 import { RequestUtils } from '../../common/utils/requestUtils';
 import { Exchanges, Events } from '../../common/events';
+import * as logger from '../../common/services/logger';
 
 export class AuthController implements IController {
     constructor(private readonly app: express.Application, private readonly authService: IAuthService) {
@@ -21,7 +22,7 @@ export class AuthController implements IController {
 
     private logout(req: express.Request, res: express.Response) {
         const loggedUserId = RequestUtils.getLoggedUserId(req);
-        console.log("user logging out: " + loggedUserId);
+        logger.info("user logging out: " + loggedUserId);
 
         req.logout();
         res.redirect(req.session.returnTo || '/');
