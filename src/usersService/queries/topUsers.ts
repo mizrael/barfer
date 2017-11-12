@@ -62,7 +62,8 @@ export class TopUsersQueryHandler implements IQueryHandler<TopUsers, User[]>{
         let followedUserIdsDict = {};
         followedUserIds.forEach(e => followedUserIdsDict[e] = true);
 
-        return entities.items.map(e => this.mapFollowedEntity(e, followedUserIdsDict));
+        return entities.items.filter(e => e.userId !== query.forUser)
+            .map(e => this.mapFollowedEntity(e, followedUserIdsDict));
     }
 
 }
