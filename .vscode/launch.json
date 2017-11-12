@@ -52,6 +52,13 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Message Processor Web UI",
+            "program": "${workspaceRoot}/bin/messageProcessor/app.js",
+            "cwd": "${workspaceRoot}"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Fake Data Feeder",
             "program": "${workspaceRoot}/bin/fakeDataFeeder/main.js",
             "cwd": "${workspaceRoot}",
@@ -79,6 +86,6 @@
     ],
     "compounds": [{
         "name": "All services",
-        "configurations": ["Users Service", "Barfs Service", "Message Processor", "Web Client"]
+        "configurations": ["Users Service", "Barfs Service", "Message Processor", "Web Client", "Message Processor Web UI"]
     }]
 }
