@@ -8,8 +8,8 @@ import { Commands } from '../../../src/common/infrastructure/entities/commands';
 import { ICommandsDbContext, IQueriesDbContext } from '../../../src/common/infrastructure/dbContext';
 import { Message } from '../../../src/common/services/message';
 import { IPublisher } from '../../../src/common/services/publisher';
-import { CreateBarfDetailsHandler, CreateBarfDetails } from '../../../src/messageProcessor/app_data/jobs/continuous/command/createBarfDetails';
-import { IUserService } from '../../../src/messageProcessor/app_data/jobs/continuous/services/userService';
+import { CreateBarfDetailsHandler, CreateBarfDetails } from '../../../src/messageProcessor/app_data/jobs/continuous/processor/command/createBarfDetails';
+import { IUserService } from '../../../src/messageProcessor/app_data/jobs/continuous/processor/services/userService';
 import { Exchanges, Events } from '../../../src/common/events';
 
 describe('CreateBarfDetailsHandler', () => {
