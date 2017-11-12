@@ -5,6 +5,7 @@ import { IPublisher } from '../../../../../../common/services/publisher';
 import { IQueriesDbContext } from '../../../../../../common/infrastructure/dbContext';
 import { Query } from '../../../../../../common/infrastructure/db';
 import * as logger from '../../../../../../common/services/logger';
+import { Queries } from '../../../../../../common/infrastructure/entities/queries';
 
 export class BroadcastBarf implements ICommand {
     constructor(public readonly barfId: string) { }
@@ -23,6 +24,9 @@ export class BroadcastBarfCommandHandler implements ICommandHandler<BroadcastBar
             return;
         }
 
+        logger.info("broadcasting barf '" + barf.id + "' to author...");
+        this.sendToUser(barf, barf.userId);
+
         const relsRepo = await this._queriesDbContext.Relationships,
             relsFilter = new Query({
                 toId: barf.userId
@@ -35,11 +39,14 @@ export class BroadcastBarfCommandHandler implements ICommandHandler<BroadcastBar
             return;
 
         followers.items.forEach(f => {
-            const key = Events.BarfFor + f.fromId;
+            logger.info("broadcasting barf '" + command.barfId + "' to " + f.fromId);
 
-            logger.info("broadcasting barf '" + command.barfId + "' to " + key);
-
-            this._publisher.publish(new Message(Exchanges.Barfs, key, barf));
+            this.sendToUser(barf, f.fromId);
         });
+    }
+
+    private sendToUser(barf: Queries.Barf, userId: string) {
+        const key = Events.BarfFor + userId;
+        this._publisher.publish(new Message(Exchanges.Barfs, key, barf));
     }
 }
