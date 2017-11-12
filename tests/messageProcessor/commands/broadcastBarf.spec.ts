@@ -13,6 +13,7 @@ describe('BroadcastBarfCommandHandler', () => {
     const creationDate = Date.now(),
         author = {
             user_id: "123134234",
+            picture: "localhost",
             nickname: "mizrael"
         },
         relationships: Queries.Relationship[] = [{
@@ -27,6 +28,7 @@ describe('BroadcastBarfCommandHandler', () => {
             id: uuid.v4(),
             userId: author.user_id,
             userName: author.nickname,
+            picture: author.picture,
             creationDate: creationDate,
             text: "lorem ipsum dolor amet"
         };
