@@ -40,6 +40,7 @@ function initFakeData() {
                         id: uuid.v4(),
                         userId: userDetails.userId,
                         userName: userDetails.nickname,
+                        picture: userDetails.picture,
                         text: barf.text,
                         creationDate: Date.now()
                     };

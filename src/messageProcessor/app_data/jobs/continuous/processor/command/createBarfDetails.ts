@@ -30,6 +30,7 @@ export class CreateBarfDetailsHandler implements ICommandHandler<CreateBarfDetai
                 id: barf.id,
                 userId: user.user_id,
                 userName: user.nickname,
+                picture: user.picture,
                 text: barf.text,
                 creationDate: barf.creationDate
             };

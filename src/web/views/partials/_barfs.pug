@@ -8,4 +8,7 @@ else
           blockquote(class="blockquote mb-0 card-body")
             p #{item.text}
             footer(class="blockquote-footer")
-              small(class="text-muted") #{item.userName}
+              small(class="text-muted") 
+                if(item.picture) 
+                  img(src=item.picture, title=item.userName, alt=item.userName, style="width:20px")
+                span #{item.userName}

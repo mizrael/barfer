@@ -3,6 +3,7 @@ export namespace Queries {
         id: string;
         userId: string;
         userName: string;
+        picture: string;
         text: string;
         creationDate: Number;
     }
