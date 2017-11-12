@@ -6,3 +6,4 @@ rm -rf ./bin/fakeDataFeeder
 rm -rf ./bin/messageProcessor
 rm -rf ./bin/usersService
 rm -rf ./bin/barfsService
+rm -rf ./.vscode

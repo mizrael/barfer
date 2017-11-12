@@ -6,5 +6,6 @@ rm -rf ./bin/fakeDataFeeder
 rm -rf ./bin/messageProcessor
 rm -rf ./bin/barfsService
 rm -rf ./bin/web
+rm -rf ./.vscode
 rm ./package.json
 mv ./deployment/package.usersService.json ./package.json

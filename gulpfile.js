@@ -4,7 +4,13 @@ const gulp = require('gulp'),
     sourcemaps = require('gulp-sourcemaps'),
     deleteEmpty = require('delete-empty'),
     tsProject = ts.createProject('./tsconfig.json'),
+    replace = require('gulp-replace'),
     plugins = require('gulp-load-plugins')();
+
+require('./src/web/gulptasks')(gulp, plugins);
+require('./src/messageProcessor/gulptasks')(gulp, plugins);
+
+/*********************************/
 
 var base_path = '.',
     ts_paths = {
@@ -46,12 +52,16 @@ gulp.task('scripts_watch', function () {
 });
 
 /*********************************/
-require('./src/web/gulptasks')(gulp, plugins);
+
 
 gulp.task('watch', ['scripts_watch', 'build_client_watch_all']);
 
 gulp.task('build', ['scripts_build', 'build_client_build_all']);
 
+gulp.task('post_build', ['build'], function () {
+    gulp.start('build_message_processor');
+});
+
 gulp.task('build:dev', ['build', 'watch']);
 
-gulp.task('default', ['build']);
+gulp.task('default', ['post_build']);
