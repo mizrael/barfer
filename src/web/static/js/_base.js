@@ -118,11 +118,10 @@ barfer.controllers.createBarf = function ($container, options) {
             contentType: 'application/json',
             dataType: "json"
         }).then(function (response) {
-            $text.val("");
             if (options.onSaved) {
                 options.onSaved(response);
             };
-        }).error(function () {
+        }).complete(function () {
             $text.val("");
         });
     });
