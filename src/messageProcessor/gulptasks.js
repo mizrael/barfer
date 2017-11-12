@@ -12,5 +12,5 @@ module.exports = function (gulp, plugins) {
             .pipe(gulp.dest(jobPath));
     });
 
-    gulp.task('build_message_processor', ['post_replace_paths']);
+    gulp.task('post_build_message_processor_azure', ['post_replace_paths']);
 };

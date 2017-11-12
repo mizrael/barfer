@@ -122,6 +122,8 @@ barfer.controllers.createBarf = function ($container, options) {
             if (options.onSaved) {
                 options.onSaved(response);
             };
+        }).error(function () {
+            $text.val("");
         });
     });
 
