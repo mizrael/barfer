@@ -50,16 +50,21 @@ describe('BroadcastBarfCommandHandler', () => {
         };
     });
 
-    it('should broadcast barf to author followers', async () => {
+    it('should broadcast barf to author and his followers', async () => {
         const command = new BroadcastBarf(barf.id),
             sut = new BroadcastBarfCommandHandler(mockPublisher, mockQueriesDb),
             spy = sinon.spy(mockPublisher, 'publish');
 
         return sut.handle(command).then(() => {
-            expect(spy.callCount).to.be.eq(relationships.length);
+            expect(spy.callCount).to.be.eq(relationships.length + 1);
+
+            const arg = spy.args[0][0];
+            expect(arg['routingKey']).to.be.eq(Events.BarfFor + author.user_id);
+            expect(arg['exchangeName']).to.be.eq(Exchanges.Barfs);
+            expect(arg['data']).to.be.eq(barf);
 
             relationships.forEach((r, i) => {
-                const arg = spy.args[i][0];
+                const arg = spy.args[i + 1][0];
                 expect(arg['routingKey']).to.be.eq(Events.BarfFor + relationships[i].fromId);
                 expect(arg['exchangeName']).to.be.eq(Exchanges.Barfs);
                 expect(arg['data']).to.be.eq(barf);
