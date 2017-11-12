@@ -28,7 +28,7 @@
     "winston": "^2.4.0"
   },
   "scripts": {
-    "start": "node ./bin/messageProcessor/main.js"
+    "start": "node ./bin/messageProcessor/app.js"
   },
   "author": "MizRaeL",
   "license": "ISC"
