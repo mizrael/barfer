@@ -72,7 +72,7 @@ function listenToBarfs() {
             const command = new BroadcastBarf(task.data),
                 handler = commandHandlerFactory<BroadcastBarf>("broadcast-barf");
             return handler.handle(command);
-        }), updateUserOptions = new SubscriberOptions(Exchanges.Users, "user-details", Events.UserLogged, task => {
+        }), updateUserOptions = new SubscriberOptions(Exchanges.Users, "user-details", Events.RequestUpdateUserData, task => {
             const handler = commandHandlerFactory<RefreshUserDetails>("user-details"),
                 command = new RefreshUserDetails(task.data);
             return handler.handle(command);

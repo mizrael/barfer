@@ -45,7 +45,7 @@ export class AuthService implements IAuthService {
 
         passport.serializeUser((user, done) => {
             const userId = user['_json'].sub,
-                msg = new Message(Exchanges.Users, Events.UserLogged, userId);
+                msg = new Message(Exchanges.Users, Events.RequestUpdateUserData, userId);
             this.publisher.publish(msg);
 
             this.listenForBarfs(userId);

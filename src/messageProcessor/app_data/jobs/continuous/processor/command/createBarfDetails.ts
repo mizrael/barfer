@@ -36,8 +36,10 @@ export class CreateBarfDetailsHandler implements ICommandHandler<CreateBarfDetai
 
         await barfsQueryRepo.insert(barfDetails);
 
+        logger.info("barf details created, publishing events... " + JSON.stringify(barfDetails));
+
         this._publisher.publish(new Message(Exchanges.Barfs, Events.BarfReady, command.barfId));
 
-        logger.info("barf details created: " + JSON.stringify(barfDetails));
+        this._publisher.publish(new Message(Exchanges.Users, Events.RequestUpdateUserData, barf.userId));
     }
 }
