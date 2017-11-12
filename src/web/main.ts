@@ -6,6 +6,7 @@ import * as session from 'express-session';
 import * as path from 'path';
 import * as amqplib from 'amqplib';
 import * as io from 'socket.io';
+import * as httpsRedirect from 'express-https-redirect';
 
 import { HomeController } from './controllers/homeController';
 import { AuthController } from './controllers/authController';
@@ -36,7 +37,8 @@ function initViewEngine(app: express.Application) {
 function initMiddlewares(app: express.Application) {
     const staticFilesPath = path.join(__dirname, '/static');
 
-    app.use(bodyParser.urlencoded({ extended: true }))
+    app.use('/', httpsRedirect())
+        .use(bodyParser.urlencoded({ extended: true }))
         .use(bodyParser.json())
         .use(cookieParser())
         .use(session({
