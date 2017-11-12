@@ -35,7 +35,18 @@ function initViewEngine(app: express.Application) {
 };
 
 function initMiddlewares(app: express.Application) {
-    const staticFilesPath = path.join(__dirname, '/static');
+    const isProd = (process.env.NODE_ENV === 'production'),
+        staticFilesPath = path.join(__dirname, '/static');
+
+    let MongoDBStore = require('connect-mongodb-session')(session),
+        store = new MongoDBStore(
+            {
+                uri: process.env.MONGO,
+                collection: 'sessions'
+            });
+    store.on('error', function (error) {
+        logger.error("unable to store session data", error);
+    });
 
     app.use('/', httpsRedirect())
         .use(bodyParser.urlencoded({ extended: true }))
@@ -44,7 +55,14 @@ function initMiddlewares(app: express.Application) {
         .use(session({
             secret: process.env.SESSION_SECRET || 'shhhhhhhhh',
             resave: true,
-            saveUninitialized: true
+            store: store,
+            saveUninitialized: true,
+            cookie: {
+                path: '/',
+                httpOnly: true,
+                secure: isProd,
+                maxAge: 3600000
+            }
         }))
         .use('/static', express.static(staticFilesPath));
 };
