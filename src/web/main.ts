@@ -60,7 +60,7 @@ function initMiddlewares(app: express.Application) {
             cookie: {
                 path: '/',
                 httpOnly: true,
-                secure: isProd,
+                secure: false,
                 maxAge: 3600000
             }
         }))
