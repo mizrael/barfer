@@ -77,17 +77,22 @@ describe('CreateBarfDetailsHandler', () => {
         });
     });
 
-    it('should publish barf ready event', () => {
-        let command = new CreateBarfDetails(barf.id),
+    it('should publish barf ready event and user update request', () => {
+        const command = new CreateBarfDetails(barf.id),
             spy = sinon.spy(mockPublisher, 'publish');
 
         return sut.handle(command).then(() => {
-            expect(spy.calledOnce).to.be.true;
+            expect(spy.callCount).to.be.eq(2);
 
             let arg = spy.args[0][0];
             expect(arg['routingKey']).to.be.eq(Events.BarfReady);
             expect(arg['exchangeName']).to.be.eq(Exchanges.Barfs);
-            expect(arg['data']).to.be.not.null.and.to.be.not.eq('');
+            expect(arg['data']).to.be.eq(barf.id);
+
+            arg = spy.args[1][0];
+            expect(arg['routingKey']).to.be.eq(Events.RequestUpdateUserData);
+            expect(arg['exchangeName']).to.be.eq(Exchanges.Users);
+            expect(arg['data']).to.be.eq(barf.userId);
         });
     });
 });
