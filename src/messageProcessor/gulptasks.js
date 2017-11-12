@@ -8,7 +8,7 @@ module.exports = function (gulp, plugins) {
         var glob = jobPath + '/**/*.js';
 
         return gulp.src(glob)
-            .pipe(plugins.replace('../../../../../common', '../../../../../../bin/common'))
+            .pipe(plugins.replace('../../../../../common', '../../../../bin/common'))
             .pipe(gulp.dest(jobPath));
     });
 

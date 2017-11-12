@@ -15,6 +15,15 @@ notifications:
 jobs:
   include:
     - script: npm test
+    - stage: deploy message processor
+      script: 
+        - chmod +x ./deployment/messageProcessor.deploy.sh
+        - ./deployment/messageProcessor.deploy.sh
+      deploy:
+        provider: azure_web_apps
+        skip_cleanup: true
+        verbose: true
+        site: message-processor-barfer
     - stage: deploy web ui
       script: 
         - chmod +x ./deployment/web.deploy.sh
@@ -42,12 +51,3 @@ jobs:
         skip_cleanup: true
         verbose: true
         site: api-users-barfer
-    - stage: deploy message processor
-      script: 
-        - chmod +x ./deployment/messageProcessor.deploy.sh
-        - ./deployment/messageProcessor.deploy.sh
-      deploy:
-        provider: azure_web_apps
-        skip_cleanup: true
-        verbose: true
-        site: message-processor-barfer
