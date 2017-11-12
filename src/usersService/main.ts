@@ -29,9 +29,10 @@ function initRoutes(app: express.Application) {
 }
 
 function startServer() {
-    let app = express(),
+    const port = process.env.PORT || 3001,
+        corsOrigins = process.env.CORS_ORIGINS || "",
         corsOptions = {
-            origin: process.env.CORS_ORIGINS.split(',')
+            origin: corsOrigins.split(',')
         },
         authCheck = jwt({
             // https://github.com/auth0/node-jwks-rsa/issues/15
@@ -50,7 +51,7 @@ function startServer() {
                 { url: pathToRegexp('/users/:userId/barfs'), methods: ['GET'] }
             ]
         }),
-        port = process.env.PORT || 3001;
+        app = express();
 
     app.use(bodyParser.urlencoded({ extended: true }))
         .use(bodyParser.json())

@@ -31,9 +31,10 @@ function initRoutes(app: express.Application) {
 }
 
 function startServer() {
-    let app = express(),
+    let port = process.env.PORT || 3000,
+        corsOrigins = process.env.CORS_ORIGINS || "",
         corsOptions = {
-            origin: process.env.CORS_ORIGINS.split(',')
+            origin: corsOrigins.split(',')
         },
         authCheck = jwt({
             // https://github.com/auth0/node-jwks-rsa/issues/15
@@ -47,7 +48,7 @@ function startServer() {
             issuer: process.env.JWT_ISSUER,
             algorithms: ['RS256']
         }),
-        port = process.env.PORT || 3000;
+        app = express();
 
     app.use(bodyParser.urlencoded({ extended: true }))
         .use(bodyParser.json())
