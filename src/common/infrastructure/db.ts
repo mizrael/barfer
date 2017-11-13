@@ -33,7 +33,9 @@ export class BaseRepository<T> implements IRepository<T> {
     }
 
     public findOne(filter: any): Promise<T> {
-        return this.coll.findOne(filter);
+        return this.coll.findOne(filter).then(item => {
+            return this.removeMongoId(item);
+        });
     }
 
     public find(query: Query): Promise<PagedCollection<T>> {

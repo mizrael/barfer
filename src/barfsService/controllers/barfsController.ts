@@ -10,15 +10,29 @@ import { CreateBarf } from '../commands/createBarf';
 import { BarfsArchive } from '../queries/barfsArchive';
 import { IQueryHandler } from '../../common/cqrs/query';
 import { Queries } from '../../common/infrastructure/entities/queries';
-import { CreateBarfDto } from './dto';
+import { CreateBarfDto, BarfDetails } from './dto';
+import { GetBarfDetails } from '../queries/barfDetails';
 
 export class BarfsController implements IController {
     constructor(private readonly app: express.Application,
         private readonly createBarfHandler: ICommandHandler<CreateBarf>,
-        private readonly barfsArchiveHandler: IQueryHandler<BarfsArchive, PagedCollection<Queries.Barf>>) {
-        app.route('/barfs')
-            .get(this.getBarfs.bind(this))
-            .post(jwtAuthz(['create:barfs']), this.postBarf.bind(this));
+        private readonly barfsArchiveHandler: IQueryHandler<BarfsArchive, PagedCollection<Queries.Barf>>,
+        private readonly barfDetailsHandler: IQueryHandler<GetBarfDetails, BarfDetails>) {
+
+        const router = express.Router();
+
+        router.get("/", this.getBarfs.bind(this));
+        router.post("/", jwtAuthz(['create:barfs']), this.postBarf.bind(this));
+        router.get("/:barfId", this.getDetails.bind(this));
+
+        app.use("/barfs", router);
+
+        // app.route("/barfs/:barfId")
+        //     .get(this.getBarfs.bind(this));
+
+        // app.route('/barfs')
+        //     .get(this.getBarfs.bind(this))
+        //     .post(jwtAuthz(['create:barfs']), this.postBarf.bind(this));
     }
 
     private getBarfs(req: express.Request, res: express.Response) {
@@ -28,6 +42,15 @@ export class BarfsController implements IController {
             query = new BarfsArchive(forUser, pageSize, page);
         this.barfsArchiveHandler.handle(query).then((items) => {
             res.json(items);
+        });
+    }
+
+    private getDetails(req: express.Request, res: express.Response) {
+        const barfId = req.params.barfId as string;
+        this.barfDetailsHandler.handle({
+            barfId: barfId
+        }).then(item => {
+            res.json(item);
         });
     }
 

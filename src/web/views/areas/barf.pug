@@ -1,0 +1,14 @@
+extends ../layout
+
+block content
+  div(class="barf")
+    div(class="row")
+      div(class="leftCol col")
+        div(class="topUsers jsTopUsers")  
+      div(class="main barf-details col-9")
+        span #{model.text}
+        footer(class="blockquote-footer")
+          small(class="text-muted") 
+            if(model.picture) 
+              img(src=model.picture, title=model.userName, alt=model.userName)
+            span #{model.userName}

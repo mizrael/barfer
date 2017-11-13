@@ -76,7 +76,7 @@ function initControllers(app: express.Application, socketServer: SocketIO.Server
         userService = new UserService(process.env.USER_SERVICE_URL, restClient);
     authService.init(app);
 
-    new HomeController(app);
+    new HomeController(app, barfService);
     new AuthController(app, authService);
     new BarfsController(app, barfService)
     new UsersController(app, userService);
