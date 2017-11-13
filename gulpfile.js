@@ -60,6 +60,7 @@ gulp.task('build', ['scripts_build', 'build_client_build_all']);
 
 gulp.task('post_build_azure', ['build'], function () {
     gulp.start('post_build_message_processor_azure');
+    gulp.start('post_build_client_scripts_azure');
 });
 
 gulp.task('build:dev', ['build', 'watch']);
