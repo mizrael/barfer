@@ -1,12 +1,14 @@
 h4 Top Users
-ul(class="list-group")
+ul(class="list-group top-users")
   each item in topUsers
       li(class="list-group-item")
-        p
-          img(src=item.picture, title=item.name, alt=item.name, style="width:50px")
-          span  #{item.name} barfed #{item.barfsCount} times
-        p 
-          span @#{item.nickname}
+        div(class="thumb")
+          img(src=item.picture, title=item.name, alt=item.name)
+        div(class="info")
+          p @#{item.nickname} 
+          p barfed #{item.barfsCount} times
           if user
-            button(class="btn btn-success btn-sm jsFollow", data-id=item.userId, data-followed=item.followed ? 'true' : 'false') Follow
+            p 
+              button(class="btn btn-success btn-sm jsFollow", data-id=item.userId, data-followed=item.followed ? 'true' : 'false') Follow
+          
           

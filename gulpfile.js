@@ -5,6 +5,7 @@ const gulp = require('gulp'),
     deleteEmpty = require('delete-empty'),
     tsProject = ts.createProject('./tsconfig.json'),
     replace = require('gulp-replace'),
+    sass = require('gulp-sass'),
     plugins = require('gulp-load-plugins')();
 
 require('./src/web/gulptasks')(gulp, plugins);
