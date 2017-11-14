@@ -68,18 +68,19 @@ function initMiddlewares(app: express.Application) {
 };
 
 function initControllers(app: express.Application, socketServer: SocketIO.Server) {
-    let publisher = new Publisher(process.env.RABBIT),
+    const publisher = new Publisher(process.env.RABBIT),
         subscriber = new Subscriber(process.env.RABBIT),
         authService = new AuthService(publisher, subscriber, socketServer),
         restClient = new RestClient(authService),
-        barfService = new BarfService(process.env.BARFER_SERVICE_URL + "/barfs", restClient),
+        barfService = new BarfService(process.env.BARFER_SERVICE_URL, restClient),
         userService = new UserService(process.env.USER_SERVICE_URL, restClient);
+
     authService.init(app);
 
-    new HomeController(app, barfService);
+    new HomeController(app, barfService, userService);
     new AuthController(app, authService);
     new BarfsController(app, barfService)
-    new UsersController(app, userService);
+    new UsersController(app, userService, barfService);
 }
 
 function startServer() {

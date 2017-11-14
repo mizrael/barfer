@@ -1,0 +1,17 @@
+extends ../layout
+
+block content
+  div(class="user-details jsUserDetails")
+  
+    div(class="row")
+        div(class="leftCol col-3")
+            div(class="head")
+                img(src=model.picture, title=model.nickName, alt=model.nickName)
+                h3 #{model.nickname}
+
+            div(class="topUsers jsTopUsers")
+
+        div(class="main col-9")
+            if user && barfs
+                div(class="barfs jsUserBarfs")
+                    include ../partials/_barfs

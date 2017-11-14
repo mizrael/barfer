@@ -14,10 +14,10 @@ import { CommandsDbContext, QueriesDbContext } from '../common/infrastructure/db
 import { BarfsController } from './controllers/barfsController';
 import { CreateBarfCommandHandler } from './commands/createBarf';
 import { BarfsArchiveQueryHandler } from './queries/barfsArchive';
-import { UserBarfsQueryHandler } from './queries/userBarfs';
 import { UsersController } from './controllers/usersController';
 import * as logger from '../common/services/logger';
 import { GetBarfDetailsQueryHandler } from './queries/barfDetails';
+import { BarfsByUserQueryHandler } from './queries/barfsByUser';
 
 function initRoutes(app: express.Application) {
     let publisher = new Publisher(process.env.RABBIT),
@@ -27,7 +27,7 @@ function initRoutes(app: express.Application) {
         createBarfHandler = new CreateBarfCommandHandler(commandsDbContext, publisher),
         barfsArchiveHandler = new BarfsArchiveQueryHandler(queriesDbContext),
         barfDetailsHandler = new GetBarfDetailsQueryHandler(queriesDbContext),
-        userBarfsHandler = new UserBarfsQueryHandler(queriesDbContext),
+        userBarfsHandler = new BarfsByUserQueryHandler(queriesDbContext),
         barfsCtrl = new BarfsController(app, createBarfHandler, barfsArchiveHandler, barfDetailsHandler),
         usersCtrl = new UsersController(app, userBarfsHandler);
 }

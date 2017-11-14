@@ -1,11 +1,12 @@
 import * as express from 'express';
 import { IController } from '../../common/web/IController';
 import { IBarfService } from '../services/barfService';
+import { IUserService } from '../services/userService';
 
 export class HomeController implements IController {
-    constructor(private readonly app: express.Application, private readonly barfService: IBarfService) {
+    constructor(private readonly app: express.Application, private readonly barfService: IBarfService, private readonly userService: IUserService) {
         app.route('/').get(this.index.bind(this));
-        app.route('/barf/:barfId').get(this.barfDetails.bind(this));
+        app.route('/barfs/:barfId').get(this.barfDetails.bind(this));
     }
 
     private index(req: express.Request, res: express.Response) {

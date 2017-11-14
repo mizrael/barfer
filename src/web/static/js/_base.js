@@ -6,11 +6,20 @@ barfer.areas = barfer.areas || {};
 
 barfer.controllers = barfer.controllers || {};
 
-barfer.controllers.barfsArchive = function ($container) {
+barfer.controllers.barfsArchive = function ($container, options) {
+    options = options || {};
+
     var read = function () {
         $container.empty();
-        $.get("/barfs").then(function (data) {
+        var url = "/barfs";
+        if (options.author) {
+            url += "?author=" + options.author;
+        }
+        $.get(url).then(function (data) {
             $container.html(data);
+            if (options.onSuccess) {
+                options.onSuccess();
+            }
         });
     };
 
@@ -23,7 +32,7 @@ barfer.controllers.topUsers = function ($container, options) {
     options = options || {};
     var read = function () {
         $container.empty();
-        $.get("/users/top").then(function (data) {
+        $.get("/topusers").then(function (data) {
             $container.html(data);
             if (options.onSuccess) {
                 options.onSuccess();
@@ -53,13 +62,13 @@ barfer.controllers.follow = function () {
         },
         _run = function ($btn, onChange) {
             var newStatus = !_getState($btn),
+                url = "/users/" + $btn.data('id') + "/follow",
                 payload = {
-                    followedId: $btn.data('id'),
                     status: newStatus
                 };
             $btn.hide();
             $.ajax({
-                url: "/users/follow",
+                url: url,
                 type: "post",
                 data: JSON.stringify(payload),
                 contentType: 'application/json',

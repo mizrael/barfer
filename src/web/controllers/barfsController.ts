@@ -4,6 +4,7 @@ import { IController } from '../../common/web/IController';
 import { IAuthService } from '../services/authService';
 import { NumberUtils } from '../../common/utils/numberUtils';
 import { IBarfService } from '../services/barfService';
+import { RequestUtils } from '../../common/utils/requestUtils';
 
 export class BarfsController implements IController {
     constructor(private readonly app: express.Application, private readonly barfService: IBarfService) {
@@ -13,10 +14,12 @@ export class BarfsController implements IController {
     }
 
     private getBarfs(req: express.Request, res: express.Response) {
-        const pageSize = Math.min(10, NumberUtils.safeParseInt(req.query.pageSize)),
+        const author: string = req.query.author,
+            loggedUserId = RequestUtils.getLoggedUserId(req),
+            pageSize = Math.min(10, NumberUtils.safeParseInt(req.query.pageSize)),
             page = NumberUtils.safeParseInt(req.query.page);
 
-        this.barfService.read({ forUser: req.user['_json'].sub, page: page, pageSize: pageSize }).then(results => {
+        this.barfService.read({ forUser: loggedUserId, author: author, page: page, pageSize: pageSize }).then(results => {
             res.render('partials/_barfs', { barfs: results });
         }).catch(err => {
             res.json(err);

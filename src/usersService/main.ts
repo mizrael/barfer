@@ -16,6 +16,7 @@ import { TopUsersQueryHandler } from './queries/topUsers';
 import { FollowUserCommandHandler } from './commands/followUser';
 import { IsUserFollowingQueryHandler } from './queries/isUserFollowing';
 import * as logger from '../common/services/logger';
+import { GetUserByIdQueryHandler } from './queries/userById';
 
 function initRoutes(app: express.Application) {
     let publisher = new Publisher(process.env.RABBIT),
@@ -25,7 +26,8 @@ function initRoutes(app: express.Application) {
         topUsersHandler = new TopUsersQueryHandler(queriesDbContext),
         isUserFollowingHandler = new IsUserFollowingQueryHandler(queriesDbContext),
         followUserHandler = new FollowUserCommandHandler(commandsDbContext, publisher),
-        usersController = new UsersController(app, topUsersHandler, followUserHandler);
+        userByIdHandler = new GetUserByIdQueryHandler(queriesDbContext, isUserFollowingHandler),
+        usersController = new UsersController(app, topUsersHandler, followUserHandler, userByIdHandler);
 }
 
 function startServer() {
@@ -47,7 +49,8 @@ function startServer() {
             algorithms: ['RS256']
         }).unless({
             path: [
-                { url: '/users/top', methods: ['GET'] },
+                { url: pathToRegexp('/users'), methods: ['GET'] },
+                { url: pathToRegexp('/users/:userId'), methods: ['GET'] },
                 { url: pathToRegexp('/users/:userId/barfs'), methods: ['GET'] }
             ]
         }),

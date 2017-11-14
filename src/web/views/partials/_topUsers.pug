@@ -3,9 +3,10 @@ ul(class="list-group top-users")
   each item in topUsers
       li(class="list-group-item")
         div(class="thumb")
-          img(src=item.picture, title=item.name, alt=item.name)
+          img(src=item.picture, title=item.nickname, alt=item.nickname)
         div(class="info")
-          p @#{item.nickname} 
+          p 
+            a(href="/users/" + item.nickname, title=item.nickname) @#{item.nickname} 
           p barfed #{item.barfsCount} times
           if user
             p 

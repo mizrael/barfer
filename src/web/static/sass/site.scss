@@ -1,2 +1,14 @@
+@import '_partials/_header';
+@import '_partials/_footer';
 @import '_partials/_topUsers';
 @import '_partials/_barfsArchive';
+@import '_partials/_createBarf';
+@import '_areas/_user';
+html {
+    min-height: 100%;
+    position: relative;
+    body {
+        padding-top: 70px;
+        margin-bottom: 80px;
+    }
+}
