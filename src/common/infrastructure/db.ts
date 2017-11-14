@@ -83,7 +83,7 @@ export class BaseRepository<T> implements IRepository<T> {
     }
 
     private removeMongoId(entity: any) {
-        if (entity._id) {
+        if (entity && entity._id) {
             delete entity._id;
         }
 
