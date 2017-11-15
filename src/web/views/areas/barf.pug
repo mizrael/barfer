@@ -1,16 +1,19 @@
 extends ../layout
 
 block content
-  div(class="barf")
+  div(class="barf-details jsBarfDetails")
     div(class="row")
 
       div(class="leftCol col")
         div(class="topUsers jsTopUsers")  
     
-      div(class="main barf-details col-9")
-        span #{model.text}
-        footer(class="blockquote-footer")
-          small(class="text-muted") 
-            if(model.picture) 
-              img(src=model.picture, title=model.userName, alt=model.userName)
-            a(href="/users/" + model.userName) @#{model.userName}
+      div(class="main col-9")
+        p #{model.text}
+        
+        footer
+          div.author.blockquote-footer
+            small(class="text-muted") 
+              if(model.picture) 
+                img(src=model.picture, title=model.userName, alt=model.userName)
+              a(href="/users/" + model.userName) @#{model.userName}
+              span on #{new Date(model.creationDate).toLocaleDateString() }

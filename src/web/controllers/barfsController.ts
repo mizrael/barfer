@@ -10,7 +10,19 @@ export class BarfsController implements IController {
     constructor(private readonly app: express.Application, private readonly barfService: IBarfService) {
         app.route('/barfs')
             .get(ensureLoggedIn(), this.getBarfs.bind(this))
-            .post(ensureLoggedIn('/login'), this.postBarf.bind(this));;
+            .post(ensureLoggedIn('/login'), this.postBarf.bind(this));
+
+
+        app.route('/barfs/:barfId').get(this.barfDetails.bind(this));
+    }
+
+    private barfDetails(req: express.Request, res: express.Response) {
+        const id = req.params.barfId as string;
+        this.barfService.readOne(id).then(barf => {
+            res.locals.model = barf;
+            res.locals.area = 'barf';
+            res.render('areas/barf');
+        });
     }
 
     private getBarfs(req: express.Request, res: express.Response) {
