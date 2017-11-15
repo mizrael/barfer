@@ -14,10 +14,12 @@ html
       gtag('js', new Date());
       gtag('config', 'UA-18080426-2');
       
-  body
+  body(class="area-" + area)
     div(class="container-fluid jsMain")
       include includes/header.pug
-      div(class="container")
+
+      div(class="container main-container")
         block content
+
     include includes/footer.pug
     include includes/scripts.pug

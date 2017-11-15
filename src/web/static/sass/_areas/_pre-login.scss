@@ -1,0 +1,16 @@
+.area-preLogin {
+    background: url('/static/assets/graph.jpg') no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    .pre-login {
+        .card {
+            opacity: 0.8;
+            margin-top: 30px;
+            .card-block {
+                padding: 20px;
+            }
+        }
+    }
+}

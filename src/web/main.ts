@@ -49,8 +49,6 @@ function initMiddlewares(app: express.Application) {
     });
 
     app.use('/', httpsRedirect())
-        .use(bodyParser.urlencoded({ extended: true }))
-        .use(bodyParser.json())
         .use(cookieParser())
         .use(session({
             secret: process.env.SESSION_SECRET || 'shhhhhhhhh',
@@ -64,6 +62,8 @@ function initMiddlewares(app: express.Application) {
                 maxAge: 3600000
             }
         }))
+        .use(bodyParser.urlencoded({ extended: true }))
+        .use(bodyParser.json())
         .use('/static', express.static(staticFilesPath));
 };
 
@@ -77,10 +77,10 @@ function initControllers(app: express.Application, socketServer: SocketIO.Server
 
     authService.init(app);
 
-    new HomeController(app);
     new AuthController(app, authService);
     new BarfsController(app, barfService)
     new UsersController(app, userService, barfService);
+    new HomeController(app);
 }
 
 function startServer() {

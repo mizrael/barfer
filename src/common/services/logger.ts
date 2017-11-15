@@ -20,7 +20,7 @@ winston.configure({
 })
 
 function log(level: string, text: string, data?: any) {
-    // winston.log(level, text, data);
+    winston.log(level, text, data);
 }
 
 export function info(text: string, data?: any) {

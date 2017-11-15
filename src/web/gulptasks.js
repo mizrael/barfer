@@ -16,6 +16,11 @@ module.exports = function (gulp, plugins) {
                 input: './src/web/views/**/*.pug',
                 output: './bin/web/views'
             },
+            assets: {
+                clean: './bin/web/static/assets/**/*',
+                input: './src/web/static/assets/**/*',
+                output: './bin/web/static/assets'
+            }
         },
         sassOptions = {
             outputStyle: 'compressed'
@@ -100,7 +105,29 @@ module.exports = function (gulp, plugins) {
     });
 
     /*********************************/
+    // ASSETS
 
-    gulp.task('build_client_build_all', ['build_client_views_build', 'build_client_scripts_build', 'build_client_style_build']);
-    gulp.task('build_client_watch_all', ['build_client_views_watch', 'build_client_scripts_watch', 'build_client_style_watch']);
+    gulp.task('build_client_assets_clean', function () {
+        return gulp.src([paths.assets.clean], {
+                read: false
+            })
+            .pipe(plugins.clean());
+    });
+
+    gulp.task('build_client_assets_build', ['build_client_assets_clean'], function () {
+        gulp.src(paths.assets.input)
+            .pipe(gulp.dest(paths.assets.output));
+    });
+
+    gulp.task('build_client_assets_watch', function () {
+        return gulp.watch(paths.assets.input, ['build_client_assets_build'])
+            .on('change', function (event) {
+                console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
+            });
+    });
+
+    /*********************************/
+
+    gulp.task('build_client_build_all', ['build_client_views_build', 'build_client_scripts_build', 'build_client_style_build', 'build_client_assets_build']);
+    gulp.task('build_client_watch_all', ['build_client_views_watch', 'build_client_scripts_watch', 'build_client_style_watch', 'build_client_assets_watch']);
 };

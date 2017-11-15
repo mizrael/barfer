@@ -7,8 +7,7 @@ block content
         div(class="col")
           include ../partials/_createBarf.pug
     div(class="row")
-      div(class="leftCol col-3")
-        div(class="topUsers jsTopUsers")  
+      include ../includes/left-col.pug
       div(class="main col-9")
         if user
           div(class="barfs jsBarfs")

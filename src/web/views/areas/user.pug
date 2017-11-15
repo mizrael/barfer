@@ -4,14 +4,14 @@ block content
   div(class="user-details jsUserDetails")
   
     div(class="row")
-        div(class="leftCol col-3")
+        div(class="leftCol col-md-3 col-xs-12")
             div(class="head")
                 img(src=model.picture, title=model.nickName, alt=model.nickName)
                 h3 #{model.nickname}
 
-            div(class="topUsers jsTopUsers")
+            div(class="topUsers jsTopUsers")  
 
-        div(class="main col-9")
+        div(class="main col-md-9 col-xs-12")
             if user && barfs
                 div(class="barfs jsUserBarfs")
                     include ../partials/_barfs

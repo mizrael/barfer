@@ -14,7 +14,7 @@ const Auth0Strategy = require('passport-auth0'),
         clientID: process.env.AUTH0_CLIENT_ID,
         domain: process.env.AUTH0_DOMAIN,
         redirectUri: process.env.AUTH0_CALLBACK_URL,
-        failureRedirect: '/',
+        failureRedirect: '/login',
         audience: 'https://' + process.env.AUTH0_DOMAIN + '/userinfo',
         responseType: 'code',
         scope: 'openid profile create:barfs read:barfs'

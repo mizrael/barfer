@@ -43,6 +43,7 @@ export interface IBarfService {
 }
 
 export class BarfService implements IBarfService {
+
     constructor(private readonly serviceUrl: string, private readonly restClient: IRestClient) { }
 
     public read(query: IBarfsArchiveQuery): Promise<PagedCollection<IBarf>> {
@@ -64,6 +65,6 @@ export class BarfService implements IBarfService {
     }
 
     public save(dto: ICreateBarfCommand): Promise<void> {
-        return this.restClient.post(this.serviceUrl, dto, RequestOptions.PrivateJson);
+        return this.restClient.post(this.serviceUrl + "/barfs/", dto, RequestOptions.PrivateJson);
     }
 }

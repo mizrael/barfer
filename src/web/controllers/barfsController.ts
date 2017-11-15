@@ -5,13 +5,13 @@ import { IAuthService } from '../services/authService';
 import { NumberUtils } from '../../common/utils/numberUtils';
 import { IBarfService } from '../services/barfService';
 import { RequestUtils } from '../../common/utils/requestUtils';
+import { xhrOnly } from '../middlewares/xhrOnly';
 
 export class BarfsController implements IController {
     constructor(private readonly app: express.Application, private readonly barfService: IBarfService) {
         app.route('/barfs')
-            .get(ensureLoggedIn(), this.getBarfs.bind(this))
-            .post(ensureLoggedIn('/login'), this.postBarf.bind(this));
-
+            .get(ensureLoggedIn(), xhrOnly(), this.getBarfs.bind(this))
+            .post(ensureLoggedIn(), xhrOnly(), this.postBarf.bind(this));
 
         app.route('/barfs/:barfId').get(this.barfDetails.bind(this));
     }

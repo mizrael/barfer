@@ -5,13 +5,14 @@ import { IUserService } from '../services/userService';
 import { NumberUtils } from '../../common/utils/numberUtils';
 import { ensureLoggedIn } from 'connect-ensure-login';
 import { RequestUtils } from '../../common/utils/requestUtils';
+import { xhrOnly } from '../middlewares/xhrOnly';
 
 export class UsersController implements IController {
     constructor(private readonly app: express.Application,
         private readonly userService: IUserService,
         private readonly barfService: IBarfService) {
-        app.route('/topusers').get(this.top.bind(this));
-        app.route('/users/:userId').get(this.details.bind(this));
+        app.route('/topusers').get(ensureLoggedIn(), xhrOnly(), this.top.bind(this));
+        app.route('/users/:userId').get(ensureLoggedIn(), this.details.bind(this));
         app.route('/users/:userId/follow').post(ensureLoggedIn(), this.follow.bind(this));
     }
 
