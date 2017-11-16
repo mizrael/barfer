@@ -15,4 +15,4 @@ block content
               if(model.picture) 
                 img(src=model.picture, title=model.userName, alt=model.userName)
               a(href="/users/" + model.userName) @#{model.userName}
-              span on #{new Date(model.creationDate).toLocaleDateString() }
+              span(class="timeago" datetime=model.creationDate / 1000)
