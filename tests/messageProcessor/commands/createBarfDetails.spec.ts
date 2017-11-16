@@ -26,7 +26,6 @@ describe('CreateBarfDetailsHandler', () => {
         };
 
     let mockBarfsRepo,
-        mockCommandsDb,
         mockBarfsQueryRepo,
         mockQueriesDb,
         mockPublisher,
@@ -37,10 +36,6 @@ describe('CreateBarfDetailsHandler', () => {
         mockBarfsRepo = {
             insert: (e) => { return Promise.resolve(); },
             findOne: (e) => Promise.resolve(barf)
-        };
-
-        mockCommandsDb = {
-            Barfs: Promise.resolve(mockBarfsRepo)
         };
 
         mockBarfsQueryRepo = {
@@ -59,7 +54,7 @@ describe('CreateBarfDetailsHandler', () => {
             readUser: (e) => Promise.resolve(user)
         };
 
-        sut = new CreateBarfDetailsHandler(mockUserService, mockPublisher, mockCommandsDb, mockQueriesDb);
+        sut = new CreateBarfDetailsHandler(mockUserService, mockPublisher, mockQueriesDb);
     });
 
     it('should create entity', () => {
