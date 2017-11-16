@@ -12,3 +12,4 @@ else
                 if(item.picture) 
                   img(src=item.picture, title=item.userName, alt=item.userName)
                 a(href="/users/" + item.userName) @#{item.userName}
+                span on #{new Date(item.creationDate).toLocaleDateString() }

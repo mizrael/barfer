@@ -14,3 +14,23 @@ html {
         margin-bottom: 80px;
     }
 }
+
+.card-columns {
+    column-count: 1;
+}
+
+*>.fa.fa-hover-show,
+*:hover>.fa.fa-hover-hidden {
+    display: none;
+}
+
+*:hover>.fa.fa-hover-show {
+    display: inline-block;
+}
+
+button {
+    cursor: pointer;
+    .fa {
+        cursor: pointer;
+    }
+}

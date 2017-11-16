@@ -51,8 +51,13 @@ barfer.controllers.follow = function () {
             return state;
         },
         _setState = function ($btn, newStatus) {
+            var text = newStatus ? "Unfollow" : "Follow";
+
             $btn.data('followed', newStatus);
-            $btn.text(newStatus ? "Unfollow" : "Follow");
+            $btn.html(newStatus ? '<i class="fa fa-heart fa-hover-hidden" aria-hidden="true"></i><i class="fa fa-heart-o fa-hover-show" aria-hidden="true"></i>' :
+                '<i class="fa fa-heart fa-hover-show" aria-hidden="true"></i><i class="fa fa-heart-o fa-hover-hidden" aria-hidden="true"></i>');
+            $btn.attr('alt', text);
+            $btn.attr('title', text);
         },
         _refresh = function ($container) {
             $container.find('.jsFollow').each(function (i, val) {
