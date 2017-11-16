@@ -1,34 +1,25 @@
 import * as amqplib from 'amqplib';
 import * as logger from './logger';
 import { Message } from './message';
+import { IChannelProvider } from './channelProvider';
 
 export interface IPublisher {
     publish(task: Message);
 }
 
 export class Publisher implements IPublisher {
-    constructor(private connStr: string) { }
+    constructor(private readonly channelProvider: IChannelProvider) { }
 
-    public publish(task: Message) {
-        let jsonData = JSON.stringify(task),
-            buffer = new Buffer(jsonData);
+    public async publish(task: Message) {
+        const jsonData = JSON.stringify(task),
+            buffer = new Buffer(jsonData),
+            ch = await this.channelProvider.get(),
+            exchange = await ch.assertExchange(task.exchangeName, 'direct', { durable: true });
 
-        amqplib.connect(this.connStr).then(conn => {
-            conn.createChannel().then(ch => {
-                ch.assertExchange(task.exchangeName, 'direct', { durable: true }).then(() => {
-                    if (!ch.publish(task.exchangeName, task.routingKey, buffer, { persistent: true })) {
-                        logger.error("unable to publish message on exchange '" + task.exchangeName + "' with routing key'" + task.routingKey + "'");
-                    }
+        logger.info("publishing message on exchange '" + task.exchangeName + "' : " + JSON.stringify(task));
 
-                    setTimeout(function () { conn.close(); }, 500);
-                }).catch(err => {
-                    logger.error("unable to connect to RabbitMQ exhange '" + task.exchangeName + "'", err);
-                });
-            }).catch(err => {
-                logger.error("unable to connect to RabbitMQ channel", err);
-            });
-        }).catch(err => {
-            logger.error("unable to connect to RabbitMQ instance", err);
-        });
+        if (!ch.publish(task.exchangeName, task.routingKey, buffer, { persistent: true })) {
+            logger.error("unable to publish message on exchange '" + task.exchangeName + "' with routing key'" + task.routingKey + "'");
+        }
     }
 }

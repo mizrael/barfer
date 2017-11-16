@@ -63,7 +63,7 @@ describe('CreateBarfDetailsHandler', () => {
     });
 
     it('should create entity', () => {
-        let command = new CreateBarfDetails(barf.id),
+        let command = new CreateBarfDetails({ id: barf.id, text: barf.text, authorId: barf.userId }),
             spy = sinon.spy(mockBarfsQueryRepo, 'insert');
 
         return sut.handle(command).then(() => {
@@ -78,7 +78,7 @@ describe('CreateBarfDetailsHandler', () => {
     });
 
     it('should publish barf ready event and user update request', () => {
-        const command = new CreateBarfDetails(barf.id),
+        const command = new CreateBarfDetails({ id: barf.id, text: barf.text, authorId: barf.userId }),
             spy = sinon.spy(mockPublisher, 'publish');
 
         return sut.handle(command).then(() => {

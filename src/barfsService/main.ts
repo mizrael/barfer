@@ -18,9 +18,11 @@ import { UsersController } from './controllers/usersController';
 import * as logger from '../common/services/logger';
 import { GetBarfDetailsQueryHandler } from './queries/barfDetails';
 import { BarfsByUserQueryHandler } from './queries/barfsByUser';
+import { ChannelProvider } from '../common/services/channelProvider';
 
 function initRoutes(app: express.Application) {
-    let publisher = new Publisher(process.env.RABBIT),
+    const channelProvider = new ChannelProvider(process.env.RABBIT),
+        publisher = new Publisher(channelProvider),
         repoFactory = new RepositoryFactory(new DbFactory()),
         commandsDbContext = new CommandsDbContext(process.env.MONGO, repoFactory),
         queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),

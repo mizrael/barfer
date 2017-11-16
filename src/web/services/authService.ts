@@ -1,4 +1,4 @@
-import { ISubscriber, SubscriberOptions } from '../../common/services/subscriber';
+import { ISubscriber, SubscriberOptions, ISubscriberFactory } from '../../common/services/subscriber';
 import * as express from 'express';
 import * as request from 'request-promise';
 import * as passport from 'passport';
@@ -38,7 +38,13 @@ export interface IAuthService {
 }
 
 export class AuthService implements IAuthService {
-    constructor(private readonly publisher: IPublisher, private readonly subscriber: ISubscriber, private readonly socketServer: SocketIO.Server) { }
+    private subscribers: { [key: string]: ISubscriber };
+
+    constructor(private readonly publisher: IPublisher,
+        private readonly subscriberFactory: ISubscriberFactory,
+        private readonly socketServer: SocketIO.Server) {
+        this.subscribers = {};
+    }
 
     public init(app: express.Application) {
         passport.use(strategy);
@@ -63,6 +69,7 @@ export class AuthService implements IAuthService {
         app.use((req, res, next) => {
             if (req.user) {
                 const loggedUserId = RequestUtils.getLoggedUserId(req);
+                this.listenForBarfs(loggedUserId);
                 res.locals.user = { id: loggedUserId, name: req.user.nickname, picture: req.user.picture };
             }
 
@@ -92,18 +99,22 @@ export class AuthService implements IAuthService {
     };
 
     private listenForBarfs(loggedUserId: string) {
+        const subscriber = this.subscribers[loggedUserId];
+        if (subscriber) {
+            return;
+        }
+
         logger.info("listening for barfs for user " + loggedUserId);
 
         const key = Events.BarfFor + loggedUserId,
             options = new SubscriberOptions(Exchanges.Barfs, "barf-ready", key, task => {
-                let barf = task.data as Queries.Barf;
+                const barf = task.data as Queries.Barf;
 
                 logger.info("received new barf: " + JSON.stringify(barf));
 
                 this.socketServer.emit(key, barf);
                 return Promise.resolve();
             });
-
-        this.subscriber.register(options);
+        this.subscribers[loggedUserId] = this.subscriberFactory.build(options);
     }
 }

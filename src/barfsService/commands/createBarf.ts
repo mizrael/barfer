@@ -17,23 +17,10 @@ export class CreateBarfCommandHandler implements ICommandHandler<CreateBarf>{
         private readonly publisher: IPublisher) { }
 
     handle(command: CreateBarf): Promise<void> {
-        return this.commandsDbCtx.Barfs.then(repo => {
-            let me = this,
-                barf: Commands.Barf = {
-                    id: command.id,
-                    userId: command.authorId,
-                    text: command.text,
-                    creationDate: Date.now()
-                };
-
-            return repo.insert(barf)
-                .then(() => {
-                    logger.info("new barf created: '" + barf.id + "', publishing event...");
-
-                    let task = new Message(Exchanges.Barfs, Events.BarfCreated, barf.id);
-                    me.publisher.publish(task);
-                });
-        });
+        const task = new Message(Exchanges.Barfs, Events.BarfCreated, command);
+        this.publisher.publish(task);
+        logger.info("published barf create command: " + JSON.stringify(command));
+        return Promise.resolve();
     }
 
 }

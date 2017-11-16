@@ -106,17 +106,36 @@ export class DbFactory implements IDbFactory {
     }
 
     public async getDb(connectionString: string): Promise<Db> {
-        let db = this._dbs[connectionString] as Db;
-        if (db)
+        const db = this._dbs[connectionString] as Db;
+        if (db) {
             return db;
-        db = await MongoClient.connect(connectionString);
-        this._dbs[connectionString] = db;
-        return db;
+        }
+
+        let newDb = await MongoClient.connect(connectionString);
+
+        newDb = newDb.on('close', () => {
+            console.log('-> lost connection');
+            this._dbs[connectionString] = newDb;
+        }).on('error', () => {
+            console.log('-> on error');
+            this._dbs[connectionString] = newDb;
+        }).on('reconnect', () => {
+            console.log('-> reconnected');
+            this._dbs[connectionString] = newDb;
+        }).on('connected', function () {
+            console.log('Mongo DB connection open for DB');
+        });
+
+        this._dbs[connectionString] = newDb;
+        return newDb;
     }
 
     public async close(connectionString: string): Promise<void> {
-        let db = await this.getDb(connectionString);
-        if (!db) return;
+        const db = await this.getDb(connectionString);
+        if (!db) {
+            return;
+        }
+
         delete this._dbs[connectionString];
         return db.close();
     }
@@ -137,7 +156,7 @@ export class RepositoryFactory implements IRepositoryFactory {
     constructor(private readonly _dbFactory: IDbFactory) { }
 
     public async create<T>(options: IRepositoryOptions): Promise<IRepository<T>> {
-        let db = await this._dbFactory.getDb(options.connectionString),
+        const db = await this._dbFactory.getDb(options.connectionString),
             coll = db.collection<T>(options.collectionName),
             repo = new BaseRepository<T>(coll);
 

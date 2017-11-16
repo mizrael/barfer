@@ -11,36 +11,43 @@ import { Exchanges, Events } from '../../../../../../common/events';
 
 import * as logger from '../../../../../../common/services/logger';
 
+interface CreateBarfData {
+    id: string;
+    text: string;
+    authorId: string;
+}
+
 export class CreateBarfDetails implements ICommand {
-    constructor(public readonly barfId: string) { }
+    constructor(public readonly barf: CreateBarfData) { }
 }
 
 export class CreateBarfDetailsHandler implements ICommandHandler<CreateBarfDetails>{
     public constructor(private readonly _userService: IUserService,
         private readonly _publisher: IPublisher,
-        private readonly _commandsDbContext: ICommandsDbContext,
         private readonly _queriesDbContext: IQueriesDbContext) { }
 
     public async handle(command: CreateBarfDetails): Promise<void> {
-        let barfsCmdRepo = await this._commandsDbContext.Barfs,
-            barfsQueryRepo = await this._queriesDbContext.Barfs,
-            barf = await barfsCmdRepo.findOne({ id: command.barfId }),
-            user = await this._userService.readUser(barf.userId),
+        const user = await this._userService.readUser(command.barf.authorId);
+        if (!user) {
+            logger.info("unable to find barf author: " + command.barf.authorId);
+            return;
+        }
+
+        const barfsQueryRepo = await this._queriesDbContext.Barfs,
             barfDetails: Queries.Barf = {
-                id: barf.id,
+                id: command.barf.id,
                 userId: user.user_id,
                 userName: user.nickname,
                 picture: user.picture,
-                text: barf.text,
-                creationDate: barf.creationDate
+                text: command.barf.text,
+                creationDate: Date.now()
             };
-
         await barfsQueryRepo.insert(barfDetails);
 
         logger.info("barf details created, publishing events... " + JSON.stringify(barfDetails));
 
-        this._publisher.publish(new Message(Exchanges.Barfs, Events.BarfReady, command.barfId));
+        this._publisher.publish(new Message(Exchanges.Barfs, Events.BarfReady, command.barf.id));
 
-        this._publisher.publish(new Message(Exchanges.Users, Events.RequestUpdateUserData, barf.userId));
+        this._publisher.publish(new Message(Exchanges.Users, Events.RequestUpdateUserData, user.user_id));
     }
 }

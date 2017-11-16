@@ -31,19 +31,6 @@ describe('CreateBarfCommandHandler', () => {
         sut = new CreateBarfCommandHandler(mockCommandsDb as ICommandsDbContext, mockPublisher as IPublisher);
     });
 
-    it('should create entity', () => {
-        const command = new CreateBarf(uuid.v4(), "lorem", "ipsum");
-
-        return sut.handle(command).then(() => {
-            expect(mockBarfsRepoSpy.calledOnce).to.be.true;
-
-            let arg = mockBarfsRepoSpy.args[0][0];
-            expect(arg['userId']).to.be.eq(command.authorId);
-            expect(arg['text']).to.be.eq(command.text);
-            expect(arg['id']).to.be.eq(command.id);
-        });
-    });
-
     it('should publish barf created event', () => {
         const command = new CreateBarf(uuid.v4(), "lorem", "ipsum");
 
@@ -53,7 +40,7 @@ describe('CreateBarfCommandHandler', () => {
             let arg = mockPublisherSpy.args[0][0];
             expect(arg['routingKey']).to.be.eq(Events.BarfCreated);
             expect(arg['exchangeName']).to.be.eq(Exchanges.Barfs);
-            expect(arg['data']).to.be.eq(command.id);
+            expect(arg['data']).to.be.eq(command);
         });
     });
 });

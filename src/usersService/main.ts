@@ -17,9 +17,11 @@ import { FollowUserCommandHandler } from './commands/followUser';
 import { IsUserFollowingQueryHandler } from './queries/isUserFollowing';
 import * as logger from '../common/services/logger';
 import { GetUserByIdQueryHandler } from './queries/userById';
+import { ChannelProvider } from '../common/services/channelProvider';
 
 function initRoutes(app: express.Application) {
-    let publisher = new Publisher(process.env.RABBIT),
+    const channelProvider = new ChannelProvider(process.env.RABBIT),
+        publisher = new Publisher(channelProvider),
         repoFactory = new RepositoryFactory(new DbFactory()),
         commandsDbContext = new CommandsDbContext(process.env.MONGO, repoFactory),
         queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),
