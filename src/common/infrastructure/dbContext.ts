@@ -28,18 +28,12 @@ abstract class BaseDbContext {
 /*********************************/
 
 export interface ICommandsDbContext {
-    Barfs: Promise<IRepository<Commands.Barf>>;
     Relationships: Promise<IRepository<Commands.Relationship>>;
 }
 
 export class CommandsDbContext extends BaseDbContext implements ICommandsDbContext {
     public constructor(connString: string, repoFactory: IRepositoryFactory) {
         super(connString, repoFactory);
-    }
-
-    private _barfs: IRepository<Commands.Barf> = null;
-    public get Barfs(): Promise<IRepository<Commands.Barf>> {
-        return this.initRepo<Commands.Barf>("barfs", "_barfs");
     }
 
     private _relationships: IRepository<Commands.Relationship> = null;

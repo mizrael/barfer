@@ -12,7 +12,7 @@ import { HomeController } from './controllers/homeController';
 import { AuthController } from './controllers/authController';
 import { BarfsController } from './controllers/barfsController';
 
-import { Subscriber, SubscriberOptions } from '../common/services/subscriber';
+import { Subscriber, SubscriberOptions, SubscriberFactory } from '../common/services/subscriber';
 import { Message } from '../common/services/message';
 import { Queries } from '../common/infrastructure/entities/queries';
 import { Publisher } from '../common/services/publisher';
@@ -23,6 +23,7 @@ import { UserService } from './services/userService';
 import { UsersController } from './controllers/usersController';
 
 import * as logger from '../common/services/logger';
+import { ChannelProvider } from '../common/services/channelProvider';
 
 function startSocket(server: Server): SocketIO.Server {
     const socketServer = io(server);
@@ -68,9 +69,10 @@ function initMiddlewares(app: express.Application) {
 };
 
 function initControllers(app: express.Application, socketServer: SocketIO.Server) {
-    const publisher = new Publisher(process.env.RABBIT),
-        subscriber = new Subscriber(process.env.RABBIT),
-        authService = new AuthService(publisher, subscriber, socketServer),
+    const channelProvider = new ChannelProvider(process.env.RABBIT),
+        publisher = new Publisher(channelProvider),
+        subscriberFactory = new SubscriberFactory(channelProvider),
+        authService = new AuthService(publisher, subscriberFactory, socketServer),
         restClient = new RestClient(authService),
         barfService = new BarfService(process.env.BARFER_SERVICE_URL, restClient),
         userService = new UserService(process.env.USER_SERVICE_URL, restClient);

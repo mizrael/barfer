@@ -1,6 +1,7 @@
 import * as amqplib from 'amqplib';
 import { Message } from './message';
 import * as logger from './logger';
+import { IChannelProvider } from './channelProvider';
 
 export class SubscriberOptions {
     constructor(public readonly exchangeName: string,
@@ -10,21 +11,22 @@ export class SubscriberOptions {
 }
 
 export interface ISubscriber {
-    register(options: SubscriberOptions);
+
 }
 
 export class Subscriber implements ISubscriber {
-    constructor(private connStr: string) { }
+    constructor(private readonly channelProvider: IChannelProvider, options: SubscriberOptions) {
+        this.register(options);
+    }
 
-    public async register(options: SubscriberOptions) {
-        let conn = await amqplib.connect(this.connStr),
-            ch = await conn.createChannel(),
+    private async register(options: SubscriberOptions) {
+        const ch = await this.channelProvider.get(),
             exchange = await ch.assertExchange(options.exchangeName, 'direct', { durable: true }),
-            queue = await ch.assertQueue(options.queueName, { exclusive: false });
-        //ch.prefetch(1);
+            queue = await ch.assertQueue('', { exclusive: true });
 
-        ch.bindQueue(queue.queue, exchange.exchange, options.routingKey);
-        ch.consume(queue.queue, (msg: amqplib.Message) => {
+        await ch.bindQueue(queue.queue, options.exchangeName, options.routingKey);
+
+        return ch.consume(queue.queue, (msg: amqplib.Message) => {
             if (!msg || !msg.content) {
                 logger.warning("empty message received");
                 return;
@@ -37,9 +39,21 @@ export class Subscriber implements ISubscriber {
 
             options.onMessage(task).then(() => {
                 ch.ack(msg);
-            }).catch(reason => {
-                logger.error("task failed: " + JSON.stringify(reason));
+            }).catch(err => {
+                logger.error("task failed: " + JSON.stringify(task) + " for reason: " + JSON.stringify(err));
             });
         }, { noAck: false });
+    }
+}
+
+export interface ISubscriberFactory {
+    build(options: SubscriberOptions): ISubscriber;
+}
+
+export class SubscriberFactory implements ISubscriberFactory {
+    constructor(private readonly channelProvider: IChannelProvider) { }
+
+    public build(options: SubscriberOptions): ISubscriber {
+        return new Subscriber(this.channelProvider, options);
     }
 }

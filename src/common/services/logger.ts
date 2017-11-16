@@ -2,25 +2,38 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as winston from 'winston';
 
-const logDir = './logs',
+const isEnabled = (process.env.LOGGING_ENABLED == "true"),
+    logDir = './logs',
     logFullPath = path.join(logDir, 'log.txt');
+let needInit = true;
 
-if (!fs.existsSync(logDir)) {
-    fs.mkdirSync(logDir);
+function init() {
+    if (!needInit)
+        return;
+
+    if (!fs.existsSync(logDir)) {
+        fs.mkdirSync(logDir);
+    }
+
+    winston.configure({
+        level: 'verbose',
+        transports: [
+            new winston.transports.Console({
+                colorize: true
+            }),
+            new winston.transports.File({ filename: 'logs/log.txt' })
+        ]
+    });
+
+    needInit = false;
 }
 
-winston.configure({
-    level: 'verbose',
-    transports: [
-        new winston.transports.Console({
-            colorize: true
-        }),
-        new winston.transports.File({ filename: 'logs/log.txt' })
-    ]
-})
+init();
 
 function log(level: string, text: string, data?: any) {
-    winston.log(level, text, data);
+    if (process.env.LOGGING_ENABLED == "true") {
+        winston.log(level, text, data);
+    }
 }
 
 export function info(text: string, data?: any) {
