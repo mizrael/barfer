@@ -10,7 +10,7 @@ else
                 img(src=item.picture, title=item.userName, alt=item.userName)
               a(href="/users/" + item.userName) @#{item.userName}
             .col
-              p #{item.text}
+              p!=item.text
               footer(class="blockquote-footer")
                 small(class="text-muted") 
                   span(class="timeago" datetime=item.creationDate / 1000)

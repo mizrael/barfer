@@ -15,18 +15,7 @@ block content
                 img(src=model.picture, title=model.userName, alt=model.userName)
               a(href="/users/" + model.userName) @#{model.userName}
             .col
-              p #{model.text}
+              p!=model.text
               footer(class="blockquote-footer")
                 small(class="text-muted") 
                   span(class="timeago" datetime=model.creationDate / 1000)
-    
-      //- div(class="main col-xs-12 col-md-9 order-1 order-md-2")
-      //-   p #{model.text}
-        
-      //-   footer
-      //-     div.author.blockquote-footer
-      //-       small(class="text-muted") 
-      //-         if(model.picture) 
-      //-           img(src=model.picture, title=model.userName, alt=model.userName)
-      //-         a(href="/users/" + model.userName) @#{model.userName}
-      //-         span(class="timeago" datetime=model.creationDate / 1000)
