@@ -35,6 +35,8 @@ barfer.controllers.topUsers = function ($container, options) {
         $container.empty();
         $.get("/topusers").then(function (data) {
             $container.html(data);
+
+            $container.find('.jsTooltip').tooltipster(barfer.utils.tooltipOptions);
             if (options.onSuccess) {
                 options.onSuccess();
             }
@@ -230,5 +232,10 @@ barfer.utils.timeAgo = (function (options) {
     };
 })({
     selector: ".timeago",
-    interval: 10000
+    interval: 59000
 });
+
+barfer.utils.tooltipOptions = {
+    contentAsHTML: true,
+    interactive: true
+};

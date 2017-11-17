@@ -1,0 +1,34 @@
+*>.fa.fa-hover-show,
+*:hover>.fa.fa-hover-hidden {
+    display: none;
+}
+
+*:hover>.fa.fa-hover-show {
+    display: inline-block;
+}
+
+button {
+    cursor: pointer;
+    .fa {
+        cursor: pointer;
+    }
+}
+
+.tooltipster-base {
+    .tooltipster-box {
+        background: #fff;
+        border: none;
+        -webkit-box-shadow: 6px 6px 20px 10px rgba(0, 0, 0, 0.75);
+        -moz-box-shadow: 6px 6px 20px 10px rgba(0, 0, 0, 0.75);
+        box-shadow: 6px 6px 20px 10px rgba(0, 0, 0, 0.1);
+        .tooltipster-content {
+            color: $text_color;
+        }
+    }
+    .tooltipster-arrow {
+        .tooltipster-arrow-border,
+        .tooltipster-arrow-background {
+            border-top-color: #ffffff;
+        }
+    }
+}

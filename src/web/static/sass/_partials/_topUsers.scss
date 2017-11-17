@@ -1,18 +1,15 @@
 .top-users {
-    li {
-        .thumb {
-            display: inline-block;
-            vertical-align: top;
-            margin-right: 4px;
-            img {
-                width: 40px;
-            }
+    .top-user {
+        display: inline-block;
+        margin-bottom: 10px;
+        position: relative;
+        img {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 100%;
         }
         .info {
-            display: inline-block;
-            p {
-                margin: 0;
-            }
+            color: #000;
         }
     }
 }

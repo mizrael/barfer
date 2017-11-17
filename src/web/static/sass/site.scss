@@ -1,4 +1,6 @@
 @import '_base/_variables';
+@import '_base/_widget';
+@import '_base/_overrides';
 @import '_partials/_header';
 @import '_partials/_footer';
 @import '_partials/_topUsers';
@@ -17,22 +19,14 @@ html {
     }
 }
 
-.card-columns {
-    column-count: 1;
+* {
+    color: $text_color;
 }
 
-*>.fa.fa-hover-show,
-*:hover>.fa.fa-hover-hidden {
+.hidden {
     display: none;
 }
 
-*:hover>.fa.fa-hover-show {
-    display: inline-block;
-}
-
-button {
-    cursor: pointer;
-    .fa {
-        cursor: pointer;
-    }
+.card-columns {
+    column-count: 1;
 }
