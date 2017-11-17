@@ -21,7 +21,7 @@ describe('CreateBarfDetailsHandler', () => {
             id: uuid.v4(),
             userId: user.user_id,
             creationDate: creationDate,
-            text: "lorem ipsum dolor amet"
+            text: "lorem ipsum #dolor amet #barf"
         };
 
     let mockBarfsRepo,
@@ -68,6 +68,9 @@ describe('CreateBarfDetailsHandler', () => {
             expect(arg['userName']).to.be.eq(user.nickname);
             expect(arg['userId']).to.be.eq(user.user_id);
             expect(arg['text']).to.be.eq(barf.text);
+            expect(arg['hashtags'].length).to.be.eq(2);
+            expect(arg['hashtags'][0]).to.be.eq('dolor');
+            expect(arg['hashtags'][1]).to.be.eq('barf');
         });
     });
 

@@ -43,6 +43,7 @@ export class QueriesDbContext extends BaseDbContext implements IQueriesDbContext
             await r.createIndex({ id: 1 }, { unique: true });
             await r.createIndex({ userId: 1 });
             await r.createIndex({ userName: 1 });
+            await r.createIndex({ hashtags: 1 });
         });
     }
 
