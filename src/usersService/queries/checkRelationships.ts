@@ -1,5 +1,5 @@
 import { IQueryHandler, IQuery } from "../../common/cqrs/query";
-import { Queries } from "../../common/infrastructure/entities/queries";
+import { Entities } from "../../common/infrastructure/entities";
 import { Query } from "../../common/infrastructure/db";
 import { IQueriesDbContext } from "../../common/infrastructure/dbContext";
 

@@ -9,14 +9,14 @@ import { ICommandHandler } from '../../common/cqrs/command';
 import { CreateBarf } from '../commands/createBarf';
 import { BarfsArchive } from '../queries/barfsArchive';
 import { IQueryHandler } from '../../common/cqrs/query';
-import { Queries } from '../../common/infrastructure/entities/queries';
+import { Entities } from '../../common/infrastructure/entities';
 import { CreateBarfDto, BarfDetails } from './dto';
 import { GetBarfDetails } from '../queries/barfDetails';
 
 export class BarfsController implements IController {
     constructor(private readonly app: express.Application,
         private readonly createBarfHandler: ICommandHandler<CreateBarf>,
-        private readonly barfsArchiveHandler: IQueryHandler<BarfsArchive, PagedCollection<Queries.Barf>>,
+        private readonly barfsArchiveHandler: IQueryHandler<BarfsArchive, PagedCollection<Entities.Barf>>,
         private readonly barfDetailsHandler: IQueryHandler<GetBarfDetails, BarfDetails>) {
 
         const router = express.Router();

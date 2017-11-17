@@ -14,7 +14,6 @@ import { BarfsController } from './controllers/barfsController';
 
 import { Subscriber, SubscriberOptions, SubscriberFactory } from '../common/services/subscriber';
 import { Message } from '../common/services/message';
-import { Queries } from '../common/infrastructure/entities/queries';
 import { Publisher } from '../common/services/publisher';
 import { AuthService } from './services/authService';
 import { BarfService } from './services/barfService';

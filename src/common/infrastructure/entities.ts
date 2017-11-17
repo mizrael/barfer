@@ -1,4 +1,4 @@
-export namespace Queries {
+export namespace Entities {
     export interface Barf {
         id: string;
         userId: string;

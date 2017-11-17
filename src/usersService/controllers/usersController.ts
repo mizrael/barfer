@@ -1,9 +1,8 @@
 import { PagedCollection } from '../../common/dto/pagedCollection';
 import * as express from 'express';
 
-import { ICommandsDbContext } from '../../common/infrastructure/dbContext';
 import { Query } from '../../common/infrastructure/db';
-import { Queries } from '../../common/infrastructure/entities/queries';
+import { Entities } from '../../common/infrastructure/entities';
 import { IController } from '../../common/web/IController';
 import { NumberUtils } from '../../common/utils/numberUtils';
 
