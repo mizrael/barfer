@@ -1,15 +1,14 @@
 .barf-details {
-    footer {
-        .author {
+    .barf {
+        .blockquote-footer {
             text-align: right;
-            img {
-                width: 25px;
-            }
-            a {
-                font-size: 12px;
-            }
             span {
                 margin-left: 4px;
+            }
+        }
+        .author {
+            img {
+                width: 100%;
             }
         }
     }
