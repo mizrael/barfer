@@ -30,7 +30,8 @@ describe('BroadcastBarfCommandHandler', () => {
             userName: author.nickname,
             picture: author.picture,
             creationDate: creationDate,
-            text: "lorem ipsum dolor amet"
+            text: "lorem ipsum dolor amet",
+            hashtags: []
         };
 
     let mockBarfsQueryRepo, mockRelsQueryRepo, mockQueriesDb, mockPublisher;
