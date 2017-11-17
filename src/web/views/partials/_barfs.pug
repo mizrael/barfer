@@ -4,6 +4,7 @@ else
   div(class="card-columns barfs-archive")
     each item in barfs.items
         div(class="card barf")
+          a(href="/barfs/" + item.id)
           blockquote(class="blockquote mb-0 card-body row")
             .col-2.author
               if(item.picture)
@@ -14,4 +15,4 @@ else
               footer(class="blockquote-footer")
                 small(class="text-muted") 
                   span(class="timeago" datetime=item.creationDate / 1000)
-                  a(href="/barfs/" + item.id)  open 
+                    
