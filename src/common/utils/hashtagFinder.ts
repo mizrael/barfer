@@ -18,7 +18,7 @@ export function search(text: string): HashTagMatches {
     while ((matches = regex.exec(text)) !== null) {
         results.push({
             index: matches.index,
-            text: matches.length > 0 ? matches[1] : matches[0]
+            text: (matches.length > 0 ? matches[1] : matches[0]).substring(1)
         });
     }
 

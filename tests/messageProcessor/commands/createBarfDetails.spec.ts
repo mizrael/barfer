@@ -69,8 +69,8 @@ describe('CreateBarfDetailsHandler', () => {
             expect(arg['userId']).to.be.eq(user.user_id);
             expect(arg['text']).to.be.eq(barf.text);
             expect(arg['hashtags'].length).to.be.eq(2);
-            expect(arg['hashtags'][0]).to.be.eq('#dolor');
-            expect(arg['hashtags'][1]).to.be.eq('#barf');
+            expect(arg['hashtags'][0]).to.be.eq('dolor');
+            expect(arg['hashtags'][1]).to.be.eq('barf');
         });
     });
 
