@@ -39,7 +39,8 @@ export class QueriesDbContext extends BaseDbContext implements IQueriesDbContext
 
     private _barfs: IRepository<Entities.Barf> = null;
     public get Barfs(): Promise<IRepository<Entities.Barf>> {
-        return this.initRepo<Entities.Barf>("barfsQueries", "_barfs", async (r) => {
+        return this.initRepo<Entities.Barf>("barfs", "_barfs", async (r) => {
+            await r.createIndex({ id: 1 }, { unique: true });
             await r.createIndex({ userId: 1 });
             await r.createIndex({ userName: 1 });
         });
