@@ -2,11 +2,9 @@ import * as uuid from 'uuid';
 import { expect } from 'chai';
 import 'mocha';
 import * as sinon from 'sinon';
-import { ICommandsDbContext } from '../../../src/common/infrastructure/dbContext';
 import { IPublisher } from '../../../src/common/services/publisher';
 import { CreateBarfCommandHandler, CreateBarf } from '../../../src/barfsService/commands/createBarf';
 import { IRepository } from '../../../src/common/infrastructure/db';
-import { Commands } from '../../../src/common/infrastructure/entities/commands';
 import { Message } from '../../../src/common/services/message';
 import { Events, Exchanges } from '../../../src/common/events';
 
@@ -19,16 +17,12 @@ describe('CreateBarfCommandHandler', () => {
         };
         mockBarfsRepoSpy = sinon.spy(mockBarfsRepo, 'insert');
 
-        mockCommandsDb = {
-            Barfs: Promise.resolve(mockBarfsRepo)
-        };
-
         mockPublisher = {
             publish: (t) => { }
         };
         mockPublisherSpy = sinon.spy(mockPublisher, 'publish');
 
-        sut = new CreateBarfCommandHandler(mockCommandsDb as ICommandsDbContext, mockPublisher as IPublisher);
+        sut = new CreateBarfCommandHandler(mockPublisher as IPublisher);
     });
 
     it('should publish barf created event', () => {

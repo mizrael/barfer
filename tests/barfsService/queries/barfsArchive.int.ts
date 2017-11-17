@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import 'mocha';
 
 import { IQueriesDbContext, QueriesDbContext } from '../../../src/common/infrastructure/dbContext';
-import { Queries } from '../../../src/common/infrastructure/entities/queries';
+import { Entities } from '../../../src/common/infrastructure/entities';
 import { IRepository, DbFactory, RepositoryFactory } from '../../../src/common/infrastructure/db';
 import { IntegrationTestsConfig } from '../../config';
 import { BarfsArchive, BarfsArchiveQueryHandler } from '../../../src/barfsService/queries/barfsArchive';

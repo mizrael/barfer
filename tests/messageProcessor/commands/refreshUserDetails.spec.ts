@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import 'mocha';
 import { IRepository } from '../../../src/common/infrastructure/db';
-import { Queries } from '../../../src/common/infrastructure/entities/queries';
-import { ICommandsDbContext, IQueriesDbContext } from '../../../src/common/infrastructure/dbContext';
+import { Entities } from '../../../src/common/infrastructure/entities';
+import { IQueriesDbContext } from '../../../src/common/infrastructure/dbContext';
 import { IUserService } from '../../../src/messageProcessor/app_data/jobs/continuous/processor/services/userService';
 import { RefreshUserDetailsCommandHandler, RefreshUserDetails } from '../../../src/messageProcessor/app_data/jobs/continuous/processor/command/refreshUserDetails';
 import * as sinon from 'sinon';

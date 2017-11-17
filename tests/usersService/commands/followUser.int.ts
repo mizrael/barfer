@@ -2,7 +2,7 @@ import * as uuid from 'uuid';
 import * as chai from 'chai';
 import * as sinon from 'sinon';
 import 'mocha';
-import { CommandsDbContext } from '../../../src/common/infrastructure/dbContext';
+import { QueriesDbContext } from '../../../src/common/infrastructure/dbContext';
 import { IRepository, DbFactory, RepositoryFactory } from '../../../src/common/infrastructure/db';
 import { FollowUserCommandHandler, FollowUser } from '../../../src/usersService/commands/followUser';
 import { IPublisher } from '../../../src/common/services/publisher';
@@ -19,7 +19,7 @@ describe('FollowUserCommandHandler', () => {
         followedUserId = uuid.v4(),
         dbFactory = new DbFactory(),
         repoFactory = new RepositoryFactory(dbFactory),
-        dbContext = new CommandsDbContext(IntegrationTestsConfig.mongoConnectionString, repoFactory);
+        dbContext = new QueriesDbContext(IntegrationTestsConfig.mongoConnectionString, repoFactory);
 
     let mockPublisher,
         sut;

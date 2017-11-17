@@ -4,8 +4,8 @@ import { expect } from 'chai';
 import 'mocha';
 import * as uuid from 'uuid';
 import { IRepository } from '../../../src/common/infrastructure/db';
-import { Queries } from '../../../src/common/infrastructure/entities/queries';
-import { ICommandsDbContext, IQueriesDbContext } from '../../../src/common/infrastructure/dbContext';
+import { Entities } from '../../../src/common/infrastructure/entities';
+import { IQueriesDbContext } from '../../../src/common/infrastructure/dbContext';
 import { BroadcastBarfCommandHandler, BroadcastBarf } from '../../../src/messageProcessor/app_data/jobs/continuous/processor/command/broadcastBarf';
 import { Exchanges, Events } from '../../../src/common/events';
 
@@ -16,7 +16,7 @@ describe('BroadcastBarfCommandHandler', () => {
             picture: "localhost",
             nickname: "mizrael"
         },
-        relationships: Queries.Relationship[] = [{
+        relationships: Entities.Relationship[] = [{
             fromId: uuid.v4(),
             toId: author.user_id
         },
@@ -24,7 +24,7 @@ describe('BroadcastBarfCommandHandler', () => {
             fromId: uuid.v4(),
             toId: author.user_id
         }],
-        barf: Queries.Barf = {
+        barf: Entities.Barf = {
             id: uuid.v4(),
             userId: author.user_id,
             userName: author.nickname,

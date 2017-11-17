@@ -3,7 +3,7 @@ import 'mocha';
 import * as uuid from 'uuid';
 
 import { QueriesDbContext } from '../../../src/common/infrastructure/dbContext';
-import { Queries } from '../../../src/common/infrastructure/entities/queries';
+import { Entities } from '../../../src/common/infrastructure/entities';
 import { RepositoryFactory, DbFactory } from '../../../src/common/infrastructure/db';
 import { IsUserFollowingQueryHandler, IsUserFollowing } from '../../../src/usersService/queries/isUserFollowing';
 import { IntegrationTestsConfig } from '../../config';
