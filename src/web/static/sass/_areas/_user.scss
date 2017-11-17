@@ -1,7 +1,14 @@
-.user-details {
-    .head {
-        img {
-            width: 100%;
+.area-user {
+    .user-details {
+        .head {
+            img {
+                width: 100%;
+            }
+        }
+    }
+    .barfs-archive {
+        .author {
+            display: none;
         }
     }
 }
