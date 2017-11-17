@@ -26,7 +26,7 @@ describe('CreateBarfCommandHandler', () => {
     });
 
     it('should publish barf created event', () => {
-        const command = new CreateBarf(uuid.v4(), "lorem", "ipsum");
+        const command = new CreateBarf(uuid.v4(), "lorem", uuid.v4());
 
         return sut.handle(command).then(() => {
             expect(mockPublisherSpy.calledOnce).to.be.true;
@@ -35,6 +35,19 @@ describe('CreateBarfCommandHandler', () => {
             expect(arg['routingKey']).to.be.eq(Events.BarfCreated);
             expect(arg['exchangeName']).to.be.eq(Exchanges.Barfs);
             expect(arg['data']).to.be.eq(command);
+        });
+    });
+
+    it('should sanitize input', () => {
+        const command = new CreateBarf(uuid.v4(), "<script type='text/javascript'>alert('xss');</script>", uuid.v4());
+
+        return sut.handle(command).then(() => {
+            expect(mockPublisherSpy.calledOnce).to.be.true;
+
+            let arg = mockPublisherSpy.args[0][0];
+            expect(arg['routingKey']).to.be.eq(Events.BarfCreated);
+            expect(arg['exchangeName']).to.be.eq(Exchanges.Barfs);
+            expect(arg['data']['text']).to.be.eq("&lt;script type=\'text/javascript\'&gt;alert(\'xss\');&lt;/script&gt;");
         });
     });
 });

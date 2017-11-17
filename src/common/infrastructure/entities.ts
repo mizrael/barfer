@@ -6,6 +6,7 @@ export namespace Entities {
         picture: string;
         text: string;
         creationDate: Number;
+        hashtags: Array<string>;
     }
 
     export interface User {

@@ -9,6 +9,7 @@ import { ICommand, ICommandHandler } from '../../../../../../common/cqrs/command
 import { Exchanges, Events } from '../../../../../../common/events';
 
 import * as logger from '../../../../../../common/services/logger';
+import * as hashtagFinder from '../../../../../../common/utils/hashtagFinder';
 
 interface CreateBarfData {
     id: string;
@@ -32,14 +33,16 @@ export class CreateBarfDetailsHandler implements ICommandHandler<CreateBarfDetai
             return;
         }
 
-        const barfsQueryRepo = await this._queriesDbContext.Barfs,
+        const hashtags = hashtagFinder.search(command.barf.text),
+            barfsQueryRepo = await this._queriesDbContext.Barfs,
             barfDetails: Entities.Barf = {
                 id: command.barf.id,
                 userId: user.user_id,
                 userName: user.nickname,
                 picture: user.picture,
                 text: command.barf.text,
-                creationDate: Date.now()
+                creationDate: Date.now(),
+                hashtags: hashtags.hashTags.map(ht => ht.text)
             };
         await barfsQueryRepo.insert(barfDetails);
 
