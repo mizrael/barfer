@@ -2,11 +2,12 @@
   h6.card-header Top Barfers
   .card-block
     each item in topUsers
-      .col-sm-4.col-xs-12.top-user.jsTooltip(data-tooltip-content="#top_user_tooltip_" + item.nickname)
+      - var content_id = "top_user_tooltip_" + utils.uuid()
+      .col-sm-4.col-xs-12.top-user.jsTooltip(data-tooltip-content="#" + content_id)
         a(href="/users/" + item.nickname, title=item.nickname)
           img(src=item.picture, title=item.nickname, alt=item.nickname)
       .hidden
-        div.info(id="top_user_tooltip_"+ item.nickname)
+        div.info(id=content_id)
           a(href="/users/" + item.nickname, title=item.nickname) @#{item.nickname} 
           span barfed #{item.barfsCount} times
           button(class="btn btn-sm follow jsFollow", data-id=item.userId, data-followed=item.followed ? 'true' : 'false') Follow

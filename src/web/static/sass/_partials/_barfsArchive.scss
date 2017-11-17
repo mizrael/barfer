@@ -2,12 +2,13 @@
     .barf {
         .blockquote-footer {
             text-align: right;
-            img {
-                margin-right: 6px;
-                width: 25px;
-            }
             span {
                 margin-left: 4px;
+            }
+        }
+        .author {
+            img {
+                width: 100%;
             }
         }
     }

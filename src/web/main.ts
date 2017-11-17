@@ -23,6 +23,7 @@ import { UsersController } from './controllers/usersController';
 
 import * as logger from '../common/services/logger';
 import { ChannelProvider } from '../common/services/channelProvider';
+import { viewUtils } from './middlewares/viewUtils';
 
 function startSocket(server: Server): SocketIO.Server {
     const socketServer = io(server);
@@ -64,7 +65,8 @@ function initMiddlewares(app: express.Application) {
         }))
         .use(bodyParser.urlencoded({ extended: true }))
         .use(bodyParser.json())
-        .use('/static', express.static(staticFilesPath));
+        .use('/static', express.static(staticFilesPath)).
+        use(viewUtils());
 };
 
 function initControllers(app: express.Application, socketServer: SocketIO.Server) {

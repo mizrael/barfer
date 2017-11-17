@@ -4,12 +4,14 @@ else
   div(class="card-columns barfs-archive")
     each item in barfs.items
         div(class="card barf")
-          blockquote(class="blockquote mb-0 card-body")
-            p #{item.text}
-            a(href="/barfs/" + item.id) view
-            footer(class="blockquote-footer")
-              small(class="text-muted") 
-                if(item.picture) 
-                  img(src=item.picture, title=item.userName, alt=item.userName)
-                a(href="/users/" + item.userName) @#{item.userName}
-                span(class="timeago" datetime=item.creationDate / 1000)
+          blockquote(class="blockquote mb-0 card-body row")
+            .col-2.author
+              if(item.picture)
+                img(src=item.picture, title=item.userName, alt=item.userName)
+              a(href="/users/" + item.userName) @#{item.userName}
+            .col
+              p #{item.text}
+              footer(class="blockquote-footer")
+                small(class="text-muted") 
+                  span(class="timeago" datetime=item.creationDate / 1000)
+                  a(href="/barfs/" + item.id)  open 
