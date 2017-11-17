@@ -6,7 +6,7 @@ else
         div(class="card barf")
           a(href="/barfs/" + item.id)
           blockquote(class="blockquote mb-0 card-body row")
-            .col-2.author
+            .col-2.author.d-none.d-sm-block
               if(item.picture)
                 img(src=item.picture, title=item.userName, alt=item.userName)
               a(href="/users/" + item.userName) @#{item.userName}
@@ -14,5 +14,6 @@ else
               p!=item.text
               footer(class="blockquote-footer")
                 small(class="text-muted") 
+                  a.d-sm-none(href="/users/" + item.userName) @#{item.userName} 
                   span(class="timeago" datetime=item.creationDate / 1000)
                     
