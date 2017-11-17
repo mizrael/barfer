@@ -10,7 +10,7 @@ import * as jwks from 'jwks-rsa';
 import * as pathToRegexp from 'path-to-regexp';
 import { Publisher } from '../common/services/publisher';
 import { RepositoryFactory, DbFactory } from '../common/infrastructure/db';
-import { CommandsDbContext, QueriesDbContext } from '../common/infrastructure/dbContext';
+import { QueriesDbContext } from '../common/infrastructure/dbContext';
 import { UsersController } from './controllers/usersController';
 import { TopUsersQueryHandler } from './queries/topUsers';
 import { FollowUserCommandHandler } from './commands/followUser';
@@ -23,11 +23,10 @@ function initRoutes(app: express.Application) {
     const channelProvider = new ChannelProvider(process.env.RABBIT),
         publisher = new Publisher(channelProvider),
         repoFactory = new RepositoryFactory(new DbFactory()),
-        commandsDbContext = new CommandsDbContext(process.env.MONGO, repoFactory),
         queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),
         topUsersHandler = new TopUsersQueryHandler(queriesDbContext),
         isUserFollowingHandler = new IsUserFollowingQueryHandler(queriesDbContext),
-        followUserHandler = new FollowUserCommandHandler(commandsDbContext, publisher),
+        followUserHandler = new FollowUserCommandHandler(queriesDbContext, publisher),
         userByIdHandler = new GetUserByIdQueryHandler(queriesDbContext, isUserFollowingHandler),
         usersController = new UsersController(app, topUsersHandler, followUserHandler, userByIdHandler);
 }

@@ -1,6 +1,6 @@
 import { IQuery, IQueryHandler } from "../../common/cqrs/query";
 import { PagedCollection } from "../../common/dto/pagedCollection";
-import { Queries } from "../../common/infrastructure/entities/queries";
+import { Entities } from "../../common/infrastructure/entities";
 import { QueriesDbContext } from "../../common/infrastructure/dbContext";
 import { Query } from "../../common/infrastructure/db";
 import { BarfDetails } from "../controllers/dto";

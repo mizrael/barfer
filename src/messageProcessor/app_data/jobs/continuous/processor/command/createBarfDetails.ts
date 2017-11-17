@@ -1,8 +1,7 @@
 import { IUserService } from '../services/userService';
-import { Commands } from '../../../../../../common/infrastructure/entities/commands';
-import { Queries } from '../../../../../../common/infrastructure/entities/queries';
+import { Entities } from '../../../../../../common/infrastructure/entities';
 
-import { ICommandsDbContext, IQueriesDbContext } from '../../../../../../common/infrastructure/dbContext';
+import { IQueriesDbContext } from '../../../../../../common/infrastructure/dbContext';
 import { Message } from '../../../../../../common/services/message';
 import { IPublisher } from '../../../../../../common/services/publisher';
 
@@ -34,7 +33,7 @@ export class CreateBarfDetailsHandler implements ICommandHandler<CreateBarfDetai
         }
 
         const barfsQueryRepo = await this._queriesDbContext.Barfs,
-            barfDetails: Queries.Barf = {
+            barfDetails: Entities.Barf = {
                 id: command.barf.id,
                 userId: user.user_id,
                 userName: user.nickname,

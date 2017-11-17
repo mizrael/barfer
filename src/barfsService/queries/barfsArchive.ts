@@ -1,6 +1,6 @@
 import { IQuery, IQueryHandler } from "../../common/cqrs/query";
 import { PagedCollection } from "../../common/dto/pagedCollection";
-import { Queries } from "../../common/infrastructure/entities/queries";
+import { Entities } from "../../common/infrastructure/entities";
 import { QueriesDbContext } from "../../common/infrastructure/dbContext";
 import { Query } from "../../common/infrastructure/db";
 
@@ -8,10 +8,10 @@ export class BarfsArchive implements IQuery {
     constructor(public readonly forUser: string, public readonly author: string, public readonly page: number, public readonly pageSize: number) { }
 }
 
-export class BarfsArchiveQueryHandler implements IQueryHandler<BarfsArchive, PagedCollection<Queries.Barf>>{
+export class BarfsArchiveQueryHandler implements IQueryHandler<BarfsArchive, PagedCollection<Entities.Barf>>{
     constructor(private readonly queriesDbCtx: QueriesDbContext) { }
 
-    async handle(query: BarfsArchive): Promise<PagedCollection<Queries.Barf>> {
+    async handle(query: BarfsArchive): Promise<PagedCollection<Entities.Barf>> {
         let filter = {};
 
         if (query.forUser && '' != query.forUser) {

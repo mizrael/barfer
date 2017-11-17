@@ -1,8 +1,8 @@
-import { IQueriesDbContext, ICommandsDbContext } from '../../../../../../common/infrastructure/dbContext';
+import { IQueriesDbContext } from '../../../../../../common/infrastructure/dbContext';
 import { IPublisher } from '../../../../../../common/services/publisher';
 import { ICommand, ICommandHandler } from '../../../../../../common/cqrs/command';
 import { IUserService } from '../services/userService';
-import { Queries } from '../../../../../../common/infrastructure/entities/queries';
+import { Entities } from '../../../../../../common/infrastructure/entities';
 import * as logger from '../../../../../../common/services/logger';
 export class RefreshUserDetails implements ICommand {
     constructor(public readonly userId: string) { }
@@ -23,7 +23,7 @@ export class RefreshUserDetailsCommandHandler implements ICommandHandler<Refresh
             barfsCount = await barfsRepo.count({
                 userId: user.user_id
             }),
-            userDetails: Queries.User = {
+            userDetails: Entities.User = {
                 userId: user.user_id,
                 email: user.email,
                 name: user.name,

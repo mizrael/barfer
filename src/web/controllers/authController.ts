@@ -2,7 +2,7 @@ import { Subscriber, SubscriberOptions } from '../../common/services/subscriber'
 import * as express from 'express';
 import { IController } from '../../common/web/IController';
 import { IAuthService } from '../services/authService';
-import { Queries } from '../../common/infrastructure/entities/queries';
+import { Entities } from '../../common/infrastructure/entities';
 import { RequestUtils } from '../../common/utils/requestUtils';
 import { Exchanges, Events } from '../../common/events';
 import * as logger from '../../common/services/logger';

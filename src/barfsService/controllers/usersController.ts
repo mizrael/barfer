@@ -5,12 +5,12 @@ import { PagedCollection } from '../../common/dto/pagedCollection';
 import { NumberUtils } from '../../common/utils/numberUtils';
 import { IController } from '../../common/web/IController';
 import { IQueryHandler } from '../../common/cqrs/query';
-import { Queries } from '../../common/infrastructure/entities/queries';
+import { Entities } from '../../common/infrastructure/entities';
 import { BarfsByUser } from '../queries/barfsByUser';
 
 export class UsersController implements IController {
     constructor(private readonly app: express.Application,
-        private readonly barfsByUserHandler: IQueryHandler<BarfsByUser, PagedCollection<Queries.Barf>>) {
+        private readonly barfsByUserHandler: IQueryHandler<BarfsByUser, PagedCollection<Entities.Barf>>) {
 
         app.route('/users/:userId/barfs')
             .get(this.getBarfsByUser.bind(this));

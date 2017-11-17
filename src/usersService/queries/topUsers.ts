@@ -1,5 +1,5 @@
 import { IQueryHandler, IQuery } from "../../common/cqrs/query";
-import { Queries } from "../../common/infrastructure/entities/queries";
+import { Entities } from "../../common/infrastructure/entities";
 import { Query } from "../../common/infrastructure/db";
 import { IQueriesDbContext } from "../../common/infrastructure/dbContext";
 import { CheckRelationships, CheckRelationshipsQueryHandler } from "./checkRelationships";
@@ -12,7 +12,7 @@ export class TopUsers implements IQuery {
 export class TopUsersQueryHandler implements IQueryHandler<TopUsers, User[]>{
     constructor(private readonly queriesDbCtx: IQueriesDbContext) { }
 
-    private mapEntity(e: Queries.User): User {
+    private mapEntity(e: Entities.User): User {
         return {
             userId: e.userId,
             nickname: e.nickname,
@@ -24,7 +24,7 @@ export class TopUsersQueryHandler implements IQueryHandler<TopUsers, User[]>{
         };
     }
 
-    private mapFollowedEntity(e: Queries.User, followedUserIdsDict: {}): User {
+    private mapFollowedEntity(e: Entities.User, followedUserIdsDict: {}): User {
         let u = this.mapEntity(e);
         u.followed = followedUserIdsDict[e.userId];
 

@@ -6,7 +6,7 @@ import { IPublisher } from '../../common/services/publisher';
 import { Message } from '../../common/services/message';
 import { Exchanges, Events } from '../../common/events';
 import { RequestUtils } from '../../common/utils/requestUtils';
-import { Queries } from '../../common/infrastructure/entities/queries';
+import { Entities } from '../../common/infrastructure/entities';
 import * as logger from '../../common/services/logger';
 
 const Auth0Strategy = require('passport-auth0'),
@@ -108,7 +108,7 @@ export class AuthService implements IAuthService {
 
         const key = Events.BarfFor + loggedUserId,
             options = new SubscriberOptions(Exchanges.Barfs, "barf-ready", key, task => {
-                const barf = task.data as Queries.Barf;
+                const barf = task.data as Entities.Barf;
 
                 logger.info("received new barf: " + JSON.stringify(barf));
 

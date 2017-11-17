@@ -5,7 +5,7 @@ import { IPublisher } from '../../../../../../common/services/publisher';
 import { IQueriesDbContext } from '../../../../../../common/infrastructure/dbContext';
 import { Query } from '../../../../../../common/infrastructure/db';
 import * as logger from '../../../../../../common/services/logger';
-import { Queries } from '../../../../../../common/infrastructure/entities/queries';
+import { Entities } from '../../../../../../common/infrastructure/entities';
 
 export class BroadcastBarf implements ICommand {
     constructor(public readonly barfId: string) { }
@@ -45,7 +45,7 @@ export class BroadcastBarfCommandHandler implements ICommandHandler<BroadcastBar
         });
     }
 
-    private sendToUser(barf: Queries.Barf, userId: string) {
+    private sendToUser(barf: Entities.Barf, userId: string) {
         const key = Events.BarfFor + userId;
         this._publisher.publish(new Message(Exchanges.Barfs, key, barf));
     }
