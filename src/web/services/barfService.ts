@@ -31,6 +31,7 @@ export interface IBarfsArchiveQuery {
     page: number;
     pageSize: number;
     author?: string;
+    hashtag?: string;
 }
 
 export interface IBarfsByUserQuery {
@@ -54,6 +55,7 @@ export class BarfService implements IBarfService {
         const url = this.serviceUrl + "/barfs?pageSize=" + query.pageSize +
             "&page=" + query.page +
             "&forUser=" + (query.forUser || '') +
+            "&hashtag=" + (query.hashtag || '') +
             "&author=" + (query.author || '');
         return this.restClient.get<PagedCollection<IBarfDTO>>(url, RequestOptions.PrivateJson).then(this.mapBarfs.bind(this));
     }

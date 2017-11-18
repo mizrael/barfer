@@ -7,6 +7,8 @@ barfer.init = function (options) {
         user: options.user
     };
 
+    var headerSearch = new barfer.controllers.headerSearch($('#header-search'));
+
     if (barfer.areas[options.area]) {
         barfer.areas[options.area]();
     }

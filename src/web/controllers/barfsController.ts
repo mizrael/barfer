@@ -14,6 +14,8 @@ export class BarfsController implements IController {
             .post(ensureLoggedIn(), xhrOnly(), this.postBarf.bind(this));
 
         app.route('/barfs/:barfId').get(this.barfDetails.bind(this));
+
+        app.route('/hashtag/:hashtag').get(this.getByHashtag.bind(this));
     }
 
     private barfDetails(req: express.Request, res: express.Response) {
@@ -37,6 +39,18 @@ export class BarfsController implements IController {
             res.json(err);
         });
     }
+
+    private getByHashtag(req: express.Request, res: express.Response) {
+        const hashtag = req.params.hashtag as string,
+            pageSize = Math.min(10, NumberUtils.safeParseInt(req.query.pageSize)),
+            page = NumberUtils.safeParseInt(req.query.page);
+
+        this.barfService.read({ hashtag: hashtag, page: page, pageSize: pageSize }).then(results => {
+            res.locals.model = results;
+            res.locals.area = 'hashtag';
+            res.render('areas/hashtag');
+        });
+    };
 
     private postBarf(req: express.Request, res: express.Response) {
         let dto = { text: req.body.text, authorId: req.user['_json'].sub };

@@ -147,6 +147,19 @@ barfer.controllers.createBarf = function ($container, options) {
     return {};
 };
 
+barfer.controllers.headerSearch = function ($container) {
+    var $button = $container.find('button'),
+        $text = $container.find('input[type="search"]');
+    $button.click(function (e) {
+        e.preventDefault();
+        var text = $text.val();
+        if (!text || 0 == text.length) {
+            return;
+        }
+        window.location = "/hashtag/" + text;
+    });
+};
+
 /****************/
 
 barfer.utils = barfer.utils || {};

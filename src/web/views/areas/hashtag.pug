@@ -1,0 +1,7 @@
+extends ../layout
+
+block content
+    each item in model.items
+        p!=item.text
+        p
+            a(href="/barfs/" + item.id) view
