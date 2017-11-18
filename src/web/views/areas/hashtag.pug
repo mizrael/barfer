@@ -1,7 +1,11 @@
 extends ../layout
 
 block content
-    each item in model.items
-        p!=item.text
-        p
-            a(href="/barfs/" + item.id) view
+  div(class="hashtag jsHashtag")
+  
+    div(class="row")
+        include ../includes/left-col.pug
+
+        div(class="main col-xs-12 col-md-9 order-1 order-md-2")
+            include ../mixins/barfs
+            +barfs(model)

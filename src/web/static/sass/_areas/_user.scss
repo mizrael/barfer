@@ -1,8 +1,16 @@
 .area-user {
     .user-details {
         .head {
+            margin-bottom: 20px;
             img {
                 width: 100%;
+            }
+            h3 {
+                display: inline;
+            }
+            button {
+                display: inline-block;
+                vertical-align: super;
             }
         }
     }

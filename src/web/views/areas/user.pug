@@ -8,7 +8,8 @@ block content
             div(class="head")
                 img(src=model.picture, title=model.nickName, alt=model.nickName)
                 h3 @#{model.nickname}
-                
+                button(class="btn btn-sm follow jsFollow", data-id=model.userId, data-followed=model.followed ? 'true' : 'false') Follow
+
             div(class="topUsers jsTopUsers")  
 
         div(class="main col-md-9 col-xs-12")
