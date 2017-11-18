@@ -3,9 +3,14 @@ import { PagedCollection } from "../../common/dto/pagedCollection";
 import { Entities } from "../../common/infrastructure/entities";
 import { QueriesDbContext } from "../../common/infrastructure/dbContext";
 import { Query } from "../../common/infrastructure/db";
+import * as xss from 'xss';
 
 export class BarfsArchive implements IQuery {
-    constructor(public readonly forUser: string, public readonly author: string, public readonly page: number, public readonly pageSize: number) { }
+    constructor(public readonly forUser: string,
+        public readonly author: string,
+        public readonly hashtag: string,
+        public readonly page: number,
+        public readonly pageSize: number) { }
 }
 
 export class BarfsArchiveQueryHandler implements IQueryHandler<BarfsArchive, PagedCollection<Entities.Barf>>{
@@ -26,8 +31,12 @@ export class BarfsArchiveQueryHandler implements IQueryHandler<BarfsArchive, Pag
             filter['userId'] = { $in: followed };
         }
 
-        if (query.author && '' != query.author) {
-            filter['userName'] = query.author;
+        if (query.hashtag && '' !== query.hashtag) {
+            filter['hashtags'] = xss(query.hashtag.trim());
+        }
+
+        if (query.author && '' !== query.author) {
+            filter['userName'] = query.author.trim();
         }
 
         const barfsRepo = await this.queriesDbCtx.Barfs,
