@@ -24,7 +24,6 @@ The unit and integration tests can be run using the standard `npm run test` comm
 
 ### Roadmap
 There's a bunch of features that I'm planning to add, more or less in this order:
-* hashtags
 * user interests
 * barf tags
 * search engine
