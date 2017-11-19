@@ -1,4 +1,4 @@
-const regex = /\W(\#[\S]+\b)/gm;
+const regex = /(\B\#\S\S+\b)/gm;
 
 export interface HashTag {
     text: string;
