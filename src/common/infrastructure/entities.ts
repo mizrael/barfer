@@ -16,6 +16,7 @@ export namespace Entities {
         name: string;
         picture: string;
         creationDate: Number;
+        lastLoginDate: Number;
         barfsCount: Number;
     }
 

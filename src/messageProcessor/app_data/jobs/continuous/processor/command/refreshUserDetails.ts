@@ -32,6 +32,7 @@ export class RefreshUserDetailsCommandHandler implements ICommandHandler<Refresh
                 nickname: user.nickname,
                 picture: user.picture,
                 creationDate: creationDate.getTime(),
+                lastLoginDate: Date.now(),
                 barfsCount: barfsCount
             };
 
