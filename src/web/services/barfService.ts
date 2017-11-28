@@ -40,9 +40,15 @@ export interface IBarfsByUserQuery {
     pageSize: number;
 }
 
+export interface IHashtag {
+    score: number;
+    text: string;
+}
+
 export interface IBarfService {
     read(query: IBarfsArchiveQuery): Promise<PagedCollection<IBarf>>;
     readOne(id: string): Promise<IBarf>;
+    tagcloud(): Promise<Array<IHashtag>>;
     readByUser(query: IBarfsByUserQuery): Promise<PagedCollection<IBarf>>;
     save(dto: ICreateBarfCommand): Promise<void>;
 }
@@ -50,6 +56,11 @@ export interface IBarfService {
 export class BarfService implements IBarfService {
 
     constructor(private readonly serviceUrl: string, private readonly restClient: IRestClient) { }
+
+    public tagcloud(): Promise<Array<IHashtag>> {
+        const url = this.serviceUrl + "/hashtags/cloud";
+        return this.restClient.get<Array<IHashtag>>(url, RequestOptions.PrivateJson);
+    }
 
     public read(query: IBarfsArchiveQuery): Promise<PagedCollection<IBarf>> {
         const url = this.serviceUrl + "/barfs?pageSize=" + query.pageSize +

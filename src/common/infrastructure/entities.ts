@@ -16,11 +16,17 @@ export namespace Entities {
         name: string;
         picture: string;
         creationDate: Number;
+        lastLoginDate: Number;
         barfsCount: Number;
     }
 
     export interface Relationship {
         fromId: string;
         toId: string;
+    }
+
+    export interface Hashtag {
+        text: string;
+        score: number;
     }
 } 

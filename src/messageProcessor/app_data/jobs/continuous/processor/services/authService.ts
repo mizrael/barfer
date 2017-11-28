@@ -1,4 +1,5 @@
 import * as request from 'request-promise';
+import { config } from '../../../../../../common/config';
 
 export interface IAuthService {
     requestAccessToken(): request.RequestPromise;
@@ -9,7 +10,7 @@ export class AuthService implements IAuthService {
     public requestAccessToken() {
         let headers = { 'content-type': 'application/json' },
             options = {
-                url: 'https://' + process.env.AUTH0_DOMAIN + '/oauth/token',
+                url: 'https://' + config.auth0.domain + '/oauth/token',
                 method: 'POST',
                 headers: headers,
                 json: true,

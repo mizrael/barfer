@@ -5,3 +5,24 @@
         padding: 10px;
     }
 }
+
+.tag-cloud.widget {
+    ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        li {
+            display: inline-block;
+            margin: 0 .3em .3em 0;
+            padding: 0;
+            a {
+                display: inline-block;
+                max-width: 100px;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                font-size: 14px;
+            }
+        }
+    }
+}

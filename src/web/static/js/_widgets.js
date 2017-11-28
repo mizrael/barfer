@@ -25,3 +25,18 @@ barfer.widgets.users = function ($container, options) {
         read: read
     };
 };
+
+barfer.widgets.tagcloud = function ($container, options) {
+    options = Object.assign({}, options);
+    var url = "/widgets/tagcloud"
+    read = function () {
+        $container.empty();
+        $.get(url).then(function (data) {
+            $container.html(data);
+        });
+    };
+
+    return {
+        read: read
+    };
+};

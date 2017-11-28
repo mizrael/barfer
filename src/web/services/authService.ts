@@ -8,23 +8,24 @@ import { Exchanges, Events } from '../../common/events';
 import { RequestUtils } from '../../common/utils/requestUtils';
 import { Entities } from '../../common/infrastructure/entities';
 import * as logger from '../../common/services/logger';
+import { config } from '../../common/config';
 
 const Auth0Strategy = require('passport-auth0'),
     authOptions = {
-        clientID: process.env.AUTH0_CLIENT_ID,
-        domain: process.env.AUTH0_DOMAIN,
-        redirectUri: process.env.AUTH0_CALLBACK_URL,
+        clientID: config.auth0.client_id,
+        domain: config.auth0.domain,
+        redirectUri: config.auth0.callback_url,
         failureRedirect: '/login',
-        audience: 'https://' + process.env.AUTH0_DOMAIN + '/userinfo',
+        audience: 'https://' + config.auth0.domain + '/userinfo',
         responseType: 'code',
         scope: 'openid profile create:barfs read:barfs'
     },
     strategy = new Auth0Strategy(
         {
-            domain: process.env.AUTH0_DOMAIN,
-            clientID: process.env.AUTH0_CLIENT_ID,
-            clientSecret: process.env.AUTH0_CLIENT_SECRET,
-            callbackURL: process.env.AUTH0_CALLBACK_URL
+            domain: config.auth0.domain,
+            clientID: config.auth0.client_id,
+            clientSecret: config.auth0.client_secret,
+            callbackURL: config.auth0.callback_url
         },
         (accessToken, refreshToken, extraParams, profile, done) => {
             return done(null, profile);
@@ -84,7 +85,7 @@ export class AuthService implements IAuthService {
     public requestAccessToken() {
         let headers = { 'content-type': 'application/json' },
             options = {
-                url: 'https://' + process.env.AUTH0_DOMAIN + '/oauth/token',
+                url: 'https://' + config.auth0.domain + '/oauth/token',
                 method: 'POST',
                 headers: headers,
                 json: true,
@@ -107,7 +108,7 @@ export class AuthService implements IAuthService {
         logger.info("listening for barfs for user " + loggedUserId);
 
         const key = Events.BarfFor + loggedUserId,
-            options = new SubscriberOptions(Exchanges.Barfs, "barf-ready", key, task => {
+            options = new SubscriberOptions(Exchanges.Barfs, key, task => {
                 const barf = task.data as Entities.Barf;
 
                 logger.info("received new barf: " + JSON.stringify(barf));

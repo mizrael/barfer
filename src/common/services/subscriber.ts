@@ -5,7 +5,6 @@ import { IChannelProvider } from './channelProvider';
 
 export class SubscriberOptions {
     constructor(public readonly exchangeName: string,
-        public readonly queueName: string,
         public readonly routingKey: string,
         public readonly onMessage: (t: Message) => Promise<void>) { }
 }

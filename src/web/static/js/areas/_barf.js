@@ -6,6 +6,7 @@ barfer.areas.barf = function () {
                 type: 'top'
             });
         topUsers.read();
+        new barfer.widgets.tagcloud($container.find('.jsTagCloud'), {}).read();
     };
     $('.jsBarfDetails').each(_init);
 };
