@@ -8,13 +8,19 @@ barfer.areas.home = function () {
                 }
             },
             $topUsersArchive = $container.find('.jsTopUsers'),
-            topUsers = new barfer.controllers.topUsers($topUsersArchive, {}),
-
+            topUsers = new barfer.widgets.users($topUsersArchive, {
+                type: 'top'
+            }),
+            $latestUsersArchive = $container.find('.jsLatestUsers'),
+            latestUsers = new barfer.widgets.users($latestUsersArchive, {
+                type: 'latest'
+            }),
             createBarf = new barfer.controllers.createBarf($container.find('.jsBarfer'));
 
         refreshArchive();
 
         topUsers.read();
+        latestUsers.read();
 
         if (barfer.context.user) {
             var key = 'barf.for.' + barfer.context.user;
