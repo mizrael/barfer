@@ -26,6 +26,7 @@ export interface UserDetailsQuery {
 
 export interface IUserService {
     readTopUsers(forUser: string): Promise<PagedCollection<IUser>>;
+    readLatest(forUser: string): Promise<PagedCollection<IUser>>;
     follow(command: IFollowUser): Promise<void>;
     readOne(query: UserDetailsQuery): Promise<IUser>;
 }
@@ -40,6 +41,11 @@ export class UserService implements IUserService {
 
     public readTopUsers(forUser: string): Promise<PagedCollection<IUser>> {
         const url = this.serviceUrl + "/users?orderBy=barfsCount&take=10&forUser=" + forUser;
+        return this.restClient.get<PagedCollection<IUser>>(url);
+    }
+
+    public readLatest(forUser: string): Promise<PagedCollection<IUser>> {
+        const url = this.serviceUrl + "/users?orderBy=creationDate&take=10&forUser=" + forUser;
         return this.restClient.get<PagedCollection<IUser>>(url);
     }
 

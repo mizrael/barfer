@@ -9,6 +9,7 @@ export interface IUser {
     user_id: string;
     name: string;
     picture: string;
+    created_at: string;
 };
 
 export interface IUserService {

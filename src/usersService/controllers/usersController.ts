@@ -44,6 +44,7 @@ export class UsersController implements IController {
     private getUsers(req: express.Request, res: express.Response) {
         const query: TopUsers = {
             forUser: req.query.forUser as string,
+            orderBy: req.query.orderBy as string,
             pageSize: NumberUtils.safeParseInt(req.query.take)
         };
         this.topUsersHandler.handle(query).then(items => { res.json(items); });

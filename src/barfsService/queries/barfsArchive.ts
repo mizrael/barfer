@@ -26,9 +26,10 @@ export class BarfsArchiveQueryHandler implements IQueryHandler<BarfsArchive, Pag
                 followed = rels.items.map((v, i) => {
                     return v.toId;
                 });
-            followed.push(query.forUser);
-
-            filter['userId'] = { $in: followed };
+            if (followed.length) {
+                followed.push(query.forUser);
+                filter['userId'] = { $in: followed };
+            }
         }
 
         if (query.hashtag && '' !== query.hashtag) {

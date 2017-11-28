@@ -1,7 +1,7 @@
 .top-users.widget.card
-  h6.card-header Top Barfers
+  h6.card-header #{title}
   .card-block
-    each item in topUsers
+    each item in users
       - var content_id = "top_user_tooltip_" + utils.uuid()
       .col-sm-4.col-xs-12.top-user.jsTooltip(data-tooltip-content="#" + content_id)
         a(href="/users/" + item.nickname, title=item.nickname)

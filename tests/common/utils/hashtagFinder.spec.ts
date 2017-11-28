@@ -33,6 +33,6 @@ describe('hashtag finder', () => {
         expect(results.hashTags).not.to.be.empty;
         expect(results.hashTags.length).to.be.eq(1);
         expect(results.hashTags[0].text).to.be.eq('dolor');
-        expect(results.hashTags[0].index).to.be.eq(11);
+        expect(results.hashTags[0].index).to.be.eq(12);
     });
 });
