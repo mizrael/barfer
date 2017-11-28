@@ -41,7 +41,10 @@ gulp.task('scripts_build', ['scripts_clean'], function () {
         .pipe(tsProject());
 
     return tsResult.js
-        .pipe(sourcemaps.write(ts_paths.sourcemaps))
+        .pipe(sourcemaps.write(ts_paths.sourcemaps, {
+            includeContent: false,
+            sourceRoot: '../src/'
+        }))
         .pipe(gulp.dest(ts_paths.output));
 });
 
