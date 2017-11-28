@@ -29,29 +29,6 @@ barfer.controllers.barfsArchive = function ($container, options) {
     };
 };
 
-barfer.controllers.topUsers = function ($container, options) {
-    options = options || {};
-    var read = function () {
-        $container.empty();
-        $.get("/topusers").then(function (data) {
-            $container.html(data);
-
-            var opts = Object.assign({}, barfer.utils.tooltipOptions);
-            opts.functionReady = function (instance, helper) {
-                barfer.controllers.follow.bind($(helper.tooltip));
-            }
-            $container.find('.jsTooltip').tooltipster(opts);
-            if (options.onSuccess) {
-                options.onSuccess();
-            }
-        });
-    };
-
-    return {
-        read: read
-    };
-};
-
 barfer.controllers.createBarf = function ($container, options) {
     var $form = $container.find('form'),
         $text = $form.find('textarea'),

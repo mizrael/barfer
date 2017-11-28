@@ -15,6 +15,7 @@ export namespace Entities {
         email: string;
         name: string;
         picture: string;
+        creationDate: Number;
         barfsCount: Number;
     }
 

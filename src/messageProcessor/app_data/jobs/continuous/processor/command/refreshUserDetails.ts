@@ -15,24 +15,25 @@ export class RefreshUserDetailsCommandHandler implements ICommandHandler<Refresh
     public async handle(command: RefreshUserDetails) {
         logger.info("refreshing user details for " + command.userId);
 
-        let user = await this._userService.readUser(command.userId);
+        const user = await this._userService.readUser(command.userId);
         if (!user)
             return;
 
-        let barfsRepo = await this._queriesDbContext.Barfs,
+        const barfsRepo = await this._queriesDbContext.Barfs,
             barfsCount = await barfsRepo.count({
                 userId: user.user_id
             }),
+            usersRepo = await this._queriesDbContext.Users,
+            creationDate = new Date(user.created_at),
             userDetails: Entities.User = {
                 userId: user.user_id,
                 email: user.email,
                 name: user.name,
                 nickname: user.nickname,
                 picture: user.picture,
+                creationDate: creationDate.getTime(),
                 barfsCount: barfsCount
             };
-
-        let usersRepo = await this._queriesDbContext.Users;
 
         await usersRepo.upsertOne({ userId: userDetails.userId }, userDetails);
     }
