@@ -8,6 +8,7 @@ barfer.areas.user = function () {
 
         topUsers.read();
         follow.bind($container);
+        new barfer.widgets.tagcloud($container.find('.jsTagCloud'), {}).read();
     };
     $('.jsUserDetails').each(_init);
 };

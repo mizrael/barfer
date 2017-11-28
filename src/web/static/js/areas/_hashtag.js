@@ -7,6 +7,7 @@ barfer.areas.hashtag = function () {
             });
 
         topUsers.read();
+        new barfer.widgets.tagcloud($container.find('.jsTagCloud'), {}).read();
     };
     $('.jsHashtag').each(_init);
 };

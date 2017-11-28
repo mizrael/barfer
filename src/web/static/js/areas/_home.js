@@ -15,12 +15,14 @@ barfer.areas.home = function () {
             latestUsers = new barfer.widgets.users($latestUsersArchive, {
                 type: 'latest'
             }),
+            tagcloud = new barfer.widgets.tagcloud($container.find('.jsTagCloud'), {}),
             createBarf = new barfer.controllers.createBarf($container.find('.jsBarfer'));
 
         refreshArchive();
 
         topUsers.read();
         latestUsers.read();
+        tagcloud.read();
 
         if (barfer.context.user) {
             var key = 'barf.for.' + barfer.context.user;

@@ -1,0 +1,7 @@
+.tag-cloud.widget.card
+    h6.card-header Trending Tags
+    .card-block
+        ul
+            each item in tagCloud
+                li
+                    a(href="/hashtag/" + item.text, title="#" + item.text) ##{item.text}

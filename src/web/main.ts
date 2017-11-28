@@ -25,6 +25,7 @@ import * as logger from '../common/services/logger';
 import { ChannelProvider } from '../common/services/channelProvider';
 import { viewUtils } from './middlewares/viewUtils';
 import { config } from '../common/config';
+import { WidgetsController } from './controllers/widgetsController';
 
 function startSocket(server: Server): SocketIO.Server {
     const socketServer = io(server);
@@ -84,6 +85,7 @@ function initControllers(app: express.Application, socketServer: SocketIO.Server
     new BarfsController(app, barfService)
     new UsersController(app, userService, barfService);
     new HomeController(app);
+    new WidgetsController(app, userService, barfService);
 }
 
 function startServer() {

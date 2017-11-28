@@ -20,6 +20,8 @@ import { GetBarfDetailsQueryHandler } from './queries/barfDetails';
 import { BarfsByUserQueryHandler } from './queries/barfsByUser';
 import { ChannelProvider } from '../common/services/channelProvider';
 import { config } from '../common/config';
+import { TagCloudQueryHandler } from './queries/tagCloud';
+import { HashtagsController } from './controllers/hashtagsController';
 
 function initRoutes(app: express.Application) {
     const channelProvider = new ChannelProvider(config.connectionStrings.rabbit),
@@ -31,7 +33,8 @@ function initRoutes(app: express.Application) {
         barfDetailsHandler = new GetBarfDetailsQueryHandler(queriesDbContext),
         userBarfsHandler = new BarfsByUserQueryHandler(queriesDbContext),
         barfsCtrl = new BarfsController(app, createBarfHandler, barfsArchiveHandler, barfDetailsHandler),
-        usersCtrl = new UsersController(app, userBarfsHandler);
+        usersCtrl = new UsersController(app, userBarfsHandler),
+        hashTagsCtrl = new HashtagsController(app, new TagCloudQueryHandler(queriesDbContext));
 }
 
 function startServer() {

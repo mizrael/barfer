@@ -11,24 +11,8 @@ export class UsersController implements IController {
     constructor(private readonly app: express.Application,
         private readonly userService: IUserService,
         private readonly barfService: IBarfService) {
-
-        app.route('/widgets/users').get(ensureLoggedIn(), xhrOnly(), this.widget.bind(this));
-
         app.route('/users/:userId').get(ensureLoggedIn(), this.details.bind(this));
         app.route('/users/:userId/follow').post(ensureLoggedIn(), this.follow.bind(this));
-    }
-
-    private widget(req: express.Request, res: express.Response) {
-        const loggedUserId = RequestUtils.getLoggedUserId(req),
-            type = req.query.type as string,
-            promise = ('latest' === type) ? this.userService.readLatest(loggedUserId) : this.userService.readTopUsers(loggedUserId),
-            title = ('latest' === type) ? 'Latest Barfers' : 'Top Barfers';
-
-        promise.then(results => {
-            res.render('partials/_usersWidget', { users: results, title: title });
-        }).catch(err => {
-            res.json(err);
-        });
     }
 
     private async details(req: express.Request, res: express.Response) {
