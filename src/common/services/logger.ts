@@ -1,9 +1,9 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import * as winston from 'winston';
+import { config } from '../config';
 
-const isEnabled = (process.env.LOGGING_ENABLED == "true"),
-    logDir = './logs',
+const logDir = './logs',
     logFullPath = path.join(logDir, 'log.txt');
 let needInit = true;
 
@@ -31,7 +31,7 @@ function init() {
 init();
 
 function log(level: string, text: string, data?: any) {
-    if (process.env.LOGGING_ENABLED == "true") {
+    if (config.loggingEnabled) {
         winston.log(level, text, data);
     }
 }

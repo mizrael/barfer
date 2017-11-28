@@ -24,6 +24,7 @@ import { UsersController } from './controllers/usersController';
 import * as logger from '../common/services/logger';
 import { ChannelProvider } from '../common/services/channelProvider';
 import { viewUtils } from './middlewares/viewUtils';
+import { config } from '../common/config';
 
 function startSocket(server: Server): SocketIO.Server {
     const socketServer = io(server);
@@ -36,13 +37,12 @@ function initViewEngine(app: express.Application) {
 };
 
 function initMiddlewares(app: express.Application) {
-    const isProd = (process.env.NODE_ENV === 'production'),
-        staticFilesPath = path.join(__dirname, '/static');
+    const staticFilesPath = path.join(__dirname, '/static');
 
     let MongoDBStore = require('connect-mongodb-session')(session),
         store = new MongoDBStore(
             {
-                uri: process.env.MONGO,
+                uri: config.connectionStrings.mongo,
                 collection: 'sessions'
             });
     store.on('error', function (error) {
@@ -52,7 +52,7 @@ function initMiddlewares(app: express.Application) {
     app.use('/', httpsRedirect())
         .use(cookieParser())
         .use(session({
-            secret: process.env.SESSION_SECRET || 'shhhhhhhhh',
+            secret: config.session_secret || 'shhhhhhhhh',
             resave: true,
             store: store,
             saveUninitialized: true,
@@ -70,13 +70,13 @@ function initMiddlewares(app: express.Application) {
 };
 
 function initControllers(app: express.Application, socketServer: SocketIO.Server) {
-    const channelProvider = new ChannelProvider(process.env.RABBIT),
+    const channelProvider = new ChannelProvider(config.connectionStrings.rabbit),
         publisher = new Publisher(channelProvider),
         subscriberFactory = new SubscriberFactory(channelProvider),
         authService = new AuthService(publisher, subscriberFactory, socketServer),
         restClient = new RestClient(authService),
-        barfService = new BarfService(process.env.BARFER_SERVICE_URL, restClient),
-        userService = new UserService(process.env.USER_SERVICE_URL, restClient);
+        barfService = new BarfService(config.endpoints.barfs, restClient),
+        userService = new UserService(config.endpoints.users, restClient);
 
     authService.init(app);
 

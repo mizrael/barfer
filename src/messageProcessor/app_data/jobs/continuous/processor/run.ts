@@ -15,20 +15,26 @@ import { BroadcastBarfCommandHandler, BroadcastBarf } from './command/broadcastB
 
 import * as logger from '../../../../../common/services/logger';
 import { ChannelProvider } from '../../../../../common/services/channelProvider';
+import { RefreshHashtagsHandler, RefreshHashtags } from './command/refreshHashtags';
+import { config } from '../../../../../common/config';
 
 const dbFactory = new DbFactory(),
     repoFactory = new RepositoryFactory(dbFactory),
-    queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),
-    channelProvider = new ChannelProvider(process.env.RABBIT),
+    queriesDbContext = new QueriesDbContext(config.connectionStrings.mongo, repoFactory),
+    channelProvider = new ChannelProvider(config.connectionStrings.rabbit),
     subscriberFactory = new SubscriberFactory(channelProvider);
 
 function commandHandlerFactory<TC extends ICommand>(commandName: string): ICommandHandler<TC> {
     const factories = {
         "barf-create": function () {
             const publisher = new Publisher(channelProvider),
-                authService = new AuthService(process.env.AUTH0_DOMAIN),
-                userService = new UserService(authService, process.env.AUTH0_DOMAIN),
+                authService = new AuthService(config.auth0.domain),
+                userService = new UserService(authService, config.auth0.domain),
                 handler = new CreateBarfDetailsHandler(userService, publisher, queriesDbContext);
+            return handler;
+        },
+        "hashtags-refresh": function () {
+            const handler = new RefreshHashtagsHandler(dbFactory, config.connectionStrings.mongo);
             return handler;
         },
         "broadcast-barf": function () {
@@ -37,8 +43,8 @@ function commandHandlerFactory<TC extends ICommand>(commandName: string): IComma
             return handler;
         },
         "user-details": function () {
-            const authService = new AuthService(process.env.AUTH0_DOMAIN),
-                userService = new UserService(authService, process.env.AUTH0_DOMAIN),
+            const authService = new AuthService(config.auth0.domain),
+                userService = new UserService(authService, config.auth0.domain),
                 handler = new RefreshUserDetailsCommandHandler(userService, queriesDbContext);
             return handler;
         }
@@ -48,16 +54,22 @@ function commandHandlerFactory<TC extends ICommand>(commandName: string): IComma
 }
 
 function listenToBarfs() {
-    const createBarfOptions = new SubscriberOptions(Exchanges.Barfs, "barf-create", Events.BarfCreated, task => {
+    const createBarfOptions = new SubscriberOptions(Exchanges.Barfs, Events.BarfCreated, task => {
         const command = new CreateBarfDetails(task.data),
             handler = commandHandlerFactory<CreateBarfDetails>("barf-create");
         return handler.handle(command);
     }),
-        broadcastBarfOptions = new SubscriberOptions(Exchanges.Barfs, "broadcast-barf", Events.BarfReady, task => {
+        broadcastBarfOptions = new SubscriberOptions(Exchanges.Barfs, Events.BarfReady, task => {
             const command = new BroadcastBarf(task.data),
                 handler = commandHandlerFactory<BroadcastBarf>("broadcast-barf");
             return handler.handle(command);
-        }), updateUserOptions = new SubscriberOptions(Exchanges.Users, "user-details", Events.RequestUpdateUserData, task => {
+        }),
+        refreshHashtagsOptions = new SubscriberOptions(Exchanges.Hashtags, Events.RequestHashtagsRefresh, task => {
+            const command = new RefreshHashtags(),
+                handler = commandHandlerFactory<RefreshHashtags>("hashtags-refresh");
+            return handler.handle(command);
+        }),
+        updateUserOptions = new SubscriberOptions(Exchanges.Users, Events.RequestUpdateUserData, task => {
             const handler = commandHandlerFactory<RefreshUserDetails>("user-details"),
                 command = new RefreshUserDetails(task.data);
             return handler.handle(command);
@@ -65,6 +77,7 @@ function listenToBarfs() {
 
     subscriberFactory.build(createBarfOptions);
     subscriberFactory.build(broadcastBarfOptions);
+    subscriberFactory.build(refreshHashtagsOptions);
     subscriberFactory.build(updateUserOptions);
 
     logger.info("Message Processor running...");
@@ -73,7 +86,7 @@ function listenToBarfs() {
 listenToBarfs();
 
 process.on('SIGINT', function () {
-    dbFactory.close(process.env.MONGO).then(() => {
+    dbFactory.close(config.connectionStrings.mongo).then(() => {
         console.log('Mongoose disconnected on app termination');
         process.exit(0);
     });

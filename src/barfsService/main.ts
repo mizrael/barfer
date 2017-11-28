@@ -19,12 +19,13 @@ import * as logger from '../common/services/logger';
 import { GetBarfDetailsQueryHandler } from './queries/barfDetails';
 import { BarfsByUserQueryHandler } from './queries/barfsByUser';
 import { ChannelProvider } from '../common/services/channelProvider';
+import { config } from '../common/config';
 
 function initRoutes(app: express.Application) {
-    const channelProvider = new ChannelProvider(process.env.RABBIT),
+    const channelProvider = new ChannelProvider(config.connectionStrings.rabbit),
         publisher = new Publisher(channelProvider),
         repoFactory = new RepositoryFactory(new DbFactory()),
-        queriesDbContext = new QueriesDbContext(process.env.MONGO, repoFactory),
+        queriesDbContext = new QueriesDbContext(config.connectionStrings.mongo, repoFactory),
         createBarfHandler = new CreateBarfCommandHandler(publisher),
         barfsArchiveHandler = new BarfsArchiveQueryHandler(queriesDbContext),
         barfDetailsHandler = new GetBarfDetailsQueryHandler(queriesDbContext),
@@ -35,7 +36,7 @@ function initRoutes(app: express.Application) {
 
 function startServer() {
     let port = process.env.PORT || 3000,
-        corsOrigins = process.env.CORS_ORIGINS || "",
+        corsOrigins = config.cors_origins || "",
         corsOptions = {
             origin: corsOrigins.split(',')
         },
@@ -45,10 +46,10 @@ function startServer() {
                 cache: true,
                 rateLimit: true,
                 jwksRequestsPerMinute: 5,
-                jwksUri: process.env.JWKS_URI
+                jwksUri: config.auth0.jwks_uri
             }),
-            audience: process.env.JWT_AUDIENCE,
-            issuer: process.env.JWT_ISSUER,
+            audience: config.auth0.jwt_audience,
+            issuer: config.auth0.jwt_issuer,
             algorithms: ['RS256']
         }),
         app = express();
