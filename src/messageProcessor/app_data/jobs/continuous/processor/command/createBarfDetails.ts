@@ -50,8 +50,6 @@ export class CreateBarfDetailsHandler implements ICommandHandler<CreateBarfDetai
 
         this._publisher.publish(new Message(Exchanges.Barfs, Events.BarfReady, command.barf.id));
 
-        this._publisher.publish(new Message(Exchanges.Hashtags, Events.RequestHashtagsRefresh));
-
         this._publisher.publish(new Message(Exchanges.Users, Events.RequestUpdateUserData, user.user_id));
     }
 }

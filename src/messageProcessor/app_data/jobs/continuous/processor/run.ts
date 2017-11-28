@@ -17,6 +17,7 @@ import * as logger from '../../../../../common/services/logger';
 import { ChannelProvider } from '../../../../../common/services/channelProvider';
 import { RefreshHashtagsHandler, RefreshHashtags } from './command/refreshHashtags';
 import { config } from '../../../../../common/config';
+import { Message } from '../../../../../common/services/message';
 
 const dbFactory = new DbFactory(),
     repoFactory = new RepositoryFactory(dbFactory),
@@ -53,7 +54,7 @@ function commandHandlerFactory<TC extends ICommand>(commandName: string): IComma
     return factories[commandName]();
 }
 
-function listenToBarfs() {
+function start() {
     const createBarfOptions = new SubscriberOptions(Exchanges.Barfs, Events.BarfCreated, task => {
         const command = new CreateBarfDetails(task.data),
             handler = commandHandlerFactory<CreateBarfDetails>("barf-create");
@@ -80,10 +81,15 @@ function listenToBarfs() {
     subscriberFactory.build(refreshHashtagsOptions);
     subscriberFactory.build(updateUserOptions);
 
+    setInterval(() => {
+        const publisher = new Publisher(channelProvider);
+        publisher.publish(new Message(Exchanges.Hashtags, Events.RequestHashtagsRefresh));
+    }, 1000 * 10);
+
     logger.info("Message Processor running...");
 };
 
-listenToBarfs();
+start();
 
 process.on('SIGINT', function () {
     dbFactory.close(config.connectionStrings.mongo).then(() => {

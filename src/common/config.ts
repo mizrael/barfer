@@ -34,8 +34,8 @@ const dev: IAppSettings = {
     session_secret: "23ricdzk234234rwdsjsdflksdf23rwsdf",
 
     connectionStrings: {
-        mongo: "mongodb://barfer:fRYXFCmd8IF6KhVw@cluster0-shard-00-00-yuik9.mongodb.net:27017,cluster0-shard-00-01-yuik9.mongodb.net:27017,cluster0-shard-00-02-yuik9.mongodb.net:27017/barfer?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin",
-        rabbit: "amqp://ttbpnbfu:7hfcmVuEDM4d-47mgZntCOceiXkMz9b3@lark.rmq.cloudamqp.com/ttbpnbfu"
+        mongo: "mongodb://barfer:WG8fFEsNmQGN6JSk@cluster0-shard-00-00-rg322.mongodb.net:27017,cluster0-shard-00-01-rg322.mongodb.net:27017,cluster0-shard-00-02-rg322.mongodb.net:27017/barfer?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin",
+        rabbit: "amqp://cbufeijf:U7nox5K_wdQYO2A5QqnDyUWrHnV22BCU@lark.rmq.cloudamqp.com/cbufeijf"
     },
 
     endpoints: {

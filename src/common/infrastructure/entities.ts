@@ -24,4 +24,9 @@ export namespace Entities {
         fromId: string;
         toId: string;
     }
+
+    export interface Hashtag {
+        text: string;
+        score: number;
+    }
 } 

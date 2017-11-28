@@ -29,6 +29,7 @@ abstract class BaseDbContext {
 export interface IQueriesDbContext {
     Barfs: Promise<IRepository<Entities.Barf>>;
     Users: Promise<IRepository<Entities.User>>;
+    Hashtags: Promise<IRepository<Entities.Hashtag>>;
     Relationships: Promise<IRepository<Entities.Relationship>>;
 }
 
@@ -51,6 +52,14 @@ export class QueriesDbContext extends BaseDbContext implements IQueriesDbContext
     public get Users(): Promise<IRepository<Entities.User>> {
         return this.initRepo<Entities.User>("usersQueries", "_users", async (r) => {
             await r.createIndex({ userId: 1 }, { unique: true });
+        });
+    }
+
+    private _hashtags: IRepository<Entities.Hashtag> = null;
+    public get Hashtags(): Promise<IRepository<Entities.Hashtag>> {
+        return this.initRepo<Entities.Hashtag>("hashtags", "_hashtags", async (r) => {
+            await r.createIndex({ text: 1 });
+            await r.createIndex({ score: 1 });
         });
     }
 
