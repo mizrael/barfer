@@ -6,7 +6,7 @@ import { CheckRelationships, CheckRelationshipsQueryHandler } from "./checkRelat
 import { User } from "./dto";
 
 export class TopUsers implements IQuery {
-    constructor(public readonly forUser: string, public readonly pageSize: number) { }
+    constructor(public readonly forUser: string, public readonly orderBy: string, public readonly pageSize: number) { }
 }
 
 export class TopUsersQueryHandler implements IQueryHandler<TopUsers, User[]>{
@@ -32,7 +32,13 @@ export class TopUsersQueryHandler implements IQueryHandler<TopUsers, User[]>{
     }
 
     async handle(query: TopUsers): Promise<User[]> {
-        let mongoQuery = new Query({}, { barfsCount: -1 }, query.pageSize),
+        const sortBy = {}; // { barfsCount: -1 }
+
+        if (query.orderBy) {
+            sortBy[query.orderBy] = -1;
+        }
+
+        const mongoQuery = new Query({}, sortBy, query.pageSize),
             repo = await this.queriesDbCtx.Users,
             entities = await repo.find(mongoQuery);
 
