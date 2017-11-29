@@ -2,8 +2,8 @@ barfer.widgets = barfer.widgets || {};
 
 (function () {
     var baseUrl = "/widgets/users?type=",
-        read = function ($container) {
-            var url = baseUrl + $container.attr("widget-users");
+        read = function ($container, type) {
+            var url = baseUrl + type;
 
             $container.empty();
             $.get(url).then(function (data) {
@@ -18,7 +18,9 @@ barfer.widgets = barfer.widgets || {};
         };
 
     $('[widget-users]').each(function (index, item) {
-        read($(item));
+        var $container = $(item),
+            type = $container.attr("widget-users");
+        read($container, type);
     });
 })();
 
