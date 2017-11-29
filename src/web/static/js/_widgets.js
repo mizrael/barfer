@@ -1,11 +1,10 @@
 barfer.widgets = barfer.widgets || {};
 
-barfer.widgets.users = function ($container, options) {
-    options = Object.assign({
-        type: 'top'
-    }, options);
-    var url = "/widgets/users?type=" + options.type,
-        read = function () {
+(function () {
+    var baseUrl = "/widgets/users?type=",
+        read = function ($container) {
+            var url = baseUrl + $container.attr("widget-users");
+
             $container.empty();
             $.get(url).then(function (data) {
                 $container.html(data);
@@ -15,28 +14,24 @@ barfer.widgets.users = function ($container, options) {
                     barfer.controllers.follow.bind($(helper.tooltip));
                 }
                 $container.find('.jsTooltip').tooltipster(opts);
-                if (options.onSuccess) {
-                    options.onSuccess();
-                }
             });
         };
 
-    return {
-        read: read
-    };
-};
+    $('[widget-users]').each(function (index, item) {
+        read($(item));
+    });
+})();
 
-barfer.widgets.tagcloud = function ($container, options) {
-    options = Object.assign({}, options);
-    var url = "/widgets/tagcloud"
-    read = function () {
-        $container.empty();
-        $.get(url).then(function (data) {
-            $container.html(data);
-        });
-    };
+(function tagcloud_widget() {
+    var url = "/widgets/tagcloud",
+        read = function ($container) {
+            $container.empty();
+            $.get(url).then(function (data) {
+                $container.html(data);
+            });
+        };
 
-    return {
-        read: read
-    };
-};
+    $('[widget-tag-cloud]').each(function (index, item) {
+        read($(item));
+    });
+})();

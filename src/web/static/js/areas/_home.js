@@ -7,22 +7,9 @@ barfer.areas.home = function () {
                     archive.read();
                 }
             },
-            $topUsersArchive = $container.find('.jsTopUsers'),
-            topUsers = new barfer.widgets.users($topUsersArchive, {
-                type: 'top'
-            }),
-            $latestUsersArchive = $container.find('.jsLatestUsers'),
-            latestUsers = new barfer.widgets.users($latestUsersArchive, {
-                type: 'latest'
-            }),
-            tagcloud = new barfer.widgets.tagcloud($container.find('.jsTagCloud'), {}),
             createBarf = new barfer.controllers.createBarf($container.find('.jsBarfer'));
 
         refreshArchive();
-
-        topUsers.read();
-        latestUsers.read();
-        tagcloud.read();
 
         if (barfer.context.user) {
             var key = 'barf.for.' + barfer.context.user;
