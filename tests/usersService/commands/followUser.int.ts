@@ -25,7 +25,7 @@ describe('FollowUserCommandHandler', () => {
         sut;
 
     before(async () => {
-        let repo = await dbContext.Relationships;
+        const repo = await dbContext.Relationships;
         await repo.insert({ fromId: userId, toId: followedUserId });
     });
 
@@ -38,46 +38,43 @@ describe('FollowUserCommandHandler', () => {
     });
 
     it('should do nothing when relation already exists', async () => {
-        let command = new FollowUser(userId, followedUserId, true),
+        const command = new FollowUser(userId, followedUserId, true),
             followingRepo = await dbContext.Relationships;
 
         await sut.handle(command);
 
-        let count = await followingRepo.count({ fromId: userId });
+        const count = await followingRepo.count({ fromId: userId });
         expect(count).to.be.eq(1);
     });
 
     it('should remove relation', async () => {
-        let newUserId = uuid.v4(),
+        const newUserId = uuid.v4(),
             newFollowedId = uuid.v4(),
-            command = new FollowUser(newUserId, newFollowedId, true),
             followingRepo = await dbContext.Relationships;
 
-        await sut.handle(command);
+        await sut.handle(new FollowUser(newUserId, newFollowedId, true));
 
-        let count = await followingRepo.count({ fromId: newUserId });
+        const count = await followingRepo.count({ fromId: newUserId });
         expect(count).to.be.eq(1);
 
-        command = new FollowUser(newUserId, newFollowedId, false);
+        await sut.handle(new FollowUser(newUserId, newFollowedId, false));
 
-        await sut.handle(command);
-
-        count = await followingRepo.count({ fromId: newUserId });
-        expect(count).to.be.eq(0);
+        const count2 = await followingRepo.count({ fromId: newUserId });
+        expect(count2).to.be.eq(0);
     });
 
     it('should create new entity when not existing', async () => {
-        let command = new FollowUser(uuid.v4(), uuid.v4(), true),
+        const command = new FollowUser(uuid.v4(), uuid.v4(), true),
             followingRepo = await dbContext.Relationships;
 
         await sut.handle(command);
 
-        let count = await followingRepo.count({ fromId: command.followerId });
+        const count = await followingRepo.count({ fromId: command.followerId });
         expect(count).to.be.eq(1);
     });
 
     it('should publish follow event', async () => {
-        let newUserId = uuid.v4(),
+        const newUserId = uuid.v4(),
             newFollowedId = uuid.v4(),
             command = new FollowUser(newUserId, newFollowedId, true),
             followingRepo = await dbContext.Relationships,
@@ -87,7 +84,7 @@ describe('FollowUserCommandHandler', () => {
 
         expect(spy.calledOnce).to.be.true;
 
-        let arg = spy.args[0][0];
+        const arg = spy.args[0][0];
         expect(arg['routingKey']).to.be.eq(Events.UserFollowed);
         expect(arg['exchangeName']).to.be.eq(Exchanges.Users);
         expect(arg['data']['followerId']).to.be.eq(command.followerId);
@@ -95,29 +92,27 @@ describe('FollowUserCommandHandler', () => {
     });
 
     it('should publish unfollow event', async () => {
-        let newUserId = uuid.v4(),
+        const newUserId = uuid.v4(),
             newFollowedId = uuid.v4(),
-            command = new FollowUser(newUserId, newFollowedId, true),
             followingRepo = await dbContext.Relationships;
 
-        await sut.handle(command);
+        await sut.handle(new FollowUser(newUserId, newFollowedId, true));
 
-        let spy = sinon.spy(mockPublisher, 'publish');
+        const spy = sinon.spy(mockPublisher, 'publish');
 
-        command = new FollowUser(newUserId, newFollowedId, false);
-        await sut.handle(command);
+        await sut.handle(new FollowUser(newUserId, newFollowedId, false));
 
         expect(spy.calledOnce).to.be.true;
 
-        let arg = spy.args[0][0];
+        const arg = spy.args[0][0];
         expect(arg['routingKey']).to.be.eq(Events.UserUnfollowed);
         expect(arg['exchangeName']).to.be.eq(Exchanges.Users);
-        expect(arg['data']['followerId']).to.be.eq(command.followerId);
-        expect(arg['data']['followedId']).to.be.eq(command.followedId);
+        expect(arg['data']['followerId']).to.be.eq(newUserId);
+        expect(arg['data']['followedId']).to.be.eq(newFollowedId);
     });
 
     it('should not publish unfollow event if relationship does not exist', async () => {
-        let newUserId = uuid.v4(),
+        const newUserId = uuid.v4(),
             newFollowedId = uuid.v4(),
             command = new FollowUser(newUserId, newFollowedId, false),
             followingRepo = await dbContext.Relationships,
@@ -129,7 +124,7 @@ describe('FollowUserCommandHandler', () => {
     });
 
     after(async () => {
-        let repo = await dbContext.Relationships;
+        const repo = await dbContext.Relationships;
         await repo.drop();
         await dbFactory.close(IntegrationTestsConfig.mongoConnectionString);
     });
