@@ -7,10 +7,25 @@
             }
             h3 {
                 display: inline;
+                margin-right: 6px;
             }
             button {
                 display: inline-block;
                 vertical-align: super;
+            }
+            .stats {
+                margin: 0;
+                padding: 0;
+                list-style: none;
+                text-align: center;
+                li {
+                    display: inline-block;
+                    margin: 0 4px;
+                    text-align: center;
+                    .stat-type {
+                        display: block;
+                    }
+                }
             }
         }
     }

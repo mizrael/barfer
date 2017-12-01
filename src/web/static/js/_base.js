@@ -111,8 +111,8 @@ barfer.controllers.follow = (function () {
             var text = newStatus ? "Unfollow" : "Follow";
 
             $btn.data('followed', newStatus);
-            $btn.html(newStatus ? '<i class="fa fa-heart fa-hover-hidden" aria-hidden="true"></i><i class="fa fa-heart-o fa-hover-show" aria-hidden="true"></i>' :
-                '<i class="fa fa-heart fa-hover-show" aria-hidden="true"></i><i class="fa fa-heart-o fa-hover-hidden" aria-hidden="true"></i>');
+            $btn.html(newStatus ? '<span class="hover-hide">Following</span><span class="hover-show">Unfollow</span>' :
+                'Follow');
             $btn.attr('alt', text);
             $btn.attr('title', text);
         },

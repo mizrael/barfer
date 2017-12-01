@@ -25,6 +25,9 @@ export class RefreshUserDetailsCommandHandler implements ICommandHandler<Refresh
             }),
             usersRepo = await this._queriesDbContext.Users,
             creationDate = new Date(user.created_at),
+            relsRepo = await this._queriesDbContext.Relationships,
+            followersCount = await relsRepo.count({ toId: user.user_id }),
+            followsCount = await relsRepo.count({ fromId: user.user_id }),
             userDetails: Entities.User = {
                 userId: user.user_id,
                 email: user.email,
@@ -33,7 +36,9 @@ export class RefreshUserDetailsCommandHandler implements ICommandHandler<Refresh
                 picture: user.picture,
                 creationDate: creationDate.getTime(),
                 lastLoginDate: Date.now(),
-                barfsCount: barfsCount
+                barfsCount: barfsCount,
+                followersCount: followersCount,
+                followsCount: followsCount
             };
 
         await usersRepo.upsertOne({ userId: userDetails.userId }, userDetails);

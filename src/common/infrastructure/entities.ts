@@ -18,6 +18,8 @@ export namespace Entities {
         creationDate: Number;
         lastLoginDate: Number;
         barfsCount: Number;
+        followersCount: Number;
+        followsCount: Number;
     }
 
     export interface Relationship {

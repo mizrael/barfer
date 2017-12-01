@@ -7,10 +7,25 @@ block content
         div(class="leftCol col-md-3 col-xs-12")
             div(class="head")
                 img(src=model.picture, title=model.nickName, alt=model.nickName)
-                h3 @#{model.nickname}
-                button(class="btn btn-sm follow jsFollow", data-id=model.userId, data-followed=model.followed ? 'true' : 'false') Follow
+                p
+                    h3 @#{model.nickname}
+                    button(class="btn btn-sm follow jsFollow", data-id=model.userId, data-followed=model.followed ? 'true' : 'false') Follow
+                p
+                    ul.stats
+                        li
+                            span.stat-type Barfs
+                            span.stat-value #{model.barfsCount}
+                        li
+                            span.stat-type Following
+                            span.stat-value #{model.followsCount}
+                        li
+                            span.stat-type Followers
+                            span.stat-value #{model.followersCount}
 
-            div(class="topUsers jsTopUsers")  
+
+            div(class="topUsers" widget-tag-cloud)
+            div(class="topUsers" widget-users="top")
+            div(class="topUsers" widget-users="latest")  
 
         div(class="main col-md-9 col-xs-12")
             if user && barfs

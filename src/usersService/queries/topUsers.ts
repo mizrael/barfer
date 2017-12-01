@@ -20,6 +20,8 @@ export class TopUsersQueryHandler implements IQueryHandler<TopUsers, User[]>{
             name: e.name,
             picture: e.picture,
             barfsCount: e.barfsCount,
+            followersCount: e.followersCount,
+            followsCount: e.followsCount,
             followed: false
         };
     }

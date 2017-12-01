@@ -5,12 +5,16 @@ export interface User {
     name: string;
     picture: string;
     barfsCount: Number;
+    followersCount: Number;
+    followsCount: Number;
     followed: boolean;
 }
 
 export const NullUser: User = {
     email: "",
     barfsCount: 0,
+    followersCount: 0,
+    followsCount: 0,
     name: "",
     nickname: "",
     picture: "",
