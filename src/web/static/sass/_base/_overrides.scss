@@ -1,9 +1,12 @@
 *>.fa.fa-hover-show,
-*:hover>.fa.fa-hover-hidden {
+*:hover>.fa.fa-hover-hidden,
+*>.hover-show,
+*:hover>.hover-hide {
     display: none;
 }
 
-*:hover>.fa.fa-hover-show {
+*:hover>.fa.fa-hover-show,
+*:hover>.hover-show {
     display: inline-block;
 }
 
@@ -11,6 +14,13 @@ button {
     cursor: pointer;
     .fa {
         cursor: pointer;
+    }
+}
+
+button.follow {
+    border: 1px solid #aaa;
+    &:hover {
+        background-color: #f3f3f3;
     }
 }
 

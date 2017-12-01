@@ -10,6 +10,8 @@ export interface IUser {
     name: string;
     picture: string;
     barfsCount: Number;
+    followersCount: Number;
+    followsCount: Number;
     followed: boolean;
 }
 

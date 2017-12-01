@@ -18,10 +18,15 @@ export class GetUserByIdQueryHandler implements IQueryHandler<GetUserById, User>
             return NullUser;
 
         const isFollowing = (query.forUser && '' !== query.forUser && await this.isFollowingHandler.handle({ followerId: query.forUser, followedId: user.userId }));
+        const relsRepo = await this.queriesDbCtx.Relationships,
+            followersCount = await relsRepo.count({toId: user.userId}),
+            followsCount = await relsRepo.count({fromId: user.userId});
 
         return {
             email: user.email,
             barfsCount: user.barfsCount,
+            followersCount: user.followersCount,
+            followsCount: user.followsCount,
             name: user.name,
             nickname: user.nickname,
             picture: user.picture,
