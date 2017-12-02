@@ -8,6 +8,8 @@ import { RefreshUserDetailsCommandHandler, RefreshUserDetails } from '../../../s
 import * as sinon from 'sinon';
 
 const userBarfsCount = 42,
+    followersCount = 2,
+    followsCount = 5,
     user = {
         user_id: "123134234",
         nickname: "mizrael",
@@ -18,11 +20,12 @@ const userBarfsCount = 42,
 
 let mockUsersRepo,
     mockBarfsRepo,
+    mockRelsRepo,
     mockQueriesDb,
     mockUserService,
     sut;
 
-describe('CreateBarfDetailsHandler', () => {
+describe('RefreshUserDetailsCommandHandler', () => {
     beforeEach(() => {
         mockUsersRepo = {
             upsertOne: (f, e) => Promise.resolve(e)
@@ -32,9 +35,14 @@ describe('CreateBarfDetailsHandler', () => {
             count: (e) => Promise.resolve(userBarfsCount)
         };
 
+        mockRelsRepo = {
+            count: (e) => Promise.resolve(followersCount)
+        };
+
         mockQueriesDb = {
             Barfs: Promise.resolve(mockBarfsRepo),
-            Users: Promise.resolve(mockUsersRepo)
+            Users: Promise.resolve(mockUsersRepo),
+            Relationships: Promise.resolve(mockRelsRepo)
         };
 
         mockUserService = {
