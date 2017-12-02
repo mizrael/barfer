@@ -12,7 +12,6 @@ import { Events, Exchanges } from '../../../src/common/events';
 
 const expect = chai.expect;
 
-
 describe('FollowUserCommandHandler', () => {
     const userId = uuid.v4(),
         notFollowingUser = uuid.v4(),
@@ -82,7 +81,7 @@ describe('FollowUserCommandHandler', () => {
 
         await sut.handle(command);
 
-        expect(spy.calledOnce).to.be.true;
+        expect(spy.called).to.be.true;
 
         const arg = spy.args[0][0];
         expect(arg['routingKey']).to.be.eq(Events.UserFollowed);
@@ -102,7 +101,7 @@ describe('FollowUserCommandHandler', () => {
 
         await sut.handle(new FollowUser(newUserId, newFollowedId, false));
 
-        expect(spy.calledOnce).to.be.true;
+        expect(spy.called).to.be.true;
 
         const arg = spy.args[0][0];
         expect(arg['routingKey']).to.be.eq(Events.UserUnfollowed);
@@ -120,7 +119,7 @@ describe('FollowUserCommandHandler', () => {
 
         await sut.handle(command);
 
-        expect(spy.called).to.not.be.true;
+        expect(spy.calledWith({ exchangeName: Exchanges.Users, routingKey: Events.UserUnfollowed })).to.not.be.true;
     });
 
     after(async () => {

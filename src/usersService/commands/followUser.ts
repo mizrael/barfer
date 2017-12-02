@@ -13,25 +13,27 @@ export class FollowUserCommandHandler implements ICommandHandler<FollowUser>{
     constructor(private readonly _dbContext: IQueriesDbContext, private readonly _publisher: IPublisher) { }
 
     public async handle(command: FollowUser): Promise<void> {
-        let entity: Entities.Relationship = {
+        const entity: Entities.Relationship = {
             fromId: command.followerId,
             toId: command.followedId
-        },
-            repo = await this._dbContext.Relationships;
+        }, repo = await this._dbContext.Relationships;
+
         if (!command.status) {
-            let deletedCount = await repo.deleteMany(entity);
+            const deletedCount = await repo.deleteMany(entity);
             if (0 !== deletedCount) {
                 const msg = new Message(Exchanges.Users, Events.UserUnfollowed, command);
                 await this._publisher.publish(msg);
             }
-            return;
+        } else {
+            const isFollowing = await repo.findOne(entity);
+            if (!isFollowing) {
+                await repo.insert(entity);
+                const msg = new Message(Exchanges.Users, Events.UserFollowed, command);
+                await this._publisher.publish(msg);
+            }
         }
 
-        const isFollowing = await repo.findOne(entity);
-        if (!isFollowing) {
-            await repo.insert(entity);
-            const msg = new Message(Exchanges.Users, Events.UserFollowed, command);
-            await this._publisher.publish(msg);
-        }
+        await this._publisher.publish(new Message(Exchanges.Users, Events.RequestUpdateUserData, command.followedId));
+        await this._publisher.publish(new Message(Exchanges.Users, Events.RequestUpdateUserData, command.followerId));
     }
 }
